@@ -16,12 +16,6 @@ SESSION_CONFIG_DEFAULTS = {
 
 SESSION_CONFIGS = [
     {
-        'name': 'Ravens_Matrices',
-        'num_demo_participants': 1,
-        'app_sequence': ['Ravens_Matrices'],
-    },
-
-    {
         'name': 'Investment_Task',
         'num_demo_participants': 1,
         'app_sequence': ['Investment_Task'],
