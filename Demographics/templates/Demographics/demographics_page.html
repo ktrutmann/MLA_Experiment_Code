@@ -1,0 +1,70 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block title %}
+    Endfragebogen
+{% endblock %}
+
+{% block content %}
+    <p>Bitte beantworten Sie die folgenden Fragen:</p>
+{% formfield player.age label='Alter'%}
+{% formfield player.gender label='Geschlecht'%}
+{% formfield player.is_student label='Sind Sie aktuell Student?'%}
+{% formfield player.study_field label='Falls ja, geben Sie Bitte Ihre Studienrichtung an.'%}
+{% formfield player.investment_experience %}
+    <p>Haben Sie eine Idee, um was es in dieser Studie ging?</p>
+{% formfield player.purpose %}
+{% formfield player.interest %}
+{% formfield player.engagement %}
+
+    {% next_button %}
+
+    <style>
+    .field-investment_experience{
+        margin-bottom: 30px;
+    }
+
+    .col-form-label {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+    </style>
+
+    <script>
+        window.onload = function (){
+            // Set experience Labels
+            let scale_elements = document.getElementsByClassName('field-investment_experience');
+
+            for (let this_scale of scale_elements){
+                let scale_html = this_scale.innerHTML;
+                this_scale.innerHTML = "<span style='margin-right: 10px; background: #eeeeee'>Gar keine Erfahrung</span>" +
+                    scale_html +
+                    "<span style='background: #eeeeee'>Professionell</span>";
+                console.log(this_scale);
+            }
+
+            // Excitement labels
+            scale_elements = document.getElementsByClassName('field-interest');
+
+            for (let this_scale of scale_elements){
+                let scale_html = this_scale.innerHTML;
+                this_scale.innerHTML = "<span style='margin-right: 10px; background: #eeeeee'>Gar nicht spannend</span>" +
+                    scale_html +
+                    "<span style='background: #eeeeee'>Sehr spannend</span>";
+                console.log(this_scale);
+            }
+
+            // Attention labels
+            scale_elements = document.getElementsByClassName('field-engagement');
+
+            for (let this_scale of scale_elements){
+                let scale_html = this_scale.innerHTML;
+                this_scale.innerHTML = "<span style='margin-right: 10px; background: #eeeeee'>Gar nicht aufmerksam</span>" +
+                    scale_html +
+                    "<span style='background: #eeeeee'>Sehr aufmerksam</span>";
+                console.log(this_scale);
+            }
+        }
+    </script>
+
+{% endblock %}

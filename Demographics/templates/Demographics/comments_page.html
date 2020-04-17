@@ -1,0 +1,15 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block title %}
+    Endfragebogen
+{% endblock %}
+
+{% block content %}
+    <p>Sie sind nun fast am Ende der Studie angelangt. Falls Sie noch generelle Kommentare zur Studie haben,
+    geben Sie diese bitte hier ab. </p>
+{% formfield player.general_comments%}
+
+    {% next_button %}
+
+{% endblock %}

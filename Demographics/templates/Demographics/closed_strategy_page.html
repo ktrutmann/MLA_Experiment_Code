@@ -1,0 +1,56 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block title %}
+    Endfragebogen
+{% endblock %}
+
+{% block content %}
+    <p>
+    Unten sehen Sie einige mögliche Strategien, welche Sie verfolgt haben könnten.
+    Bitte geben Sie an, wie sehr jede dieser Strategien Ihr Verhalten beschreiben würden.
+    1 bedeutet dabei, dass diese Strategie für Sie gar nicht zutrifft, 7 bedeutet, dass Sie genau diese Strategie
+    verwendet haben.
+    </p>
+    {% formfield player.strategy_random %}
+    {% formfield player.strategy_DE %}
+    {% formfield player.strategy_anti_DE %}
+    {% formfield player.strategy_feeling %}
+    {% formfield player.strategy_risk_averse %}
+    {% formfield player.strategy_short_risk_averse %}
+    {% formfield player.strategy_rational %}
+    {% formfield player.strategy_short_rational %}
+    {% formfield player.strategy_inertia %}
+    {% next_button %}
+
+    <style>
+    #id_strategy {
+        height: 150px;
+    }
+
+    .controls {
+        margin-left: 10px;
+    }
+
+    .col-form-label {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+    </style>
+
+    <script>
+    window.onload = function () {
+        let scale_elements = document.getElementsByClassName('controls');
+
+        for (let this_scale of scale_elements){
+            let scale_html = this_scale.innerHTML;
+            this_scale.innerHTML = "<span style='margin-right: 10px; background: #eeeeee'>Trift gar nicht zu</span>" +
+                scale_html +
+                "<span style='background: #eeeeee'>Trift vollkommen zu</span>";
+            console.log(this_scale);
+        }
+    }
+
+    </script>
+
+{% endblock %}

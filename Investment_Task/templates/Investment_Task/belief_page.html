@@ -1,0 +1,142 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block title %}Lotterie/Wette{% endblock %}
+
+{% block content %}
+<div class="belief_content content">
+    <p>
+        Sie werden entweder auf einen Preisanstieg wetten, oder eine Lotterie spielen. Wie hoch müsste die
+        Gewinnwahrscheinlichkeit der Lotterie sein, damit Sie diese der Wette vorziehen?
+    </p>
+</div>
+
+<!--timeout warning field-->
+<div id="timer_warning_field" style="visibility: hidden; margin-bottom: -10px">
+    <p class="blink_text">
+        Bitte entscheiden Sie sich jetzt!
+    </p>
+</div>
+
+<div id="slider_container" style="width: 100%; align-content: center">
+    <label for="id_belief"></label>
+    <span>
+        <i>0%</i>
+        <input type="range" class="slider slider_hidden belief_slider belief"
+               id="id_belief" name="belief"
+               style = "width: 500px; margin-top: 10px; margin-bottom: 20px; "
+
+               oninput="change_slider_value()">
+        <i>100%</i>
+    </span>
+    <p>
+        <br>
+        Ich würde lieber die Lotterie spielen, wenn diese eine Gewinnwahrscheinlichkeit von
+        <span id="belief_feedback" style="font-weight: bold">XX</span><b>%</b>
+        oder höher hat.
+    </p>
+    <button type="button" class="next_button btn" id="next_button"
+    onclick="submit_belief()">Weiter</button>
+</div>
+
+<input type="hidden" id="id_time_to_belief_report" name="time_to_belief_report" value="">
+<input type="hidden" id="id_unfocused_time_to_belief_report" name="unfocused_time_to_belief_report" value="">
+<style>
+    /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+    .slider_hidden::-webkit-slider-thumb {
+        visibility: hidden;
+    }
+
+    .slider_hidden::-moz-range-thumb {
+        visibility: hidden;
+    }
+
+    .otree-timer {
+        display: none;
+    }
+
+    /* Timer style */
+      .blink_text {
+        animation:1s blinker linear infinite;
+        -webkit-animation:1s blinker linear infinite;
+        -moz-animation:1s blinker linear infinite;
+        color: red;
+        font-weight: bold;
+    }
+    @-moz-keyframes blinker {
+        0% { opacity: 1.0; }
+        50% { opacity: 0.0; }
+        100% { opacity: 1.0; }
+    }
+    @-webkit-keyframes blinker {
+        0% { opacity: 1.0; }
+        50% { opacity: 0.0; }
+        100% { opacity: 1.0; }
+    }
+    @keyframes blinker {
+        0% { opacity: 1.0; }
+        50% { opacity: 0.0; }
+        100% { opacity: 1.0; }
+    }
+</style>
+
+<script>
+    let has_touched_slider = false;
+
+    $$ = function(x){return document.getElementById(x)};
+
+    // Warning after time has run out
+    setTimeout(
+        function () {
+            $$('timer_warning_field').style.visibility = 'visible';
+        },
+        parseInt('{{max_time}}')*1000 // 60 seconds
+    );
+
+    // Timetracking
+    let load_time = 0;
+    let unfocused_time = 0;
+    let unfocused_start = 0;
+
+    get_time = function(){
+        let timer = new Date();
+        return timer.getTime();
+    };
+
+    window.onload = function(){
+        load_time = get_time();
+        unfocused_start = get_time();
+        unfocused_time = 0;
+    };
+
+    window.onblur = function(){
+        unfocused_start = get_time()
+    };
+
+    window.onfocus = function(){
+        unfocused_time = unfocused_time + (get_time() - unfocused_start);
+    };
+
+    // Slider input handler:
+    change_slider_value = function(){
+        $$('belief_feedback').innerHTML = $$('id_belief').value;
+        // Reveal the slider handle
+        if (~has_touched_slider) {
+            $$('id_belief').classList.remove('slider_hidden');
+            has_touched_slider = true
+        }
+    };
+
+    submit_belief = function(){
+        if (has_touched_slider) {
+            $$('id_belief').value = parseInt($$('id_belief').value);
+            $$('id_time_to_belief_report').value = (get_time() - load_time) / 1000;
+            $$('id_unfocused_time_to_belief_report').value = unfocused_time / 1000;
+            $$('form').submit();
+        } else {
+            alert('Bitte geben Sie mit dem Slider eine Wahrscheinlichkeit an!')
+        }
+    }
+</script>
+
+{% endblock %}

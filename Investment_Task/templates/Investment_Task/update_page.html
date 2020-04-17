@@ -1,0 +1,58 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block title %}
+Update
+{% endblock %}
+
+{% block content %}
+<div class="price_update">
+    <table id="price_update_table">
+        <tr><td>
+            Der Preis der Aktie
+            {% if update_raise %}
+                <b>steigt</b>
+            {% else %}
+                <b>sinkt</b>
+            {% endif %}
+            um <b>{{update}}</b> und beträgt nun <b>{{price}}</b>
+            <br>
+        </td></tr>
+    </table>
+{% next_button %}
+</div>
+
+<input type="hidden" id="id_update_time_used" name="update_time_used" value="0">
+
+<style>
+    .otree-timer {
+        display: none;
+    }
+</style>
+
+
+<style>
+    .otree-timer {
+        display: none;
+    }
+</style>
+
+<script>
+    let t_start = 0;
+
+    get_time = function(){
+        let timer = new Date();
+        return timer.getTime();
+    };
+
+    window.onload = function(){
+        t_start = get_time()
+    };
+
+    document.getElementById('form').onsubmit = function(){
+        document.getElementById('id_update_time_used').value = get_time() - t_start;
+    }
+
+</script>
+
+{% endblock %}

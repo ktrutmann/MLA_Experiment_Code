@@ -1,0 +1,85 @@
+{% extends "Tutorial_Investment_Task/Page.html" %}
+{% load otree static %}
+
+{% block title %}
+Investitions-Entscheidungen Quiz
+{% endblock %}
+{% block content %}
+
+<div class="quiz_tutorial content" id="content_quiz">
+    <p>
+        Im folgenden finden Sie einige Fragen, welche überprüfen sollen, dass Sie die Aufgabe verstanden haben.
+        Bitte markieren Sie die jeweils korrekte Antwort und klicken Sie auf "Weiter".
+    </p>
+    <div id="Q1_div" style="display: inline;">{% formfield player.Q1 %}</div>
+    <div id="Q2_div" style="display: none;">{% formfield player.Q2 %}</div>
+    <div id="Q3_div" style="display: none;">{% formfield player.Q3 %}</div>
+    <div id="Q4_div" style="display: none;">{% formfield player.Q4 %}</div>
+    <div id="Q5_div" style="display: none;">{% formfield player.Q5 %}</div>
+    <div id="Q6_div" style="display: none;">{% formfield player.Q6 %}</div>
+
+    <table class = "trade_info_table" id="quiz_table"
+               style="text-align:center; width: 100%; margin-bottom: 10px; display: none;">
+            <tr style="background: darkgrey">
+                <th></th>
+                <th>Anteil</th>
+                <th>Einstandskurs</th>
+                <th>Aktueller Kurs</th>
+                <th>Wahrscheinlichkeit<br>für Anstieg</th>
+                <th>Gewinne/Verluste <br>Absolut (in %)</th>
+                <th>Kurswert</th>
+            </tr>
+            <tr class="table_content">
+                <td><b>Bargeld</b></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>3800</td>
+            </tr>
+            <tr class="table_content">
+                <td><b>Aktie</b></td>
+                <td>+1</td>
+                <td>2020</td>
+                <td id="id_price">2000</td>
+                <td>-</td>
+                <td>-20 (-1,0)</td>
+                <td>2000</td>
+            </tr>
+            <tr style="background: skyblue;">
+                <td><b>Gesamt</b></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>-20 (-1,0)</td>
+                <td style="font-weight: bold">5800</td>
+            </tr>
+        </table>
+    <input type="hidden" id="id_wrong_answers" name="wrong_answers" value="0">
+    <button class="button btn back_button navigation_button" id="quiz_back_button" type="button"
+        onclick="flip_tut_pages('back')">Zurück</button>
+    <button class="button btn continue_button navigation_button" id="lottery_continue_button" type="button"
+            onclick="check_quiz()">Weiter</button>
+</div>
+
+<style>
+.btn{
+    margin-right: 10px;
+}
+
+.form-group{
+    margin-right: 10px;
+}
+
+.row {
+    margin-bottom: 20px;
+}
+
+.table_content{
+    background: aliceblue;
+}
+</style>
+
+{% endblock %}

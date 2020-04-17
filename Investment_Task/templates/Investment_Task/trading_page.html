@@ -1,0 +1,199 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block title %}
+Investitions-Entscheidungen
+{% endblock %}
+{% block content %}
+
+<!--timeout warning field-->
+<div id="timer_warning_field" style="visibility: hidden; text-align: right; margin-top: -30px">
+    <p class="blink_text" style="align-content: end">
+        Bitte entscheiden Sie sich jetzt!
+    </p>
+</div>
+
+<div class="content">
+<!--    trading information table-->
+    <table id="trade_info_table" style="text-align:center; width: 100%">
+        <tr style="background: darkgrey">
+            <th></th>
+            <th>Anteile</th>
+            <th>Einstandskurs</th>
+            <th>Aktueller Kurs</th>
+            <th>Wahrscheinlichkeit<br>für Anstieg</th>
+            <th>Gewinne/Verluste <br>Absolut (in %)</th>
+            <th>Kurswert</th>
+        </tr>
+        <tr class="table_content">
+            <td><b>Bargeld</b></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>{{ cash }}</td>
+        </tr>
+        <tr class="table_content">
+            <td><b>Aktie</b></td>
+            <td>{% if player.hold > 0 %}+{% endif %}{{player.hold}}</td>
+            <td>{{base_price}}</td>
+            <td>{{price}}</td>
+{#            Condition row:#}
+            {% if condition == 'baseline' %}
+            <td>-</td>
+            {% elif condition == 'probs_shown' %}
+            <td>{{ bayes_prob }}% </td>
+            {% else %}
+            <td>{{ up_prob_state }}%</td>
+            {% endif %}
+            <td>{{player.returns}} ({{percentage_returns}})</td>
+            <td>{{all_val}}</td>
+        </tr>
+        <tr style="background: skyblue;">
+            <td><b>Gesamt</b></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><b>{{wealth}}</b></td>
+        </tr>
+    </table>
+    <hr>
+
+<!--    order forms-->
+    <div id="order_buttons">
+        <div class="row">
+            <button class="btn trade_button" id="asset_buy_two_button" type="button"
+                    onclick="make_trade('short')">-1 Aktien Halten</button>
+            <button class="btn trade_button" id="asset_buy_one_button" type="button"
+                    onclick="make_trade('hold_none')">Keine Aktie Halten</button>
+            <button class="btn trade_button" id="asset_sell_button" type="button"
+                    onclick="make_trade('hold_one')">+1 Aktie Halten</button>
+        </div>
+    </div>
+
+    <input id="id_transaction" name="transaction" type="hidden" value="0">
+    <input id="id_time_to_order" name="time_to_order" type="hidden" value="0">
+    <input id="id_unfocused_time_to_order" name="unfocused_time_to_order" type="hidden" value="0">
+
+
+</div> <!-- end content --->
+
+<style>
+.btn{
+    margin-left: 10px;
+}
+
+.form-group{
+    margin-right: 10px;
+}
+
+.row {
+    margin-bottom: 20px;
+}
+
+.table_content{
+    background: aliceblue;
+}
+
+/* Timer style */
+      .blink_text {
+        animation:1s blinker linear infinite;
+        -webkit-animation:1s blinker linear infinite;
+        -moz-animation:1s blinker linear infinite;
+        color: red;
+        font-weight: bold;
+    }
+    @-moz-keyframes blinker {
+        0% { opacity: 1.0; }
+        50% { opacity: 0.0; }
+        100% { opacity: 1.0; }
+    }
+    @-webkit-keyframes blinker {
+        0% { opacity: 1.0; }
+        50% { opacity: 0.0; }
+        100% { opacity: 1.0; }
+    }
+    @keyframes blinker {
+        0% { opacity: 1.0; }
+        50% { opacity: 0.0; }
+        100% { opacity: 1.0; }
+    }
+</style>
+
+<!--Button logic and order handling happens here><-->
+<script>
+    $$ = function(x){return document.getElementById(x)};
+
+    // Disable the enter key for this page
+    window.addEventListener('keydown',function(e){
+        if(e.keyIdentifier === 'U+000A' || e.keyIdentifier === 'Enter' || e.keyCode === 13) {
+            e.preventDefault();
+            return false;
+        }
+    }, true);
+
+    // Start tracking the time
+    window.onload = function(){
+        load_time = get_time();
+        unfocused_start = get_time();
+        unfocused_time = 0;
+    };
+
+    // Warning after time has run out
+    setTimeout(
+        function () {
+            $$('timer_warning_field').style.visibility = 'visible'
+        },
+        parseInt('{{max_time}}')*1000
+    );
+
+    // Timetracking
+    let load_time = 0;
+    let unfocused_time = 0;
+    let unfocused_start = 0;
+
+    get_time = function(){
+        let timer = new Date();
+        return timer.getTime();
+    };
+
+    window.onblur = function(){
+        unfocused_start = get_time();
+    };
+
+    window.onfocus = function(){
+        unfocused_time = unfocused_time + (get_time() - unfocused_start);
+    };
+
+    // Handle the button click
+    make_trade = function(action){
+        if (action === 'short'){
+            if (parseInt('{{player.hold}}') === 1){
+                $$('id_transaction').value = -2
+            } else if (parseInt('{{player.hold}}') === 0) {
+                $$('id_transaction').value = -1
+            }
+        } else if (action === 'hold_none'){
+            if (parseInt('{{player.hold}}') === 1){
+                $$('id_transaction').value = -1
+            } else if (parseInt('{{player.hold}}') === -1) {
+                $$('id_transaction').value = 1
+            }
+         } else if (action === 'hold_one') {
+            if (parseInt('{{player.hold}}') === 0) {
+                $$('id_transaction').value = 1
+            } else if (parseInt('{{player.hold}}') === -1) {
+                $$('id_transaction').value = 2
+            }
+        }
+
+        $$('id_time_to_order').value = (get_time() - load_time) / 1000;
+        $$('id_unfocused_time_to_order').value = unfocused_time / 1000;
+        $$('form').submit()
+    }
+</script>
+
+{% endblock %}

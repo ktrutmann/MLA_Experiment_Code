@@ -1,0 +1,31 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block title %}
+Update
+{% endblock %}
+
+{% block content %}
+<div class="price_update">
+    <table id="price_update_table">
+        <tr><td>
+            Der Preis der Aktie
+            {% if update_raise %}
+                <b>steigt</b>
+            {% else %}
+                <b>sinkt</b>
+            {% endif %}
+            um <b>{{update}}</b> und beträgt nun <b>{{price}}</b>
+            <br>
+        </td></tr>
+    </table>
+{% next_button %}
+</div>
+
+<style>
+    .otree-timer {
+        display: none;
+    }
+</style>
+
+{% endblock %}

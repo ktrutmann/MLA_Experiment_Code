@@ -1,0 +1,12 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block content %}
+    {# This page is submitted as soon as it's loaded, since it only exists to run some code. #}
+    <script>
+        window.onload = function(){
+            console.log('derp');
+            document.getElementById('form').submit()
+        }
+    </script>
+{% endblock %}

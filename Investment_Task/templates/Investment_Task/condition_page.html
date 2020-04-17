@@ -1,0 +1,33 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block title %}
+Neuer Block
+{% endblock %}
+
+{% block content %}
+    <p>
+        Es wird nun eine neue Runde der Investment-Aufgabe geben.
+        Dies bedeutet, dass alle Werte wieder auf Anfang gesetzt werden.
+        Auch der Preis der Aktie, und es wird erneut ausgelost, ob sie im guten oder schlechten Zustand startet
+        (mit gleicher Wahrscheinlichkeit).
+    </p>
+
+    {% if condition == 'probs_shown' %}
+        <p>
+            Zusätzlich wird Ihnen in diesem Block die <b>Wahrscheinlichkeit des nächsten
+            Preisanstiegs</b> gezeigt. Die angezeigte Wahrscheinlichkeit wird berechnet, indem zurückgerechnet
+            wird, wie wahrscheinlich der gute Zustand aktuell ist, gegeben den bisherigen Preisbewegungen und
+            dem Mechanismus der Preisentwicklung.
+        </p>
+    {% endif %}
+
+    {% if condition == 'states_shown' %}
+        <p>
+            Zusätzlich wird Ihnen in diesem Block die <b>Wahrscheinlichkeit des nächsten
+            Preisanstiegs</b> gezeigt. Die angezeigte Wahrscheinlichkeit basiert auf dem aktuellen Zustand der Firma.
+        </p>
+    {% endif %}
+
+{% next_button %}
+{% endblock %}

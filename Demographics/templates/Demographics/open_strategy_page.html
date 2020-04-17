@@ -1,0 +1,26 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block title %}
+    Endfragebogen
+{% endblock %}
+
+{% block content %}
+    <p>
+    Sie sind nun fast am Ende der Studie angelangt.
+    Gerne möchten wir Sie bitten, uns noch kurz einige Fragen zu beantworten.
+    </p>
+    <p>
+        Verfolgten Sie während der Aufgabe eine bestimmte Strategie? Falls ja, beschreiben Sie diese kurz.<br>
+        Falls nicht, versuchen Sie kurz zu beschreiben, worauf Sie Ihre Entscheidungen basiert haben.
+    </p>
+    {% formfield player.strategy label=''%}
+    {% next_button %}
+
+<style>
+#id_strategy {
+    height: 150px;
+}
+</style>
+
+{% endblock %}

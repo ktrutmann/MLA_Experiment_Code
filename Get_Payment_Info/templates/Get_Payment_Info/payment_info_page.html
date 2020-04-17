@@ -1,0 +1,18 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block title %}
+    Informationen für die Auszahlung
+{% endblock %}
+
+{% block content %}
+        <p>
+        Es folgen nun noch ein paar Fragebögen. Bevor Sie diese ausfüllen,
+        geben Sie bitte die Nr. ihres Sitzplatzes ein.
+        Diese Information wird für die Auszahlung am Schluss benötigt.
+    </p>
+    {% formfield player.booth_nr %}
+
+    {% next_button %}
+
+{% endblock %}
