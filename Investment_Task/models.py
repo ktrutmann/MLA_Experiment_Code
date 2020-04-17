@@ -15,27 +15,29 @@ An oTree implementation of the Trading Task used in Frydman et al., 2014
 class Constants(BaseConstants):
     name_in_url = 'Investment_Task'
     players_per_group = None
-    # Needs to include a 'main_condition':
-    condition_sequence = ['baseline', 'baseline', 'main_condition', 'main_condition']
-    lottery_prob = 1  # What proportions of the periods has a lottery attached?
-    lottery_bonus = 10  # How many points can be won in the belief elicitation task?
-    lottery_discount = .1  # How many "investment points are the lottery points worth?
-    n_periods_per_block = 75  # How many periods should each block contain?
-    num_rounds = (n_periods_per_block + 1) * len(condition_sequence)
 
+    # Experimental Flow
+    n_phases = 2  # How many phases should there be?
+    n_periods_per_phase = 5  # How long should the participants be "blocked"?
+    n_paths = 5  # How many paths should be generated?
+    condition_names = ['full_control', 'full_control_with_MLA',
+                       'blocked_full_info', 'blocked_blocked_info']  # List of the conditions
+    num_rounds = n_paths * n_periods_per_phase * n_phases
+
+    # The parameters for the price path
+    up_probs = [.4, .6]  # The possible probabilities of a price increase (i.e. "drifts")
+    start_price = 1000  # The first price in the price path
+    updates = [5, 10, 15]  # List of possible price movements
+    starting_cash = 2500  # How much cash does the participant own at the start
+
+    # Belief elicitation
+    max_belief_bonus = 10  # How many points can be won in the belief elicitation task?
+    belief_bonus_discount = .1  # How many "investment points are the lottery points worth?
+
+    # Time:
     update_time = 3  # Number of seconds to show the price updates
     max_time = 6  # Number of seconds until a reminder to decide appears
     max_time_beliefs = 5  # Same but for the belief page
-
-    # The parameters for the price path
-    import_path = ''  # Leave as '' if the path should be generated
-    up_prob = .65  # The probability of a price raise given the good state
-    switch_prob = .2  # The probability of flipping the states
-    start_price = 1000  # The first price in the price path
-    updates = [5, 10, 15]  # List of possible price movements
-
-    # The starting portfolio
-    starting_cash = 2500
 
 
 class mainSubsession(BaseSubsession):
@@ -58,7 +60,6 @@ class Player(BasePlayer):
     update_time_used = models.FloatField()
 
     bayes_prob_up = models.FloatField()
-    bayes_prob_good = models.FloatField()
     state = models.BooleanField()
     belief = models.IntegerField(min=0, max=100, widget=widgets.Slider, label='')
     belief_bonus = models.CurrencyField()
@@ -73,10 +74,10 @@ class Player(BasePlayer):
     price = models.IntegerField()
 
     condition = models.StringField()
-    main_condition = models.StringField()
     i_round_in_block = models.IntegerField()
     i_block = models.IntegerField()
 
+    # TODO: Continue adapting from here
     # Validated in R
     def make_price_paths(self, save_path=True, conditions=tuple('training')):
         if not Constants.import_path == '':
@@ -133,51 +134,6 @@ class Player(BasePlayer):
                 if save_path:
                     self.save_price_path(i_condition, this_condition, price, good_state)
 
-    def read_price_path(self):
-        with open(Constants.import_path, 'r') as file:
-            reader = csv.reader(file)
-            this_data = []
-            for this_row in reader:
-                this_data.append(this_row)
-
-        # Check for errors
-        if this_data[0] != ['price', 'good_state']:
-            raise ValueError('Please provide a csv with exactly the columns'
-                             '"price" and "good_state".')
-        elif len(this_data) - 1 != Constants.num_rounds:
-            raise IndexError('The price path has not the same length ({})'
-                             'as determined in Constants ({}).'.format(len(this_data) - 1,
-                                                                       Constants.num_rounds))
-        else:
-            this_data.pop(0)
-            price = [int(i[0]) for i in this_data]
-            price_raise = [price[i] < price[i + 1] for i in range(len(price) - 1)] + [False]
-            self.participant.vars['price_path'] = price
-            self.participant.vars['good_state'] = [i[1] for i in this_data]
-            self.participant.vars['price_raise'] = price_raise
-
-            print('Successfully imported price path')
-
-            # Re-Save the price paths in the right format
-            for i_condition, this_condition in enumerate(self.participant.vars['condition_sequence']):
-                this_price = price[(i_condition * (Constants.n_periods_per_block + 1)):
-                                   ((i_condition + 1) * (Constants.n_periods_per_block + 1))]
-                good_state = self.participant.vars['good_state'][
-                             (i_condition * (Constants.n_periods_per_block + 1)):
-                             ((i_condition + 1) * (Constants.n_periods_per_block + 1))]
-
-                self.save_price_path(i_condition, this_condition, this_price, good_state)
-
-    def save_price_path(self, i_condition, this_condition, price, good_state):
-        filename = os.path.join('Investment_Task', 'price_paths',
-                                'price_path_participant-{}_session-{}_Condition-{}-{}.csv'.format(
-                                 self.participant.code, self.session.code, i_condition, this_condition))
-        with open(filename, 'w', newline='') as file:
-            writer = csv.writer(file, quoting=csv.QUOTE_MINIMAL)
-            writer.writerow(['price', 'good_state'])
-            for i in range(Constants.n_periods_per_block + 1):
-                writer.writerow([price[i], good_state[i]])
-
 
     def calculate_bayesian_prob(self):
         self.participant.vars['bayes_prob_good'] = []  # P(good_state|data)
@@ -232,13 +188,13 @@ class Player(BasePlayer):
         actual_lottery_prob = rd.random()
 
         if self.belief < actual_lottery_prob:  # Play the lottery:
-            self.belief_bonus = Constants.lottery_bonus * int(actual_lottery_prob < rd.random())
+            self.belief_bonus = Constants.max_belief_bonus * int(actual_lottery_prob < rd.random())
         else:  # Bet on the price increasing:
-            self.belief_bonus = Constants.lottery_bonus *\
+            self.belief_bonus = Constants.max_belief_bonus * \
                                 int(self.participant.vars['price_path'][self.round_number - 1] <
                                     self.participant.vars['price_path'][self.round_number])
 
-        self.belief_bonus *= Constants.lottery_discount  # Discount the lottery/bet earnings
+        self.belief_bonus *= Constants.belief_bonus_discount  # Discount the lottery/bet earnings
 
     def update_vars(self):
         future_me = self.in_round(self.round_number + 1)
