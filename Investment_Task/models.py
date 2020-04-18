@@ -2,15 +2,14 @@ from otree.api import (
     models, BaseConstants, BaseSubsession, BaseGroup, BasePlayer, widgets
 )
 import random as rd
-import csv
-import os
 
 
 author = 'Kevin Trutmann'
 
 doc = """
-An oTree implementation of the Trading Task used in Frydman et al., 2014
+
 """
+
 
 class Constants(BaseConstants):
     name_in_url = 'Investment_Task'
@@ -19,10 +18,11 @@ class Constants(BaseConstants):
     # Experimental Flow
     n_phases = 2  # How many phases should there be?
     n_periods_per_phase = 5  # How long should the participants be "blocked"?
-    n_paths = 5  # How many paths should be generated?
+    n_distinct_paths = 5  # How many paths should be generated?
     condition_names = ['full_control', 'full_control_with_MLA',
                        'blocked_full_info', 'blocked_blocked_info']  # List of the conditions
-    num_rounds = n_paths * n_periods_per_phase * n_phases
+    num_rounds = n_distinct_paths * n_periods_per_phase * n_phases
+    # TODO: Add "hold_range" = [-10, 10]
 
     # The parameters for the price path
     up_probs = [.4, .6]  # The possible probabilities of a price increase (i.e. "drifts")
@@ -78,90 +78,94 @@ class Player(BasePlayer):
     i_block = models.IntegerField()
 
     # TODO: Continue adapting from here
-    # Validated in R
-    def make_price_paths(self, save_path=True, conditions=tuple('training')):
-        if not Constants.import_path == '':
-            self.read_price_path()
-        else:
-            self.participant.vars['price_path'] = []
-            self.participant.vars['price_raise'] = []
-            self.participant.vars['good_state'] = []
+    # TODO: Validate in R!
+    # TODO: Do we need extra rounds for training / burner? Maybe by using an argument "training"?
+    def make_price_paths(self):
+        """
+        This function first creates distinct movement sets and then multiplies and scrambles them
+        (paths within the experiment and movements within phases). In the end it applies the movement sets
+        to create the actual price paths. It takes no arguments since everything is handled via the Constants.
+        """
 
-            for i_condition, this_condition in enumerate(conditions):
-                while True:
-                    all_is_fine = True
-                    switches = [rd.random() < Constants.switch_prob
-                                for _ in range(Constants.n_periods_per_block)]
+        # Determine the drift for each path:
+        drift_list = rd.choices(Constants.up_probs, k=Constants.n_distinct_paths)
+        distinct_path_moves_list = []  # Will be a list of lists
 
-                    price = [Constants.start_price]
-                    good_state = [rd.random() < .5]
-                    price_raise = []
-                    for this_switch in switches:
-                        this_update = rd.sample(Constants.updates, 1)[0]
+        # How many rounds are there per path?
+        # One more phase for the MLA treatment.
+        n_moves_per_path = Constants.n_periods_per_phase * (Constants.n_phases + 1)
 
-                        # Determine whether to raise the price
-                        if good_state[-1]:
-                            increase = rd.random() < Constants.up_prob
-                        else:
-                            increase = rd.random() < (1 - Constants.up_prob)
+        for this_drift in drift_list:
+            moves = []
 
-                        # If yes, raise the price
-                        if increase:
-                            price_raise.append(True)
-                            price.append(price[-1] + this_update)
-                        else:
-                            price_raise.append(False)
-                            price.append(price[-1] - this_update)
+            for _ in range(n_moves_per_path):
+                movement_direction = rd.choices([1, -1], weights=[this_drift, 1 - this_drift])[0]
+                movement_magnitude = rd.choice(Constants.updates)
+                moves += [movement_direction * movement_magnitude]
 
-                        # Determine whether to switch states
-                        if this_switch:
-                            good_state.append(not good_state[-1])
-                        else:
-                            good_state.append(good_state[-1])
+            distinct_path_moves_list += [moves]
 
-                        # Check whether we're still above 0:
-                        if price[-1] < 0:
-                            all_is_fine = False
-                            break
+        # Scramble the moves differently for each condition:
+        all_moves_list = [distinct_path_moves_list] * len(Constants.condition_names)
+        all_drifts_list = [drift_list] * len(Constants.condition_names)
+        # The levels here are [condition][path][period]
 
-                    if all_is_fine:
-                        break
+        for i_cond, _ in enumerate(Constants.condition_names):
+            for i_path in range(Constants.n_distinct_paths):
+                # Create a moving window to scramble the movements:
+                for i_phase in range(Constants.n_phases):
+                    these_moves = all_moves_list[i_cond][i_path][(i_phase * Constants.n_periods_per_phase):
+                                                                 ((i_phase + 1) * Constants.n_periods_per_phase)]
+                    rd.shuffle(these_moves)
+                    all_moves_list[i_cond][i_path][(i_phase * Constants.n_periods_per_phase):
+                                                   ((i_phase + 1) * Constants.n_periods_per_phase)] = these_moves
 
-                self.participant.vars['price_path'] += price
-                self.participant.vars['price_raise'] += price_raise + [True]  # Filler
-                self.participant.vars['good_state'] += good_state
+        # Now also shuffle the paths together with their drifts:
+        # TODO: Make sure the structure of the lists is always correct (lists within lists instead of just appending).
+        distinct_path_ids = [list(range(Constants.n_distinct_paths))] * len(Constants.condition_names)
+        for i_cond, _ in enumerate(Constants.condition_names):
+            rd.shuffle(distinct_path_ids[i_cond])
+            all_drifts_list[i_cond] = [all_drifts_list[i_cond][path_id] for path_id in distinct_path_ids[i_cond]]
+            all_moves_list[i_cond] = [all_moves_list[i_cond][path_id] for path_id in distinct_path_ids[i_cond]]
 
-                if save_path:
-                    self.save_price_path(i_condition, this_condition, price, good_state)
+        # Apply the price movements to create actual prices and concatenate all price paths:
+        prices = []
+        i_path_global = 0
+        i_path_global_list = []
+        distinct_path_id = []
+        drift = []
 
+        for i_cond, _ in enumerate(Constants.condition_names):
+            for i_path in range(Constants.n_distinct_paths):
+                prices = [Constants.start_price]
+                i_path_global_list += [i_path_global]
+                distinct_path_id += distinct_path_ids[i_cond][i_path]
+                drift += all_drifts_list[i_cond][i_path]
 
-    def calculate_bayesian_prob(self):
-        self.participant.vars['bayes_prob_good'] = []  # P(good_state|data)
-        self.participant.vars['bayes_prob_up'] = []   # P(price_increase|data)
-        for i in range(Constants.num_rounds):
-            # Set it to .5 if we're starting a new block
-            if i % (Constants.n_periods_per_block + 1) == 0:
-                self.participant.vars['bayes_prob_good'].append(.5)
-                self.participant.vars['bayes_prob_up'].append(.5)
-            else:
-                prior = self.participant.vars['bayes_prob_good'][-1]
-                if self.participant.vars['price_raise'][i - 1]:
-                    likelihood = Constants.up_prob
-                    bayes_denominator = Constants.up_prob * prior + (1 - Constants.up_prob) * (1 - prior)
-                else:
-                    likelihood = 1 - Constants.up_prob
-                    bayes_denominator = prior * (1 - Constants.up_prob) + (1 - prior) * Constants.up_prob
+                for this_move in all_moves_list[i_cond][i_path]:
+                    prices += [prices[-1] + this_move]
+                    i_path_global_list += [i_path_global]
+                    distinct_path_id += distinct_path_ids[i_cond][i_path]
+                    drift += all_drifts_list[i_cond][i_path]
+                i_path_global += 1
 
-                prob_good = (prior * likelihood) / bayes_denominator
+        self.participant.vars['i_path'] = i_path_global_list
+        self.participant.vars['distinct_path_id'] = distinct_path_id
+        self.participant.vars['price'] = prices
+        self.participant.vars['drift'] = drift
 
-                # Add the probability of a switch
-                prob_good = prob_good * (1 - Constants.switch_prob) + (1 - prob_good) * Constants.switch_prob
-                prob_up = prob_good * Constants.up_prob + (1 - prob_good) * (1 - Constants.up_prob)
-
-                self.participant.vars['bayes_prob_good'].append(prob_good)
-                self.participant.vars['bayes_prob_up'].append(prob_up)
+    def initialize_portfolio(self):
+        self.hold = rd.sample([-1, 0, 1], 1)[0]
+        self.cash = Constants.starting_cash - (self.hold * Constants.start_price)
+        self.base_price = abs(self.hold * Constants.start_price)
+        self.returns = 0
+        self.bayes_prob_up = .5
+        self.bayes_prob_good = .5
+        self.belief_bonus_cumulative = 0
+        self.price = Constants.start_price
 
     def advance_round(self):
+        # TODO: make sure to record the distinct_path_id and the drift in each round!
         self.participant.vars['i_in_block'] += 1
 
         if self.participant.vars['skipper']:
@@ -173,16 +177,6 @@ class Player(BasePlayer):
 
         elif self.participant.vars['i_in_block'] == Constants.n_periods_per_block:
             self.participant.vars['skipper'] = True
-
-    def initialize_portfolio(self):
-        self.hold = rd.sample([-1, 0, 1], 1)[0]
-        self.cash = Constants.starting_cash - (self.hold * Constants.start_price)
-        self.base_price = abs(self.hold * Constants.start_price)
-        self.returns = 0
-        self.bayes_prob_up = .5
-        self.bayes_prob_good = .5
-        self.belief_bonus_cumulative = 0
-        self.price = Constants.start_price
 
     def calculate_belief_bonus(self):
         actual_lottery_prob = rd.random()

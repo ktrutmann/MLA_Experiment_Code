@@ -6,7 +6,7 @@ This is a trading task similar to Weber & Camerer (1998).
 ### Experimental Flow
 - `n_phases`: How many phases should there be?
 - `n_periods_per_phase`: How long should the participants be "blocked"?
-- `n_paths`: How many paths should be generated for each condition.
+- `n_distinct_paths`: How many paths should be generated for each condition?
 The actual amount of paths played by the participants is thus multiplied
 by the number of conditions.
 - `condition_names`: A list of all the conditions that should be played
@@ -38,6 +38,7 @@ parallel "round management system". The variables for this are stored in the par
 - `i_block` the index of the condition in the condition_sequence starting with 0.
 - `condition` tracks the current condition name.
 - `skipper` is set to true to skip the last round of each block. This is because the price path
+will move one last time in the end.
 
 
 ## Exported Data (Codebook)
