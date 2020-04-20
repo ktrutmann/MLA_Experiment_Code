@@ -10,6 +10,7 @@ This is a trading task similar to Weber & Camerer (1998).
 The actual amount of paths played by the participants is thus multiplied
 by the number of conditions.
 - `condition_names`: A list of all the conditions that should be played
+- `hold_range`: A list containing the minimum and maximum amount of shares that can be held.
 
 ### Price Path Parameters
 - `up_probs`: List of the possible probabilities of a price increase (i.e. "drifts")
@@ -32,13 +33,13 @@ Because of the way oTree handles the round numbers (beginning with 1), the indic
 periods and prices are shifted by one. So in round 1 price number 0 is displayed,
 and the price update that will be displayed is from 0 to 1. In the last round (n) the price
 is updated from price number n-1 to n. Further, to have all conditions within one app, there is a
-parallel "round management system". The variables for this are stored in the participant.vars dict:
+parallel "round management system". The variables for this are stored in the `participant.vars` dict:
 
 - `i_in_block` is the round number within this block (condition) starting from 0.
 - `i_block` the index of the condition in the condition_sequence starting with 0.
 - `condition` tracks the current condition name.
 - `skipper` is set to true to skip the last round of each block. This is because the price path
-will move one last time in the end.
+will move one last time in the end but that should not be a "tradable" round.
 
 
 ## Exported Data (Codebook)

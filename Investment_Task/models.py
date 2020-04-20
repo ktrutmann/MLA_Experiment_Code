@@ -21,8 +21,9 @@ class Constants(BaseConstants):
     n_distinct_paths = 5  # How many paths should be generated?
     condition_names = ['full_control', 'full_control_with_MLA',
                        'blocked_full_info', 'blocked_blocked_info']  # List of the conditions
+    hold_range = [-10, 10]  # What's the minimum and maximum amount of shares that can be held.
+
     num_rounds = n_distinct_paths * n_periods_per_phase * n_phases
-    # TODO: Add "hold_range" = [-10, 10]
 
     # The parameters for the price path
     up_probs = [.4, .6]  # The possible probabilities of a price increase (i.e. "drifts")
@@ -77,7 +78,6 @@ class Player(BasePlayer):
     i_round_in_block = models.IntegerField()
     i_block = models.IntegerField()
 
-    # TODO: Continue adapting from here
     # TODO: Validate in R!
     # TODO: Do we need extra rounds for training / burner? Maybe by using an argument "training"?
     def make_price_paths(self):
@@ -155,15 +155,14 @@ class Player(BasePlayer):
         self.participant.vars['drift'] = drift
 
     def initialize_portfolio(self):
-        self.hold = rd.sample([-1, 0, 1], 1)[0]
+        self.hold = rd.choice(range(Constants.hold_range[0], Constants.hold_range[1] + 1))
         self.cash = Constants.starting_cash - (self.hold * Constants.start_price)
-        self.base_price = abs(self.hold * Constants.start_price)
+        self.base_price = Constants.start_price if self.hold != 0 else 0
         self.returns = 0
-        self.bayes_prob_up = .5
-        self.bayes_prob_good = .5
         self.belief_bonus_cumulative = 0
         self.price = Constants.start_price
 
+    # TODO: Continue adapting from here
     def advance_round(self):
         # TODO: make sure to record the distinct_path_id and the drift in each round!
         self.participant.vars['i_in_block'] += 1
@@ -281,3 +280,31 @@ class Player(BasePlayer):
                 'bayes_prob': round(self.participant.vars['bayes_prob_up'][self.round_number - 1] * 100, 2),
                 'up_prob_state': up_prob_state
                 }
+
+    # After the last round, calculate how much was earned
+    def calculate_final_payoff(self):
+        blockend_rounds = list(range(Constants.n_periods_per_block, Constants.num_rounds + 1,
+                                     Constants.n_periods_per_block + 1))
+        end_cash_list = [self.player.in_round(i).final_cash - Constants.starting_cash for i in blockend_rounds]
+        sum_end_cash = sum(end_cash_list)
+
+        end_belief_bonus_list = [self.player.in_round(i).belief_bonus_cumulative for i in blockend_rounds]
+        sum_end_belief_bonus = sum(end_belief_bonus_list)
+
+        # Add the base_payoff to the game-payoff and make sure that it is floored at 0
+        self.player.payoff = self.session.config['base_bonus'] *\
+            (1 / self.session.config['real_world_currency_per_point'])
+
+        if self.participant.payoff < 0:
+            self.participant.payoff -= self.participant.payoff  # For some reason 0 didn't work.
+
+        self.player.participant.vars['payoff_dict'] = {'payoff_list': zip(end_cash_list, end_belief_bonus_list),
+                                               'end_cash_sum': sum_end_cash,
+                                               'belief_bonus_sum': sum_end_belief_bonus,
+                                               'payoff_game': sum_end_cash + sum_end_belief_bonus,
+                                               'payoff_total': self.participant.payoff_plus_participation_fee(),
+                                               'showup_fee': self.session.config['participation_fee'],
+                                               'base_payoff': self.session.config['base_bonus'],
+                                               'percent_conversion':
+                                                       self.session.config['real_world_currency_per_point'] * 100
+                                                       }
