@@ -4,25 +4,14 @@ from .models import Constants
 
 class initializer_page(Page):
     def before_next_page(self):
-        if self.round_number == 1:
-            self.player.make_price_paths()
-
-            self.player.participant.vars['i_in_block'] = 0
-            self.player.participant.vars['i_block'] = 0
-            self.player.participant.vars['skipper'] = False  # To skip the last round of a block (for the price path)
-
-            # TODO: Implement a way by which to know what condition we're in.
-            self.player.participant.vars['condition'] = self.participant.vars['condition_sequence'][0]
-        else:
-            self.player.advance_round()
-
-        if self.player.participant.vars['i_in_block'] == 0:
-            self.player.initialize_portfolio()
+        self.player.initialize_round()
 
 
 class condition_page(Page):
     def is_displayed(self):
         return self.player.participant.vars['i_in_block'] == 0
+    # TODO: Only show if it's the first round or the condition has changed!
+    # TODO: Also mention it in the instructions whether we scramble conditions or not.
 
     def vars_for_template(self) -> dict:
         return {'condition': self.player.participant.vars['condition']}

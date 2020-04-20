@@ -2,6 +2,7 @@ from otree.api import (
     models, BaseConstants, BaseSubsession, BaseGroup, BasePlayer, widgets
 )
 import random as rd
+import pandas as pd
 
 
 author = 'Kevin Trutmann'
@@ -16,14 +17,16 @@ class Constants(BaseConstants):
     players_per_group = None
 
     # Experimental Flow
-    n_phases = 2  # How many phases should there be?
     n_periods_per_phase = 5  # How long should the participants be "blocked"?
     n_distinct_paths = 5  # How many paths should be generated?
     condition_names = ['full_control', 'full_control_with_MLA',
                        'blocked_full_info', 'blocked_blocked_info']  # List of the conditions
+    n_phases = [2, 3, 2, 2]  # How many phases should there be per condition
     hold_range = [-10, 10]  # What's the minimum and maximum amount of shares that can be held.
+    shuffle_conditions = False  # Should the conditions be presented in "blocks" or shuffled?
 
-    num_rounds = n_distinct_paths * n_periods_per_phase * n_phases
+    num_paths = n_distinct_paths * len(condition_names)
+    num_rounds = n_distinct_paths * n_periods_per_phase * sum(n_phases) + (n_distinct_paths * len(condition_names))
 
     # The parameters for the price path
     up_probs = [.4, .6]  # The possible probabilities of a price increase (i.e. "drifts")
@@ -60,8 +63,6 @@ class Player(BasePlayer):
     unfocused_time_to_belief_report = models.FloatField()
     update_time_used = models.FloatField()
 
-    bayes_prob_up = models.FloatField()
-    state = models.BooleanField()
     belief = models.IntegerField(min=0, max=100, widget=widgets.Slider, label='')
     belief_bonus = models.CurrencyField()
     belief_bonus_cumulative = models.CurrencyField()
@@ -73,10 +74,12 @@ class Player(BasePlayer):
     transaction = models.IntegerField()
     base_price = models.IntegerField()
     price = models.IntegerField()
+    drift = models.FloatField()
 
     condition = models.StringField()
-    i_round_in_block = models.IntegerField()
+    i_round_in_path = models.IntegerField()
     i_block = models.IntegerField()
+    distinct_path_id = models.IntegerField()
 
     # TODO: Validate in R!
     # TODO: Do we need extra rounds for training / burner? Maybe by using an argument "training"?
@@ -113,7 +116,7 @@ class Player(BasePlayer):
         for i_cond, _ in enumerate(Constants.condition_names):
             for i_path in range(Constants.n_distinct_paths):
                 # Create a moving window to scramble the movements:
-                for i_phase in range(Constants.n_phases):
+                for i_phase in range(Constants.n_phases[i_cond]):
                     these_moves = all_moves_list[i_cond][i_path][(i_phase * Constants.n_periods_per_phase):
                                                                  ((i_phase + 1) * Constants.n_periods_per_phase)]
                     rd.shuffle(these_moves)
@@ -121,61 +124,109 @@ class Player(BasePlayer):
                                                    ((i_phase + 1) * Constants.n_periods_per_phase)] = these_moves
 
         # Now also shuffle the paths together with their drifts:
-        # TODO: Make sure the structure of the lists is always correct (lists within lists instead of just appending).
         distinct_path_ids = [list(range(Constants.n_distinct_paths))] * len(Constants.condition_names)
         for i_cond, _ in enumerate(Constants.condition_names):
             rd.shuffle(distinct_path_ids[i_cond])
             all_drifts_list[i_cond] = [all_drifts_list[i_cond][path_id] for path_id in distinct_path_ids[i_cond]]
             all_moves_list[i_cond] = [all_moves_list[i_cond][path_id] for path_id in distinct_path_ids[i_cond]]
 
-        # Apply the price movements to create actual prices and concatenate all price paths:
+        # Apply the price movements to create actual prices and save them in the participant vars:
+        # Not too elegant with the for loops, but it does the trick...
         prices = []
         i_path_global = 0
         i_path_global_list = []
+        i_round_in_path = []
         distinct_path_id = []
         drift = []
+        i_condition = []
+        last_trial_in_path = []
 
         for i_cond, _ in enumerate(Constants.condition_names):
             for i_path in range(Constants.n_distinct_paths):
                 prices = [Constants.start_price]
                 i_path_global_list += [i_path_global]
                 distinct_path_id += distinct_path_ids[i_cond][i_path]
+                i_round_in_path += [0]
                 drift += all_drifts_list[i_cond][i_path]
+                i_condition += i_cond
+                last_trial_in_path += [False]
 
-                for this_move in all_moves_list[i_cond][i_path]:
+                for i_move, this_move in enumerate(all_moves_list[i_cond][i_path]):
                     prices += [prices[-1] + this_move]
                     i_path_global_list += [i_path_global]
                     distinct_path_id += distinct_path_ids[i_cond][i_path]
+                    i_round_in_path += [i_move + 1]
                     drift += all_drifts_list[i_cond][i_path]
+                    i_condition += i_cond
+                    last_trial_in_path += [False]
                 i_path_global += 1
+                last_trial_in_path[-1] = True
 
-        self.participant.vars['i_path'] = i_path_global_list
-        self.participant.vars['distinct_path_id'] = distinct_path_id
-        self.participant.vars['price'] = prices
-        self.participant.vars['drift'] = drift
+        condition_name = [Constants.condition_names[i] for i in i_condition]
 
-    def initialize_portfolio(self):
-        self.hold = rd.choice(range(Constants.hold_range[0], Constants.hold_range[1] + 1))
-        self.cash = Constants.starting_cash - (self.hold * Constants.start_price)
-        self.base_price = Constants.start_price if self.hold != 0 else 0
-        self.returns = 0
-        self.belief_bonus_cumulative = 0
-        self.price = Constants.start_price
+        price_df = pd.DataFrame(dict(global_path_id=i_path_global_list,
+                                     distinct_path_id=distinct_path_id,
+                                     i_round_in_path=i_round_in_path,
+                                     last_trial_in_path=last_trial_in_path,
+                                     price=prices,
+                                     drift=drift,
+                                     condition_id=i_condition,
+                                     condition_name=condition_name))
 
-    # TODO: Continue adapting from here
-    def advance_round(self):
-        # TODO: make sure to record the distinct_path_id and the drift in each round!
-        self.participant.vars['i_in_block'] += 1
+        if Constants.shuffle_conditions:
+            grouped_df = [group for _, group in price_df.groupby('condition_id')]
+            rd.shuffle(grouped_df)
+            price_df = pd.concat(grouped_df).reset_index
 
-        if self.participant.vars['skipper']:
-            self.participant.vars['skipper'] = False
-            self.participant.vars['i_in_block'] = 0
-            self.participant.vars['i_block'] += 1
-            self.participant.vars['condition'] = self.participant.vars[
-                'condition_sequence'][self.participant.vars['i_block']]
+        self.participant.vars['price_info'] = price_df
 
-        elif self.participant.vars['i_in_block'] == Constants.n_periods_per_block:
-            self.participant.vars['skipper'] = True
+    def initialize_round(self):
+        # Record the relevant price variables into the database:
+        for this_var in ['price', 'drift', 'condition', 'i_round_in_path', 'i_block', 'distinct_path_id']:
+            setattr(self, this_var, self.participant.vars['price_info'][this_var][self.round_number - 1])
+
+        # If this is the first round of a new path:
+        if self.participant.vars['price_info'].i_round_in_path[self.round_number - 1] == 0:
+            self.hold = rd.choice(range(Constants.hold_range[0], Constants.hold_range[1] + 1))
+            self.cash = Constants.starting_cash - (self.hold * Constants.start_price)
+            self.base_price = Constants.start_price if self.hold != 0 else 0
+            self.returns = 0
+            self.belief_bonus_cumulative = 0
+            self.price = Constants.start_price
+            # TODO: Check if the generated prices ACTUALLY start at the start_price!
+        else:
+            former_self = self.in_round(self.round_number - 1)
+
+            self.hold = former_self.hold + former_self.transaction
+            self.cash = former_self.cash - former_self.transaction *\
+                self.participant.vars['price_info'].price[self.round_number - 2]
+            self.belief_bonus_cumulative = former_self.belief_bonus_cumulative + self.belief_bonus
+
+            # Base price:
+            if self.hold == 0:
+                self.base_price = 0
+            elif (self.hold > 0) is not (former_self.hold > 0):  # "Crossed" the 0 hold line
+                self.base_price = self.participant.vars['price_info'].price[self.round_number - 2]
+            elif former_self.transaction == 0 or abs(former_self.hold) - abs(self.hold) > 0:  # Only sales or nothing
+                self.base_price = former_self.base_price
+            else:  # TODO: Test thoroughly!
+                self.base_price = (abs(former_self.hold) * former_self.base_price +
+                                   abs(former_self.transaction) *
+                                   self.participant.vars['price_info'].price[self.round_number - 1]) /\
+                                   abs(self.hold)
+
+            self.returns = self.hold *\
+                (self.participant.vars['price_info'].price[self.round_number - 1] - self.base_price)
+
+            # If this is the last round of a block:
+            if self.round_number == Constants.num_rounds or\
+                    self.participant.vars['price_info'].i_round_in_path[self.round_number] == 0:
+                self.belief_bonus = 0
+                self.belief_bonus_cumulative = self.in_round(self.round_number - 1).belief_bonus_cumulative
+                # "Sell everything" for the last price:
+                self.final_cash = self.cash + self.hold *\
+                    self.participant.vars['price_info'].price[self.round_number - 1]
+                self.payoff = (self.final_cash - Constants.starting_cash) + self.belief_bonus_cumulative
 
     def calculate_belief_bonus(self):
         actual_lottery_prob = rd.random()
@@ -184,76 +235,10 @@ class Player(BasePlayer):
             self.belief_bonus = Constants.max_belief_bonus * int(actual_lottery_prob < rd.random())
         else:  # Bet on the price increasing:
             self.belief_bonus = Constants.max_belief_bonus * \
-                                int(self.participant.vars['price_path'][self.round_number - 1] <
-                                    self.participant.vars['price_path'][self.round_number])
+                                int(self.participant.vars['price_info'].price[self.round_number - 1] <
+                                    self.participant.vars['price_info'].price[self.round_number])
 
         self.belief_bonus *= Constants.belief_bonus_discount  # Discount the lottery/bet earnings
-
-    def update_vars(self):
-        future_me = self.in_round(self.round_number + 1)
-        i_round = self.round_number
-
-        self.condition = self.participant.vars['condition']
-        self.main_condition = self.participant.vars['main_condition']
-        self.i_round_in_block = self.participant.vars['i_in_block']
-        self.i_block = self.participant.vars['i_block']
-
-        # Get the bayesian beliefs and state
-        self.bayes_prob_good = self.participant.vars['bayes_prob_good'][self.round_number - 1]
-        self.bayes_prob_up = self.participant.vars['bayes_prob_up'][self.round_number - 1]
-        self.state = self.participant.vars['good_state'][self.round_number - 1]
-
-        # Get the next price
-        if self.round_number < Constants.num_rounds:
-            future_me.price = self.participant.vars['price_path'][self.round_number]
-
-        # Figure out that we're not in the last round of a condition
-        if self.participant.vars['i_in_block'] < Constants.n_periods_per_block - 1:
-            # Base Price
-            if self.transaction != 0 and self.hold + self.transaction != 0:
-                future_me.base_price = self.participant.vars['price_path'][i_round - 1]
-            elif self.transaction == 0:
-                future_me.base_price = self.base_price
-            else:
-                future_me.base_price = 0
-
-            # Cash and belief bonus before last period
-            future_me.cash = self.cash -\
-                (self.transaction * self.participant.vars['price_path'][i_round - 1])
-
-            if self.participant.vars['i_in_block'] > 0:
-                if self.participant.vars['belief_elicitation']:
-                    self.belief_bonus_cumulative = self.in_round(self.round_number - 1).belief_bonus_cumulative + \
-                                                   self.belief_bonus
-                else:
-                    self.belief_bonus_cumulative = 0
-            else:
-                self.belief_bonus_cumulative = self.belief_bonus
-
-            # Holdings
-            future_me.hold = self.hold + self.transaction
-
-            # Returns
-            future_me.returns = int(future_me.hold *
-                                    (self.participant.vars['price_path'][i_round] - future_me.base_price))
-
-        else:  # In the last period of a condition, just update the final cash and belief bonus
-            # First, update the belief_bonus:
-            if self.participant.vars['belief_elicitation']:
-                self.belief_bonus_cumulative = self.in_round(self.round_number - 1).belief_bonus_cumulative + \
-                                               self.belief_bonus
-            else:
-                self.belief_bonus_cumulative = 0
-
-            # Update the cash according to the last trade-decision:
-            self.final_cash = self.cash -\
-                self.transaction * self.participant.vars['price_path'][i_round - 1]
-            # Then update the cash according to the forced-sale at the end:
-            self.final_cash += (self.hold + self.transaction) *\
-                self.participant.vars['price_path'][i_round]
-            # Then add this to the payoff together with the belief bonus
-            self.payoff = (self.final_cash - Constants.starting_cash) +\
-                self.belief_bonus_cumulative
 
     # For displaying the page
     def get_trading_vars(self):
@@ -263,10 +248,6 @@ class Player(BasePlayer):
         if self.base_price != 0:
             percentage_returns = round((self.returns / self.base_price) * 100, 1)
 
-        up_prob_state = int(Constants.up_prob * 100)
-        if not self.participant.vars['good_state'][self.round_number - 1]:
-            up_prob_state = int((1 - Constants.up_prob) * 100)
-
         return {'price': price,
                 'cash': int(self.cash),
                 'hold': self.hold,
@@ -275,36 +256,34 @@ class Player(BasePlayer):
                 'all_val': price * self.hold,
                 'wealth': int(price * self.hold + self.cash),
                 'max_time': Constants.max_time,
-                'condition': self.participant.vars['condition'],
-                'main_condition': self.participant.vars['main_condition'],
-                'bayes_prob': round(self.participant.vars['bayes_prob_up'][self.round_number - 1] * 100, 2),
-                'up_prob_state': up_prob_state
+                'condition': self.participant.vars['price_info'].condition_name[self.round_number - 1]
                 }
 
     # After the last round, calculate how much was earned
+    # TODO: Adapt
     def calculate_final_payoff(self):
-        blockend_rounds = list(range(Constants.n_periods_per_block, Constants.num_rounds + 1,
-                                     Constants.n_periods_per_block + 1))
-        end_cash_list = [self.player.in_round(i).final_cash - Constants.starting_cash for i in blockend_rounds]
+        # TODO: Use last_trial_in_path
+        # TODO: CONTINUE HERE!
+        end_cash_list = [self.player.in_round(i).final_cash - Constants.starting_cash for
+                         i in range(Constants.num_rounds) if self.participant.vars['price_info'].last_trial_in_path[i]]
         sum_end_cash = sum(end_cash_list)
 
         end_belief_bonus_list = [self.player.in_round(i).belief_bonus_cumulative for i in blockend_rounds]
         sum_end_belief_bonus = sum(end_belief_bonus_list)
 
         # Add the base_payoff to the game-payoff and make sure that it is floored at 0
-        self.player.payoff = self.session.config['base_bonus'] *\
-            (1 / self.session.config['real_world_currency_per_point'])
+        self.player.payoff = self.session.config['base_bonus'] / self.session.config['real_world_currency_per_point']
 
         if self.participant.payoff < 0:
             self.participant.payoff -= self.participant.payoff  # For some reason 0 didn't work.
 
-        self.player.participant.vars['payoff_dict'] = {'payoff_list': zip(end_cash_list, end_belief_bonus_list),
-                                               'end_cash_sum': sum_end_cash,
-                                               'belief_bonus_sum': sum_end_belief_bonus,
-                                               'payoff_game': sum_end_cash + sum_end_belief_bonus,
-                                               'payoff_total': self.participant.payoff_plus_participation_fee(),
-                                               'showup_fee': self.session.config['participation_fee'],
-                                               'base_payoff': self.session.config['base_bonus'],
-                                               'percent_conversion':
-                                                       self.session.config['real_world_currency_per_point'] * 100
-                                                       }
+        self.player.participant.vars['payoff_dict'] =\
+            {'payoff_list': zip(end_cash_list, end_belief_bonus_list),
+             'end_cash_sum': sum_end_cash,
+             'belief_bonus_sum': sum_end_belief_bonus,
+             'payoff_game': sum_end_cash + sum_end_belief_bonus,
+             'payoff_total': self.participant.payoff_plus_participation_fee(),
+             'showup_fee': self.session.config['participation_fee'],
+             'base_payoff': self.session.config['base_bonus'],
+             'percent_conversion': self.session.config['real_world_currency_per_point'] * 100
+             }
