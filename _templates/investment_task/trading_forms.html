@@ -5,8 +5,8 @@
     <div class="row">
         <div class="col-md-9" id="trading_form">
             <div class="row">
+            <span style="margin-right: 10px">Your Order: </span>
             {% formfield player.transaction %}
-            <p style="display: inline;">  Shares  </p>
             <button class="btn trade_button" id="asset_buy_button" type="button"
                     onclick="buy()">Buy</button>
             <button class="btn trade_button" id="asset_sell_button" type="button"
@@ -14,30 +14,38 @@
             </div>
         </div>
         <div class="col-md-9" id="confirm_form" style="display: none;">
-            <p id="confirm_text" style="display: inline;">
+            <p id="confirm_text" style="display: inline; font-weight: bold">
                 bux X shares
             </p>
-            <button class="btn" id="change_order_button" type="button"
+            <br>
+            <br>
+            <button class="btn change_button" id="change_order_button" type="button"
                     onclick="switch_order_display()">Change Order</button>
-        </div>
-    </div>
-
-    <div class="row">
-        <button class="btn" id="confirm_orders_button" style="display: none;" type="button"
+            <button class="btn confirm_button" id="confirm_orders_button" style="display: none;" type="button"
                 onclick="submit_order()">Confirm Order</button>
+        </div>
     </div>
 </div>
 
 <style>
-.btn{
+
+.trade_button{
+    height: 38px;
     margin-left: 10px;
+}
+
+.confirm_button{
+    height: 38px;
+    margin-left: 10px;
+}
+
+.change_button{
+    background-color: #909090;
+    border: #909090;
 }
 
 .form-group{
     margin-right: 10px;
 }
 
-.row {
-    margin-bottom: 20px;
-}
 </style>

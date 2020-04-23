@@ -31,9 +31,9 @@ class Constants(BaseConstants):
 
     # The parameters for the price path
     up_probs = [.4, .6]  # The possible probabilities of a price increase (i.e. "drifts")
-    start_price = 1000  # The first price in the price path
+    start_price = 100  # The first price in the price path
     updates = [5, 10, 15]  # List of possible price movements
-    starting_cash = 2500  # How much cash does the participant own at the start
+    starting_cash = 25000  # How much cash does the participant own at the start
 
     # Belief elicitation
     max_belief_bonus = 10  # How many points can be won in the belief elicitation task?
@@ -60,7 +60,7 @@ class Group(BaseGroup):
 class Player(BasePlayer):
     time_to_order = models.FloatField()
     unfocused_time_to_order = models.FloatField()
-    changed_mind = models.BooleanField(default=False)
+    changed_mind = models.BooleanField()
     erroneous_trade = models.StringField()
     time_to_belief_report = models.FloatField()
     unfocused_time_to_belief_report = models.FloatField()
@@ -69,12 +69,12 @@ class Player(BasePlayer):
     belief = models.IntegerField(min=0, max=100, widget=widgets.Slider, label='')
     belief_bonus = models.CurrencyField()
     belief_bonus_cumulative = models.CurrencyField()
-    cash = models.CurrencyField()
+    cash = models.IntegerField()
     final_cash = models.CurrencyField()
 
     hold = models.IntegerField()
     returns = models.IntegerField()
-    transaction = models.IntegerField()
+    transaction = models.IntegerField(label='')
     base_price = models.IntegerField()
     price = models.IntegerField()
     drift = models.FloatField()
@@ -99,7 +99,6 @@ class Player(BasePlayer):
 
         # How many rounds are there per path?
         # One more phase for the MLA treatment.
-        # TODO: Adapt to the varying path lengths!
         max_moves_per_path = Constants.n_periods_per_phase * max(Constants.n_phases) + 1
 
         for this_drift in drift_list:
@@ -210,11 +209,11 @@ class Player(BasePlayer):
             # TODO: Check if the generated prices ACTUALLY start at the start_price!
         else:
             former_self = self.in_round(self.round_number - 1)
-
             self.hold = former_self.hold + former_self.transaction
             self.cash = former_self.cash - former_self.transaction *\
                 self.participant.vars['price_info'].price[self.round_number - 2]
-            self.belief_bonus_cumulative = former_self.belief_bonus_cumulative + self.belief_bonus
+            former_self.belief_bonus_cumulative += former_self.belief_bonus
+            self.belief_bonus_cumulative = former_self.belief_bonus_cumulative
 
             # Base price:
             if self.hold == 0:
@@ -223,10 +222,10 @@ class Player(BasePlayer):
                 self.base_price = self.participant.vars['price_info'].price[self.round_number - 2]
             elif former_self.transaction == 0 or abs(former_self.hold) - abs(self.hold) > 0:  # Only sales or nothing
                 self.base_price = former_self.base_price
-            else:  # TODO: Test thoroughly!
+            else:
                 self.base_price = (abs(former_self.hold) * former_self.base_price +
                                    abs(former_self.transaction) *
-                                   self.participant.vars['price_info'].price[self.round_number - 1]) /\
+                                   self.participant.vars['price_info'].price[self.round_number - 2]) /\
                                    abs(self.hold)
 
             self.returns = self.hold *\
@@ -263,7 +262,7 @@ class Player(BasePlayer):
             percentage_returns = round((self.returns / self.base_price) * 100, 1)
 
         return {'price': price,
-                'cash': int(self.cash),
+                'cash': self.cash,
                 'hold': self.hold,
                 'min_hold': Constants.hold_range[0],
                 'max_hold': Constants.hold_range[1],

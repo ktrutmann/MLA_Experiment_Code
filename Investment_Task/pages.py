@@ -45,8 +45,7 @@ class belief_page(Page):
         return not self.player.participant.vars['price_info'].last_trial_in_path[self.round_number - 1]
 
     def vars_for_template(self):
-        return {'this_condition': self.player.participant.vars['condition'],
-                'max_time': Constants.max_time_beliefs}
+        return {'max_time': Constants.max_time_beliefs}
 
     def before_next_page(self):
         self.player.calculate_belief_bonus()
@@ -61,16 +60,13 @@ class update_page(Page):
         return not self.player.participant.vars['price_info'].last_trial_in_path[self.round_number - 1]
 
     def vars_for_template(self):
-        update = self.player.participant.vars['price_path'][self.round_number] - \
-            self.player.participant.vars['price_path'][self.round_number - 1]
+        update = self.player.participant.vars['price_info'].price[self.round_number] - \
+            self.player.participant.vars['price_info'].price[self.round_number - 1]
 
         return {'update_raise': update >= 0,
                 'update': abs(update),
-                'price': self.participant.vars['price_path'][self.round_number],
+                'new_price': self.participant.vars['price_info'].price[self.round_number],
                 }
-
-    def before_next_page(self):
-        self.player.update_vars()
 
 
 class end_page(Page):
