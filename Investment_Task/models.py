@@ -61,7 +61,7 @@ class Player(BasePlayer):
     time_to_order = models.FloatField()
     unfocused_time_to_order = models.FloatField()
     changed_mind = models.BooleanField(default=False)
-    erroneous_trades = models.StringField()
+    erroneous_trade = models.StringField()
     time_to_belief_report = models.FloatField()
     unfocused_time_to_belief_report = models.FloatField()
     update_time_used = models.FloatField()
@@ -79,9 +79,9 @@ class Player(BasePlayer):
     price = models.IntegerField()
     drift = models.FloatField()
 
-    condition = models.StringField()
+    condition_name = models.StringField()
     i_round_in_path = models.IntegerField()
-    i_block = models.IntegerField()
+    global_path_id = models.IntegerField()
     distinct_path_id = models.IntegerField()
 
     # TODO: Validate in R!
@@ -99,12 +99,13 @@ class Player(BasePlayer):
 
         # How many rounds are there per path?
         # One more phase for the MLA treatment.
-        n_moves_per_path = Constants.n_periods_per_phase * (Constants.n_phases + 1)
+        # TODO: Adapt to the varying path lengths!
+        max_moves_per_path = Constants.n_periods_per_phase * max(Constants.n_phases) + 1
 
         for this_drift in drift_list:
             moves = []
 
-            for _ in range(n_moves_per_path):
+            for _ in range(max_moves_per_path):
                 movement_direction = rd.choices([1, -1], weights=[this_drift, 1 - this_drift])[0]
                 movement_magnitude = rd.choice(Constants.updates)
                 moves += [movement_direction * movement_magnitude]
@@ -118,6 +119,10 @@ class Player(BasePlayer):
 
         for i_cond, _ in enumerate(Constants.condition_names):
             for i_path in range(Constants.n_distinct_paths):
+                # Trim the path if the last phase is not needed in this condition:
+                all_moves_list[i_cond][i_path] = all_moves_list[i_cond][i_path][:Constants.n_periods_per_phase *
+                                                                                Constants.n_phases[i_cond] + 1]
+
                 # Create a moving window to scramble the movements:
                 for i_phase in range(Constants.n_phases[i_cond]):
                     these_moves = all_moves_list[i_cond][i_path][(i_phase * Constants.n_periods_per_phase):
@@ -129,7 +134,9 @@ class Player(BasePlayer):
         # Now also shuffle the paths together with their drifts:
         distinct_path_ids = [list(range(Constants.n_distinct_paths))] * len(Constants.condition_names)
         for i_cond, _ in enumerate(Constants.condition_names):
-            rd.shuffle(distinct_path_ids[i_cond])
+            these_ids = distinct_path_ids[i_cond].copy()
+            rd.shuffle(these_ids)
+            distinct_path_ids[i_cond] = these_ids
             all_drifts_list[i_cond] = [all_drifts_list[i_cond][path_id] for path_id in distinct_path_ids[i_cond]]
             all_moves_list[i_cond] = [all_moves_list[i_cond][path_id] for path_id in distinct_path_ids[i_cond]]
 
@@ -146,21 +153,21 @@ class Player(BasePlayer):
 
         for i_cond, _ in enumerate(Constants.condition_names):
             for i_path in range(Constants.n_distinct_paths):
-                prices = [Constants.start_price]
+                prices += [Constants.start_price]
                 i_path_global_list += [i_path_global]
-                distinct_path_id += distinct_path_ids[i_cond][i_path]
+                distinct_path_id += [distinct_path_ids[i_cond][i_path]]
                 i_round_in_path += [0]
-                drift += all_drifts_list[i_cond][i_path]
-                i_condition += i_cond
+                drift += [all_drifts_list[i_cond][i_path]]
+                i_condition += [i_cond]
                 last_trial_in_path += [False]
 
                 for i_move, this_move in enumerate(all_moves_list[i_cond][i_path]):
                     prices += [prices[-1] + this_move]
                     i_path_global_list += [i_path_global]
-                    distinct_path_id += distinct_path_ids[i_cond][i_path]
+                    distinct_path_id += [distinct_path_ids[i_cond][i_path]]
                     i_round_in_path += [i_move + 1]
-                    drift += all_drifts_list[i_cond][i_path]
-                    i_condition += i_cond
+                    drift += [all_drifts_list[i_cond][i_path]]
+                    i_condition += [i_cond]
                     last_trial_in_path += [False]
                 i_path_global += 1
                 last_trial_in_path[-1] = True
@@ -184,8 +191,12 @@ class Player(BasePlayer):
         self.participant.vars['price_info'] = price_df
 
     def initialize_round(self):
+        # If this is the very first round
+        if self.round_number == 1:
+            self.make_price_paths()
+
         # Record the relevant price variables into the database:
-        for this_var in ['price', 'drift', 'condition', 'i_round_in_path', 'i_block', 'distinct_path_id']:
+        for this_var in ['price', 'drift', 'condition_name', 'i_round_in_path', 'global_path_id', 'distinct_path_id']:
             setattr(self, this_var, self.participant.vars['price_info'][this_var][self.round_number - 1])
 
         # If this is the first round of a new path:
@@ -245,7 +256,7 @@ class Player(BasePlayer):
 
     # For displaying the page
     def get_trading_vars(self):
-        price = self.participant.vars['price_path'][self.round_number - 1]
+        price = self.participant.vars['price_info'].price[self.round_number - 1]
 
         percentage_returns = 0
         if self.base_price != 0:
@@ -254,6 +265,8 @@ class Player(BasePlayer):
         return {'price': price,
                 'cash': int(self.cash),
                 'hold': self.hold,
+                'min_hold': Constants.hold_range[0],
+                'max_hold': Constants.hold_range[1],
                 'base_price': self.base_price,
                 'percentage_returns': percentage_returns,
                 'all_val': price * self.hold,

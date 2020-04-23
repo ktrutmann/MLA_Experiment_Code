@@ -92,5 +92,5 @@ is sold, the return is reset to 0.
 
     condition = models.StringField()
     i_round_in_block = models.IntegerField()
-    i_block = models.IntegerField()
+    global_path_id = models.IntegerField()
     distinct_path_id = models.IntegerField()

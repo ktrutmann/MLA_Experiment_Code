@@ -16,7 +16,7 @@ class condition_page(Page):
                 self.player.participant.vars['price_info'].condition_id[self.round_number - 2]
 
     def vars_for_template(self) -> dict:
-        return {'condition': self.player.participant.vars['condition']}
+        return {'condition': self.player.condition_name}
 
 
 class trading_page(Page):
@@ -29,7 +29,7 @@ class trading_page(Page):
                    ]
 
     def is_displayed(self):
-        return not self.player.participant.vars['skipper']
+        return not self.player.participant.vars['price_info'].last_trial_in_path[self.round_number - 1]
 
     def vars_for_template(self):
         return self.player.get_trading_vars()
@@ -42,7 +42,7 @@ class belief_page(Page):
                    'unfocused_time_to_belief_report']
 
     def is_displayed(self):
-        return not self.player.participant.vars['skipper']
+        return not self.player.participant.vars['price_info'].last_trial_in_path[self.round_number - 1]
 
     def vars_for_template(self):
         return {'this_condition': self.player.participant.vars['condition'],
@@ -58,7 +58,7 @@ class update_page(Page):
     timeout_seconds = Constants.update_time
 
     def is_displayed(self):
-        return not self.player.participant.vars['skipper']
+        return not self.player.participant.vars['price_info'].last_trial_in_path[self.round_number - 1]
 
     def vars_for_template(self):
         update = self.player.participant.vars['price_path'][self.round_number] - \

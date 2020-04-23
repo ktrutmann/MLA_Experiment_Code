@@ -14,6 +14,7 @@ doc = """
 Tutorial for the Trading Task
 """
 
+# TODO: Maybe include some highchart examples in the instructions?
 
 class Constants(mainConstants):
     name_in_url = 'Tutorial_Investment_Task'
@@ -21,8 +22,8 @@ class Constants(mainConstants):
     belief_trials = [True] * num_rounds
 
     # Parameters specifically for the tutorial text
-    num_blocks = len(mainConstants.condition_sequence)
-    n_conditions = len(set(mainConstants.condition_sequence))
+    num_blocks = mainConstants.num_paths
+    n_conditions = len(set(mainConstants.condition_names))
 
     # IMPORTANT: THE PICTURE IN THE TUTORIAL IS NOT DYNAMIC!
     # IF YOU CHANGE PARAMETERS, CHANGE THE PICTURE AS WELL!

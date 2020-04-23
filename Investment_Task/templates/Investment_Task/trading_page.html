@@ -2,7 +2,7 @@
 {% load otree static %}
 
 {% block title %}
-    Investitions-Entscheidungen
+    Investment-decisions
 {% endblock %}
 
 {% block content %}
@@ -10,7 +10,7 @@
     <!--timeout warning field-->
     <div id="timer_warning_field" style="visibility: hidden; text-align: right; margin-top: -30px">
         <p class="blink_text" style="align-content: end">
-            Bitte entscheiden Sie sich jetzt!
+            Please decide now!
         </p>
     </div>
 
@@ -21,7 +21,7 @@
         <hr>
         {% include 'investment_task/trading_forms.html' %}
 
-        <input type="hidden" name="changed_mind" id="id_changed_mind" value=0>
+        <input type="hidden" name="changed_mind" id="id_changed_mind" value=false>
         <input type="hidden" name="erroneous_trades" id="id_erroneous_trades" value=0>
         <input id="id_transaction" name="transaction" type="hidden" value="0">
         <input id="id_time_to_order" name="time_to_order" type="hidden" value="0">
@@ -78,7 +78,7 @@
         $$ = function(x){return document.getElementById(x)};
 
         //first some layout corrections that oTree wouldn't allow otherwise
-        $$("id_transaction").placeholder = "Anzahl";
+        $$("id_transaction").placeholder = "Amount";
 
         // Disable the enter key for this page
         window.addEventListener('keydown',function(e){
@@ -122,33 +122,38 @@
         };
 
 // Handling orders
-    let order_a_given = false;
     let order = 0;
 
     check_order = function(order){
-        let hold = parseInt('{{player.hold_A}}');
+        let hold = parseInt('{{player.hold}}');
+        let min_hold = parseInt('{{min_hold}}');
         let max_hold = parseInt('{{max_hold}}');
         let cash = parseInt('{{player.cash}}');
-        let price = parseInt('{{value_A}}');
+        let price = parseInt('{{price}}');
 
-        if (hold + order > max_hold ){
-            alert('Sie können nicht mehr als ' + max_hold + ' Anteile halten.');
+        if (hold + order > max_hold ) {
+            alert('You can\'t hold more than ' + max_hold + ' shares.');
             switch_order_display();
             $$('id_erroneous_trade').value = 'overbought';
             return false;
+        } else if (hold + order < min_hold ){
+            alert('You can\'t short more than ' + min_hold * -1 + ' shares.');
+            switch_order_display();
+            $$('id_erroneous_trade').value = 'overshorted';
+            return false;
         } else if (hold + order < 0) {
-            alert('Sie haben nur ' + hold + ' Anteile, die Sie verkaufen können.');
+            alert('You only have ' + hold + ' shares to sell.');
             switch_order_display();
             $$('id_erroneous_trade').value = 'oversold';
             return false;
         } else if (Math.max(0, order * price) > cash) {
             {#TODO: Test! This should never happen!#}
-            alert('Diese Transaktion kostet leider zu viel.');
+            alert('You don\'t have enough cash for this transaction.');
             switch_order_display();
             $$('id_erroneous_trade').value = 'not_enough_cash';
             return false;
         }
-    }
+    };
 
     switch_order_display = function(){
         if ($$("trading_form").style.display !== 'none'){ // We are looking at the trading form
@@ -161,7 +166,7 @@
             $$("confirm_orders_button").style.display = "none";
             // Make sure no number is displayed in the input field and record the change of mind
             $$('id_transaction').value = '';
-            $$('id_changed_mind').value = 1;
+            $$('id_changed_mind').value = true;
         }
     };
 
@@ -176,14 +181,17 @@
     };
 
     set_confirm_text = function(amount){
-        let action_prefix = ' ';
-        if (amount < 0) { action_prefix = ' ver' }
-        $$("confirm_text").innerHTML =
-        Math.abs(amount) + ' Anteile ' + action_prefix + 'kaufen';
+        if (amount < 0) {
+            $$("confirm_text").innerHTML = 'Sell ' + Math.abs(amount) + ' shares';
+        } else {
+            $$("confirm_text").innerHTML = 'Buy ' + Math.abs(amount) + ' shares';
+        }
     };
 
     // Then handle the clicky bits
     buy = function(){
+        {#TODO: Implement this for sell() as well!#}
+        {#FIXME: I think order is parsed as sting, leading to weird behavior of the + operator!#}
         if (isNaN($$("id_transaction").value)){
             order = 0
         } else{
@@ -199,7 +207,7 @@
         switch_order_display();
         order = get_order_value('sell');
         set_confirm_text(order);
-        check_order();
+        check_order(order);
     };
 
     submit_order = function(){

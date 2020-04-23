@@ -26,14 +26,14 @@ SESSION_CONFIGS = [
     {
         'name': 'Demographics',
         'num_demo_participants': 1,
-        'app_sequence': ['Demographics', 'SOEP5', 'Ambiguity'],
+        'app_sequence': ['Demographics'],
     },
 
     {
         'name': 'Investment_Task_Full',
         'num_demo_participants': 1,
-        'app_sequence': ['Tutorial_Investment_Task', 'Investment_Task', 'Ravens_Matrices', 'Get_Payment_Info',
-                         'SOEP5', 'Ambiguity',  'Demographics', 'Show_Payoff'],
+        'app_sequence': ['Tutorial_Investment_Task', 'Investment_Task', 'Get_Payment_Info',
+                         'Demographics', 'Show_Payoff'],
         'real_world_currency_per_point': .05,
         'participation_fee': 10,
         'base_bonus': 15,
@@ -46,7 +46,7 @@ SESSION_CONFIGS = [
 
 # ISO-639 code
 # for example: de, fr, ja, ko, zh-hans
-LANGUAGE_CODE = 'de'
+LANGUAGE_CODE = 'en'
 
 # e.g. EUR, GBP, CNY, JPY
 REAL_WORLD_CURRENCY_CODE = 'CHF'
@@ -82,8 +82,10 @@ ADMIN_USERNAME = 'admin'
 # for security, best to set admin password in an environment variable
 ADMIN_PASSWORD = environ.get('OTREE_ADMIN_PASSWORD')
 
+# TODO: Change to production!
 # Consider '', None, and '0' to be empty/false
-DEBUG = (environ.get('OTREE_PRODUCTION') in {None, '', '0'})
+# DEBUG = (environ.get('OTREE_PRODUCTION') in {None, '', '0'})
+DEBUG = True
 
 DEMO_PAGE_INTRO_HTML = """ """
 
@@ -100,3 +102,4 @@ INSTALLED_APPS = ['otree']
     # They should make screenshots and send them or write into the general comments section at the end of the study
     # They should be done till wednessday evening. The mail should be sent on monday
 # TODO: Translate everything to english
+# TODO: Test with other browsers!

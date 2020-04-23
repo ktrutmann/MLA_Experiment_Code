@@ -1,14 +1,14 @@
 <table id="trade_info_table" style="text-align:center; width: 100%">
     <tr style="background: darkgrey">
         <th></th>
-        <th>Anteile</th>
-        <th>Einstandskurs</th>
-        <th>Aktueller Kurs</th>
-        <th>Gewinne/Verluste <br>Absolut (in %)</th>
-        <th>Kurswert</th>
+        <th>Shares</th>
+        <th>Average Buying Price</th>
+        <th>Current Price</th>
+        <th>Returns (in %)</th>
+        <th>Total Value</th>
     </tr>
     <tr class="table_content">
-        <td><b>Bargeld</b></td>
+        <td><b>Cash</b></td>
         <td></td>
         <td></td>
         <td></td>
@@ -16,7 +16,7 @@
         <td>{{ cash }}</td>
     </tr>
     <tr class="table_content">
-        <td><b>Aktie</b></td>
+        <td><b>Asset</b></td>
         <td>{% if player.hold > 0 %}+{% endif %}{{player.hold}}</td>
         <td>{{base_price}}</td>
         <td>{{price}}</td>
@@ -24,7 +24,7 @@
         <td>{{all_val}}</td>
     </tr>
     <tr style="background: skyblue;">
-        <td><b>Gesamt</b></td>
+        <td><b>Total</b></td>
         <td></td>
         <td></td>
         <td></td>
