@@ -9,9 +9,11 @@ class initializer_page(Page):
 
 class condition_page(Page):
     def is_displayed(self):
-        return self.player.participant.vars['i_in_block'] == 0
-    # TODO: Only show if it's the first round or the condition has changed!
-    # TODO: Also mention it in the instructions whether we scramble conditions or not.
+        if self.round_number == 1:
+            return True
+        else:  # Check whether the condition changed
+            return self.player.participant.vars['price_info'].condition_id[self.round_number - 1] !=\
+                self.player.participant.vars['price_info'].condition_id[self.round_number - 2]
 
     def vars_for_template(self) -> dict:
         return {'condition': self.player.participant.vars['condition']}
@@ -21,7 +23,10 @@ class trading_page(Page):
     form_model = 'player'
     form_fields = ['transaction',
                    'time_to_order',
-                   'unfocused_time_to_order']
+                   'unfocused_time_to_order',
+                   'changed_mind',
+                   'erroneous_trade'
+                   ]
 
     def is_displayed(self):
         return not self.player.participant.vars['skipper']

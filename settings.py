@@ -95,3 +95,8 @@ INSTALLED_APPS = ['otree']
 
 # Database: This is so that devserver can still be used
 # DATABASES = {'default': dj_database_url.config(default='sqlite:///db.sqlite3')}
+
+# TODO: Make it ready for the students: Write email with invitation and betatester instructions!
+    # They should make screenshots and send them or write into the general comments section at the end of the study
+    # They should be done till wednessday evening. The mail should be sent on monday
+# TODO: Translate everything to english

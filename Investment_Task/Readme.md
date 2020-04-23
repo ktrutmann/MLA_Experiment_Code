@@ -79,6 +79,8 @@ is sold, the return is reset to 0.
     time_to_belief_report = models.FloatField()
     unfocused_time_to_belief_report = models.FloatField()
     update_time_used = models.FloatField()
+        changed_mind = models.BooleanField(default=False) 
+    erroneous_trades = models.IntegerField() 
 
     bayes_prob_up = models.FloatField()
     state = models.BooleanField()

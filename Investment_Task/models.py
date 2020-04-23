@@ -24,6 +24,7 @@ class Constants(BaseConstants):
     n_phases = [2, 3, 2, 2]  # How many phases should there be per condition
     hold_range = [-10, 10]  # What's the minimum and maximum amount of shares that can be held.
     shuffle_conditions = False  # Should the conditions be presented in "blocks" or shuffled?
+    # TODO: mention in the instructions whether conditions are scrambled or not
 
     num_paths = n_distinct_paths * len(condition_names)
     num_rounds = n_distinct_paths * n_periods_per_phase * sum(n_phases) + (n_distinct_paths * len(condition_names))
@@ -59,6 +60,8 @@ class Group(BaseGroup):
 class Player(BasePlayer):
     time_to_order = models.FloatField()
     unfocused_time_to_order = models.FloatField()
+    changed_mind = models.BooleanField(default=False)
+    erroneous_trades = models.StringField()
     time_to_belief_report = models.FloatField()
     unfocused_time_to_belief_report = models.FloatField()
     update_time_used = models.FloatField()
@@ -259,16 +262,15 @@ class Player(BasePlayer):
                 'condition': self.participant.vars['price_info'].condition_name[self.round_number - 1]
                 }
 
-    # After the last round, calculate how much was earned
-    # TODO: Adapt
+    # In the very last round, calculate how much was earned
     def calculate_final_payoff(self):
-        # TODO: Use last_trial_in_path
-        # TODO: CONTINUE HERE!
         end_cash_list = [self.player.in_round(i).final_cash - Constants.starting_cash for
                          i in range(Constants.num_rounds) if self.participant.vars['price_info'].last_trial_in_path[i]]
         sum_end_cash = sum(end_cash_list)
 
-        end_belief_bonus_list = [self.player.in_round(i).belief_bonus_cumulative for i in blockend_rounds]
+        end_belief_bonus_list = [self.player.in_round(i).belief_bonus_cumulative for
+                                 i in range(Constants.num_rounds) if
+                                 self.participant.vars['price_info'].last_trial_in_path[i]]
         sum_end_belief_bonus = sum(end_belief_bonus_list)
 
         # Add the base_payoff to the game-payoff and make sure that it is floored at 0
