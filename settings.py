@@ -101,5 +101,6 @@ INSTALLED_APPS = ['otree']
 # TODO: Make it ready for the students: Write email with invitation and betatester instructions!
     # They should make screenshots and send them or write into the general comments section at the end of the study
     # They should be done till wednessday evening. The mail should be sent on monday
+    # Write that they don't get any money
 # TODO: Translate everything to english
 # TODO: Test with other browsers!

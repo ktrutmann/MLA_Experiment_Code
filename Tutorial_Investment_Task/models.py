@@ -2,8 +2,7 @@ from otree.api import (
     models, BaseGroup, BasePlayer, widgets
 )
 import random as rd
-import csv
-import os
+import pandas as pd
 
 from Investment_Task.models import Constants as mainConstants, mainSubsession
 
@@ -15,20 +14,17 @@ Tutorial for the Trading Task
 """
 
 # TODO: Maybe include some highchart examples in the instructions?
+# TODO (After Pilot): Also update the readme
+# TODO (After Pilot): Put the belief page in a template as well
 
 class Constants(mainConstants):
     name_in_url = 'Tutorial_Investment_Task'
-    num_rounds = 30  # Number of training rounds
-    belief_trials = [True] * num_rounds
+    # TODO (After Pilot): Bring back training rounds!
+    num_rounds = 1  # Number of training rounds
 
     # Parameters specifically for the tutorial text
     num_blocks = mainConstants.num_paths
     n_conditions = len(set(mainConstants.condition_names))
-
-    # IMPORTANT: THE PICTURE IN THE TUTORIAL IS NOT DYNAMIC!
-    # IF YOU CHANGE PARAMETERS, CHANGE THE PICTURE AS WELL!
-
-    start_hold = True
 
 
 class Subsession(mainSubsession):
@@ -41,9 +37,9 @@ class Group(BaseGroup):
 
 class Player(BasePlayer):
     participant_name = models.StringField(label='Vor und Nachname')
-    booth_nr = models.IntegerField(label='Sitzplatznummer')
     transaction = models.IntegerField(label='', blank=True)
 
+    # TODO (After Pilot): Bring back the quizz
     Q1 = models.StringField(widget=widgets.RadioSelect, blank=True,
                             label='Wenn die Firma in einem guten Zustand ist, '
                                   'dann ist die Wahrscheinlichkeit, dass der Preis der Aktie um 5 steigt...',
@@ -97,106 +93,181 @@ class Player(BasePlayer):
 
 
     # Initializing functions:
-    # Validated in R
-    def make_price_paths(self, conditions=tuple('training')):
-        self.participant.vars['price_path'] = []
-        self.participant.vars['price_raise'] = []
-        self.participant.vars['good_state'] = []
+    def make_price_paths(self):
+        """
+        This function first creates distinct movement sets and then multiplies and scrambles them
+        (paths within the experiment and movements within phases). In the end it applies the movement sets
+        to create the actual price paths. It takes no arguments since everything is handled via the Constants.
+        """
 
-        for _, _ in enumerate(conditions):
-            while True:
-                all_is_fine = True
-                switches = [rd.random() < Constants.switch_prob
-                            for _ in range(Constants.n_periods_per_block)]
+        # Determine the drift for each path:
+        drift_list = rd.choices(Constants.up_probs, k=Constants.n_distinct_paths)
+        distinct_path_moves_list = []  # Will be a list of lists
 
-                price = [Constants.start_price]
-                good_state = [rd.random() < .5]
-                price_raise = []
-                for this_switch in switches:
-                    this_update = rd.sample(Constants.updates, 1)[0]
+        # How many rounds are there per path?
+        # One more phase for the MLA treatment.
+        max_moves_per_path = Constants.n_periods_per_phase * max(Constants.n_phases) + 1
 
-                    # Determine whether to raise the price
-                    if good_state[-1]:
-                        increase = rd.random() < Constants.up_prob
-                    else:
-                        increase = rd.random() < (1 - Constants.up_prob)
+        for this_drift in drift_list:
+            moves = []
 
-                    # If yes, raise the price
-                    if increase:
-                        price_raise.append(True)
-                        price.append(price[-1] + this_update)
-                    else:
-                        price_raise.append(False)
-                        price.append(price[-1] - this_update)
+            for _ in range(max_moves_per_path):
+                movement_direction = rd.choices([1, -1], weights=[this_drift, 1 - this_drift])[0]
+                movement_magnitude = rd.choice(Constants.updates)
+                moves += [movement_direction * movement_magnitude]
 
-                    # Determine whether to switch states
-                    if this_switch:
-                        good_state.append(not good_state[-1])
-                    else:
-                        good_state.append(good_state[-1])
+            distinct_path_moves_list += [moves]
 
-                    # Check whether we're still above 0:
-                    if price[-1] < 0:
-                        all_is_fine = False
-                        break
+        # Scramble the moves differently for each condition:
+        all_moves_list = [distinct_path_moves_list] * len(Constants.condition_names)
+        all_drifts_list = [drift_list] * len(Constants.condition_names)
+        # The levels here are [condition][path][period]
 
-                if all_is_fine:
-                    break
+        for i_cond, _ in enumerate(Constants.condition_names):
+            for i_path in range(Constants.n_distinct_paths):
+                # Trim the path if the last phase is not needed in this condition:
+                all_moves_list[i_cond][i_path] = all_moves_list[i_cond][i_path][:Constants.n_periods_per_phase *
+                                                                                Constants.n_phases[i_cond] + 1]
 
-            self.participant.vars['price_path'] += price
-            self.participant.vars['price_raise'] += price_raise + [True]  # Filler
-            self.participant.vars['good_state'] += good_state
+                # Create a moving window to scramble the movements:
+                for i_phase in range(Constants.n_phases[i_cond]):
+                    these_moves = all_moves_list[i_cond][i_path][(i_phase * Constants.n_periods_per_phase):
+                                                                 ((i_phase + 1) * Constants.n_periods_per_phase)]
+                    rd.shuffle(these_moves)
+                    all_moves_list[i_cond][i_path][(i_phase * Constants.n_periods_per_phase):
+                                                   ((i_phase + 1) * Constants.n_periods_per_phase)] = these_moves
+
+        # Now also shuffle the paths together with their drifts:
+        distinct_path_ids = [list(range(Constants.n_distinct_paths))] * len(Constants.condition_names)
+        for i_cond, _ in enumerate(Constants.condition_names):
+            these_ids = distinct_path_ids[i_cond].copy()
+            rd.shuffle(these_ids)
+            distinct_path_ids[i_cond] = these_ids
+            all_drifts_list[i_cond] = [all_drifts_list[i_cond][path_id] for path_id in distinct_path_ids[i_cond]]
+            all_moves_list[i_cond] = [all_moves_list[i_cond][path_id] for path_id in distinct_path_ids[i_cond]]
+
+        # Apply the price movements to create actual prices and save them in the participant vars:
+        # Not too elegant with the for loops, but it does the trick...
+        prices = []
+        i_path_global = 0
+        i_path_global_list = []
+        i_round_in_path = []
+        distinct_path_id = []
+        drift = []
+        i_condition = []
+        last_trial_in_path = []
+
+        for i_cond, _ in enumerate(Constants.condition_names):
+            for i_path in range(Constants.n_distinct_paths):
+                prices += [Constants.start_price]
+                i_path_global_list += [i_path_global]
+                distinct_path_id += [distinct_path_ids[i_cond][i_path]]
+                i_round_in_path += [0]
+                drift += [all_drifts_list[i_cond][i_path]]
+                i_condition += [i_cond]
+                last_trial_in_path += [False]
+
+                for i_move, this_move in enumerate(all_moves_list[i_cond][i_path]):
+                    prices += [prices[-1] + this_move]
+                    i_path_global_list += [i_path_global]
+                    distinct_path_id += [distinct_path_ids[i_cond][i_path]]
+                    i_round_in_path += [i_move + 1]
+                    drift += [all_drifts_list[i_cond][i_path]]
+                    i_condition += [i_cond]
+                    last_trial_in_path += [False]
+                i_path_global += 1
+                last_trial_in_path[-1] = True
+
+        condition_name = [Constants.condition_names[i] for i in i_condition]
+
+        price_df = pd.DataFrame(dict(global_path_id=i_path_global_list,
+                                     distinct_path_id=distinct_path_id,
+                                     i_round_in_path=i_round_in_path,
+                                     last_trial_in_path=last_trial_in_path,
+                                     price=prices,
+                                     drift=drift,
+                                     condition_id=i_condition,
+                                     condition_name=condition_name))
+
+        if Constants.shuffle_conditions:
+            grouped_df = [group for _, group in price_df.groupby('condition_id')]
+            rd.shuffle(grouped_df)
+            price_df = pd.concat(grouped_df).reset_index
+
+        self.participant.vars['price_info'] = price_df
 
 
-    def initialize_portfolio(self):
-        self.hold = rd.sample([-1, 0, 1], 1)[0]
-        self.cash = Constants.starting_cash - (self.hold * Constants.start_price)
-        self.base_price = abs(self.hold * Constants.start_price)
-        self.returns = 0
+    def initialize_round(self):
+        # If this is the very first round
+        if self.round_number == 1:
+            self.make_price_paths()
 
-    def update_vars(self):
-        future_me = self.in_round(self.round_number + 1)
-        i_round = self.round_number
+        # Record the relevant price variables into the database:
+        for this_var in ['price', 'drift', 'condition_name', 'i_round_in_path', 'global_path_id', 'distinct_path_id']:
+            setattr(self, this_var, self.participant.vars['price_info'][this_var][self.round_number - 1])
 
-        # Base Price
-        if self.transaction != 0 and self.hold + self.transaction != 0:
-            future_me.base_price = self.participant.vars['price_path'][i_round - 1]
-        elif self.transaction == 0:
-            future_me.base_price = self.base_price
+        # If this is the first round of a new path:
+        if self.participant.vars['price_info'].i_round_in_path[self.round_number - 1] == 0:
+            self.hold = rd.choice(range(Constants.hold_range[0], Constants.hold_range[1] + 1))
+            self.cash = Constants.starting_cash - (self.hold * Constants.start_price)
+            self.base_price = Constants.start_price if self.hold != 0 else 0
+            self.returns = 0
+            self.belief_bonus_cumulative = 0
+            self.price = Constants.start_price
         else:
-            future_me.base_price = 0
+            former_self = self.in_round(self.round_number - 1)
+            self.hold = former_self.hold + former_self.transaction
+            self.cash = former_self.cash - former_self.transaction *\
+                self.participant.vars['price_info'].price[self.round_number - 2]
+            former_self.belief_bonus_cumulative += former_self.belief_bonus
+            self.belief_bonus_cumulative = former_self.belief_bonus_cumulative
 
-        # Cash and belief before last period
-        future_me.cash = self.cash -\
-            (self.transaction * self.participant.vars['price_path'][i_round - 1])
+            # Base price:
+            if self.hold == 0:
+                self.base_price = 0
+            elif (self.hold > 0) is not (former_self.hold > 0):  # "Crossed" the 0 hold line
+                self.base_price = self.participant.vars['price_info'].price[self.round_number - 2]
+            elif former_self.transaction == 0 or abs(former_self.hold) - abs(self.hold) > 0:  # Only sales or nothing
+                self.base_price = former_self.base_price
+            else:
+                self.base_price = (abs(former_self.hold) * former_self.base_price +
+                                   abs(former_self.transaction) *
+                                   self.participant.vars['price_info'].price[self.round_number - 2]) /\
+                                   abs(self.hold)
 
-        # Holdings
-        future_me.hold = self.hold + self.transaction
+            self.returns = self.hold *\
+                (self.participant.vars['price_info'].price[self.round_number - 1] - self.base_price)
 
-        # Returns
-        future_me.returns = int(future_me.hold * (self.participant.vars['price_path'][i_round] - future_me.base_price))
+            # If this is the last round of a block:
+            if self.round_number == Constants.num_rounds or\
+                    self.participant.vars['price_info'].i_round_in_path[self.round_number] == 0:
+                self.belief_bonus = 0
+                self.belief_bonus_cumulative = self.in_round(self.round_number - 1).belief_bonus_cumulative
+                # "Sell everything" for the last price:
+                self.final_cash = self.cash + self.hold *\
+                    self.participant.vars['price_info'].price[self.round_number - 1]
+                self.payoff = (self.final_cash - Constants.starting_cash) + self.belief_bonus_cumulative
+
 
     # Display functions:
     def get_tutorial_vars(self):
         return {'n_rounds': Constants.num_rounds,
-                'n_rounds_per_block': Constants.n_periods_per_block,
+                'n_rounds_per_block_list': [Constants.n_periods_per_phase * i for i in set(Constants.n_phases)],
+                'min_hold': Constants.hold_range[0],
+                'max_hold': Constants.hold_range[1],
+                'bad_raise_prob': min(Constants.up_probs),
+                'good_raise_prob': max(Constants.up_probs),
+                'lottery_bonus': Constants.max_belief_bonus,
+                'lottery_discount': round(Constants.belief_bonus_discount * 100, 2),
                 'movements': Constants.updates,
                 'example_move': [i + 1000 for i in Constants.updates],
                 'n_blocks': Constants.num_blocks,
                 'max_time': Constants.max_time,
                 'start_price': Constants.start_price,
                 'start_cash': Constants.starting_cash,
-                'start_value': Constants.start_hold * Constants.start_price,
-                'value_all': (Constants.start_hold * Constants.start_price + Constants.starting_cash),
-                'non_switch_prob': int((1 - Constants.switch_prob) * 100),
-                'switch_prob': int(Constants.switch_prob * 100),
-                'raise_prob_good': int(Constants.up_prob * 100),
-                'fall_prob_good': int((1 - Constants.up_prob) * 100),
                 'update_time': Constants.update_time,
-                'belief_elicitation': self.participant.vars['belief_elicitation'],
                 'max_belief_bonus': Constants.max_belief_bonus,
                 'belief_bonus_discount': round(Constants.belief_bonus_discount * 100, 2),
-                'main_condition': self.participant.vars['main_condition'],
                 'base_bonus': self.session.config['base_bonus'],
                 'conversion_percent': round(self.session.config['real_world_currency_per_point'] * 100, 2),
                 'showup_fee': self.session.config['participation_fee'],
@@ -204,20 +275,23 @@ class Player(BasePlayer):
                 100 * self.session.config['real_world_currency_per_point']
                 }
 
+    # For displaying the page
     def get_trading_vars(self):
-        price = self.participant.vars['price_path'][self.round_number - 1]
+        price = self.participant.vars['price_info'].price[self.round_number - 1]
 
         percentage_returns = 0
         if self.base_price != 0:
             percentage_returns = round((self.returns / self.base_price) * 100, 1)
 
         return {'price': price,
-                'cash': int(self.cash),
+                'cash': self.cash,
                 'hold': self.hold,
-                'base_price': round(self.base_price, 2),
+                'min_hold': Constants.hold_range[0],
+                'max_hold': Constants.hold_range[1],
+                'base_price': self.base_price,
                 'percentage_returns': percentage_returns,
                 'all_val': price * self.hold,
                 'wealth': int(price * self.hold + self.cash),
                 'max_time': Constants.max_time,
-                'main_condition': self.participant.vars['main_condition'],
+                'condition': self.participant.vars['price_info'].condition_name[self.round_number - 1]
                 }

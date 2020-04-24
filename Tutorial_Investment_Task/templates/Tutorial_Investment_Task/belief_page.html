@@ -1,25 +1,25 @@
 {% extends "global/Page.html" %}
 {% load otree static %}
 
-{% block title %}Lotterie/Wette{% endblock %}
+{% block title %}Lottery / Bet{% endblock %}
 
 {% block content %}
 <div class="belief_content content">
     <p>
-        Sie werden entweder auf einen Preisanstieg wetten, oder eine Lotterie spielen. Wie hoch müsste die
-        Gewinnwahrscheinlichkeit der Lotterie sein, damit Sie diese der Wette vorziehen?
+        You will either bet on a price increase or play a lottery. How high does the probability of winning the lottery
+        have to be for you to prefer the lottery over the bet?
     </p>
 </div>
 
 <!--timeout warning field-->
-<div id="timer_warning_field" style="visibility: hidden; margin-bottom: -10px; margin-top: -20px">
+<div id="timer_warning_field" style="visibility: hidden; margin-bottom: -10px">
     <p class="blink_text">
-        Bitte entscheiden Sie sich jetzt!
+        Please decide now!
     </p>
 </div>
 <span class="training_hint blink_text" id="training_hint"
       style="color: forestgreen; font-weight:bold">
-    Übungsrunde!
+    Practice Round!
 </span>
 
 <div id="slider_container" style="width: 100%; align-content: center">
@@ -33,12 +33,11 @@
     </span>
     <p>
         <br>
-        Ich würde lieber die Lotterie spielen, wenn diese eine Gewinnwahrscheinlichkeit von
-        <span id="belief_feedback" style="font-weight: bold">XX</span><b>%</b>
-        oder höher hat.
+        I would prefer to play the lottery if the probability of winning is at least
+        <span id="belief_feedback" style="font-weight: bold">XX</span><b>%</b>.
     </p>
     <button type="button" class="next_button btn" id="next_button"
-    onclick="submit_belief()">Weiter</button>
+    onclick="submit_belief()">Continue</button>
 </div>
 
 <style>
@@ -108,7 +107,7 @@
             $$('id_belief').value = parseInt($$('id_belief').value);
             $$('form').submit();
         } else {
-            alert('Bitte geben Sie mit dem Slider eine Wahrscheinlichkeit an!')
+            alert('Please choose a probability using the slider!')
         }
     }
 </script>

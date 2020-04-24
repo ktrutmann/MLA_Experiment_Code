@@ -2,597 +2,535 @@
 {% load otree static %}
 
 {% block title %}
-Investitions-Entscheidungen Einführung
+    Investment decision experiment
 {% endblock %}
+
 {% block content %}
-
-
-<div class="welcome_page content" id="content_welcome_page">
-    <p>
-        Willkommen zur Investitionsentscheidungs-Studie.
-        Die Studie wird zwischen 1 - 2 Stunden dauern und Sie haben im Verlauf der Studie die
-        Möglichkeit zusätzlich eine Bonuszahlung zu verdienen.
-        Im Folgenden wird Ihnen erklärt, wie Sie Ihre Investitions-Entscheidungen treffen können,
-        wie die Aktie funktioniert, in welche Sie investieren können,
-        wie Sie über Ihre Erwartungen abgefragt werden,
-        und wie sich Ihre Entscheidungen auf Ihre Bonuszahlung am Ende auswirken.
-        Es werden dann einige Übungsrunden gespielt und zum Schluss dieser Einführung wird es ein
-        kurzes Quiz geben, damit Sie sicher sein können, dass Sie alles verstanden haben.
-        Wenn Sie während der Einfühung etwas unverständlich finden, zögern Sie nicht, die Hand zu heben
-        damit wir Ihre Fragen direkt beantworten können.
-    </p>
-    <p>
-        Wir bitten Sie darum, während der gesamten Studie möglichst konzentriert zu bleiben und dieses Browser-Fenster
-        nicht zu verlassen.
-    </p>
-    <p>
-        Klicken Sie bitte auf "Weiter", um mit den Instruktionen zu starten.
-    </p>
-    <button class="button btn continue_button navigation_button" id="welcome_continue_button" type="button"
-            onclick="flip_tut_pages('continue')">Weiter</button>
-</div>
-
-<div class="trading_tutorial content" id="content_trading_tutorial" style="display: none;">
-    <h4>Handelsentscheidungen treffen</h4>
-    <div class="instr_text tut_part_1" id="instr_text_1">
+    <div class="welcome_page content" id="content_welcome_page">
         <p>
-            In dieser Studie werden Sie in {{ n_blocks }} "Blöcken" über jeweils {{ n_rounds_per_block }} Runden
-            Investitionsentscheidungen treffen.
-            Es wird dabei eine Aktie geben, in die Sie investieren können. Zu Beginn wird der Wert dieser Aktie
-            {{start_price}} Punkte sein. Sie können in jeder Periode entscheiden wie Ihr Portfolio aussehen soll.
-            Dabei haben Sie drei Möglichkeiten: Sie können eine Aktie halten, Sie können keine Aktie halten,
-            oder Sie können einen Blankoverkauf tätigen. Letzteres wird später genauer erläutert.
+            Welcome to this Experiment.
+            It will take around 1 hour to complete and you will have the option to earn an additional bonus payment
+            depending on your performance.
+            This is the tutorial part of the experiment, where you will be shown how to make your investments,
+            how the asset you're investing in works, how you will be asked about your expectations, and how this
+            all affects the bonus payment at the end.
+{#            TODO (After Pilot): Mention Quizz and training rounds#}
         </p>
         <p>
-            Unten sehen Sie den Bildschirm mit welchem Sie während der Aufgabe interagieren werden.
-            Es werden hier die einzelnen Spalten kurz beschrieben. Schauen Sie sich diese am besten jeweils
-            kurz in der Tabelle an, während dem Sie sich die Liste durchlesen:
-            <ul>
-                <li><b>Spalte I:</b> Zeigt die gehaltenen Anteile der Aktie. '+1' bedeutet also,
-                    dass Sie in die Aktie investiert haben indem Sie Sie gekauft haben und nun besitzen.
-                    Eine '0' bedeutet, dass Sie die Aktie momentan nicht halten.
-                    Eine '-1' bedeutet, dass Sie einen Blankoverkauf getätigt haben. Dies wird Ihnen später erklärt.
-                    Ob Sie die Aktie halten, nicht halten, oder einen Blankoverkauf tätigen können Sie
-                    jeweils entscheiden.</li>
-                <li><b>Spalte II:</b> Zeigt den Einstandskurs an. Dies ist der Preis zu welchem Sie die
-                    Aktie gekauft haben, falls Sie diese halten.</li>
-                <li><b>Spalte III:</b> Diese Spalte zeigt den aktuellen Kurs der Aktie an.
-                    Dies ist der Preis, zu welchem Sie in dieser Runde die Aktie kaufen oder verkaufen können.
-                    Wie sich dieser Preis entwickelt wird später genauer erklärt.</li>
-                <li><b>Spalte IV:</b> Diese Spalte kann zu einem späteren Zeitpunkt weitere Informationen über die
-                    zukünftige Preisentwicklung enthalten. Der Inhalt der Spalte wird Ihnen dann genauer erläutert.</li>
-                <li><b>Spalte V:</b> Diese Spalte zeigt Ihnen an, wie viel Gewinn oder Verlust Sie mit der
-                    aktuell gehaltenen Aktie bisher gemacht haben, seit Sie diese gekauft haben.
-                    Die Zahl in der Klammer drückt das selbe Konzept in Prozenten aus. 100% Gewinn würde bedeuten,
-                    dass sich der Preis seit dem Kauf verdoppelt hat. -50% würde wiederum bedeuten,
-                    das sich der Preis halbiert hat, und Sie somit 50% Verlust gemacht haben.</li>
-                <li><b>Spalte VI:</b> Zeigt den aktuellen Kurswert der einzelnen Positionen an. Wenn Sie also die
-                    Aktie mit Wert 100 halten, würde hier 100 angezeigt. Ebenso sehen Sie hier Ihr aktuelles Bargeld,
-                    sowie den gesamten Wert Ihres Bargeldes plus dem Ihres Portfolios in der "Gesamt" Zeile.</li>
-            </ul>
+            Please try to stay focused during the whole experiment and do not leave this browser window.
+            If possible, complete the study in the fullscreen mode of your browser.
+            To enter fullscreen mode on windows, press the <i><b>F11</b></i> key on your keyboard.
+            If you are using a Mac you can press <i><b>Cmd + Ctrl + F</b></i>.
         </p>
         <p>
-            Unterhalb der Tabelle finden Sie die Schaltflächen, mit welchen Sie Ihre Handelsentscheidungen
-            treffen können. Um sich mit dem Prozess vertraut zu machen, kaufen Sie bitte die Aktie, indem
-            Sie auf "+1 Aktie Halten" klicken.<br>
-            Der Instruktionstext wird dann hier weitergeführt und Sie können nach unten scrollen.
+            Please click the continue button to start the tutorial.
         </p>
+        <button class="button btn continue_button navigation_button" id="welcome_continue_button" type="button"
+                onclick="flip_tut_pages('continue')">Continue</button>
     </div>
 
-    <div class="instr_text tut_part_2" id="instr_text_2" style="display: none;">
-        <hr>
-        <p>
-            Sehr gut. Sie haben nun in die Aktie investiert.
-            Der Wert der gekauften Aktie wurde Ihrem "Bargeld" Feld abgezogen.
-        </p>
-        <p>
-            Um Ihnen während der Aufgabe später eine Orientierung über Ihre Zeit zu geben,
-            wird nach {{ max_time }} Sekunden eine blinkende Warnmeldung erscheinen, wie Sie sie unten sehen können.
-            Wenn Sie Ihre Entscheidungen jeweils treffen, bevor die Meldung erscheint,
-            werden Sie in der vorgegebenen Zeit fertig. Lassen Sie sich jedoch nicht unter Druck setzen.
-            {{ max_time }} Sekunden reichen, um eine überlegte Entscheidung zu treffen.
-            Wenn Sie möchten, können Sie die Zeit in den folgenden Übungsrunden einmal verstreichen lassen,
-            um ein Gefühl dafür zu erhalten.
-        </p>
-        <div id="timer_warning_field">
-        <p class="blink_text">
-            So sieht diese Warnmeldung aus: "Bitte entscheiden Sie sich jetzt!"
-        </p>
-        </div>
-        <p>
-            Nachdem Sie sich für eine Aktion entschieden haben wird Ihnen in der Aufgabe für
-            {{update_time}} Sekunden ein Update über den Preis der Aktie gegeben.
-            Wie sich der Preis entwickelt, wird auf den nächsten Seiten genauer erklärt.
-            Dieses Update sieht zum Beispiel so aus:
-        </p>
-        <div class="price_update_text example_box" id="price_update_text">
-            <p class="price_update_paragraph">
-                Der Preis der Aktie <b>steigt</b> um <b>5</b> und beträgt nun
-                    <span id="new_value" style="font-weight: bold;"></span>
-            </p>
-        </div>
-        <p>
-            Nehmen Sie sich kurz Zeit um sich anzuschauen, wie sich die Tabelle nach Ihrem Kauf und
-            dem Preis-Update verändert hat.
-        </p>
-        <p>
-            Wenn Sie soweit alles verstanden haben, gehen Sie bitte davon aus, dass Sie die Aktie
-            nun verkaufen möchten. Klicken Sie bitte die Entsprechende Schaltfläche.
-        </p>
-    </div>
-
-    <div class="content trade_interface" id="id_trade_interface">
-    <!--    trading information table-->
-        <table class = "trade_info_table" id="trade_info_table" style="text-align:center; width: 100%">
-            <tr>
-                <th></th>
-                <th>I</th>
-                <th>II</th>
-                <th>III</th>
-                <th>IV</th>
-                <th>V</th>
-                <th>VI</th>
-            </tr>
-            <tr style="background: darkgrey">
-                <th></th>
-                <th>Anteil</th>
-                <th>Einstandskurs</th>
-                <th>Aktueller Kurs</th>
-                <th>{% if main_condition == 'probs_shown' %}Wahrscheinlichkeit<br>für Anstieg
-                    {% else %}Aktueller <br> Zustand
-                    {% endif %}
-                </th>
-                <th>Gewinne/Verluste <br>Absolut (in %)</th>
-                <th>Kurswert</th>
-            </tr>
-            <tr class="table_content">
-                <td><b>Bargeld</b></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td id="id_cash">{{ start_cash }}</td>
-            </tr>
-            <tr class="table_content">
-                <td><b>Aktie</b></td>
-                <td id="id_hold">0</td>
-                <td id="id_baseprice">0</td>
-                <td id="id_price">{{start_price}}</td>
-                <td>-</td>
-                <td id="id_return">0 (0.0)</td>
-                <td id="id_value">0</td>
-            </tr>
-            <tr style="background: skyblue;">
-                <td><b>Gesamt</b></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td id="id_value_all" style="font-weight: bold">{{start_cash}}</td>
-            </tr>
-        </table>
-        <br>
-        <hr>
-        <!--    order forms-->
-        <div id="order_buttons">
-             <div class="row">
-                 <button class="btn trade_button" id="asset_short_button" type="button"
-                         onclick="check_tutorial_moves('short', 'trade_page')">-1 Aktie Halten</button>
-                 <button class="btn trade_button" id="asset_hold_none_button" type="button"
-                         onclick="check_tutorial_moves('hold_none', 'trade_page')">Keine Aktie Halten</button>
-                 <button class="btn trade_button" id="trading_continue_button" type="button"
-                         onclick="check_tutorial_moves('hold_one', 'trade_page')">+1 Aktie Halten</button>
-             </div>
-         </div>
-    </div>
-
-    <button class="button btn continue_button navigation_button" id="trade_continue_button" type="button"
-        style="display: none" onclick="flip_tut_pages('continue')">Weiter</button>
-</div>
-
-<div class="shorting_tutorial content" id="content_shorting_tutorial" style="display: none;">
-    <h4>Blankoverkäufe</h4>
-    <div class="instr_text tut_part_3" id="instr_text_3">
-        <p>
-            Bei Investitionsgeschäften erzielen Sie einen Gewinn, indem Sie ein Wertpapier möglichst günstig kaufen
-            und möglichst teuer verkaufen. Die Reihenfolge in welcher Sie diese Aktionen tätigen spielt dafür aber
-            keine Rolle. Das heisst, Sie können eine Aktie verkaufen, ohne diese zu besitzen.
-            Dies wird gemacht, indem Sie sich die Aktie von einer Drittperson (in diesem Fall von uns als
-            Experimentalleitung) ausleihen. Sie "schulden" uns dann also noch eine Aktie,
-            weswegen der Zustand des Blankoverkaufs hier als "-1 Aktie Halten" dargestellt wird.
-        </p>
-        <p>
-            Stellen Sie sich vor, Sie hätten einen Anteil einer Aktie für 100 Punkte verkauft.
-            Diese 100 Punkte haben Sie zwar nun als Bargeld erhalten, es steht aber immer noch ein Rückkauf der
-            Aktie bevor, damit Sie diese zurückgeben können (Sie haben die Aktie ja von uns ausgeliehen).
-            Unter dem Strich machen Sie bei einem Blankoverkauf also einen Gewinn, wenn der Wert der Aktie <b>sinkt</b>.
-            Wenn Sie die Aktie zu einem späteren Zeitpunkt für 80 Punkte kaufen können, um sie zurück zu geben,
-            dann haben Sie insgesamt 20 Punkte Gewinn gemacht (100 Punkte erhalten beim Verkauf - 80 Punkte ausgegeben
-            beim Rückkauf = 20 Punkte Gewinn). Umgekehrt ist es für Sie nun <b>nicht</b> wünschenswert, dass der Wert
-            der Aktie steigt, da Sie dann mehr Geld für den Rückkauf ausgeben müssen.
-        </p>
-        <p>
-            Wenn Sie das Gefühl haben das Prinzip so weit verstanden zu haben, dann schauen Sie sich bitte die Tabelle
-            unten an (diese wurde wieder in den Start-Zustand zurückversetzt) und tätigen Sie einen Blankoverkauf.
-            Der Text wird dann hier fortgesetzt.
-        </p>
-    </div>
-
-    <div class="instr_text tut_part_4" id="instr_text_4" style="display: none;">
-        <hr>
-        <p>
-            Stellen Sie sich nun vor Sie erhalten das folgende Preis-update:
-        </p>
-        <div class="price_update_text example_box" id="price_update_text2">
-            <p class="price_update_paragraph">
-                Der Preis der Aktie <b>sinkt</b> um <b>5</b> und beträgt nun
-                    <span id="new_value2" style="font-weight: bold;"></span>
-            </p>
-        </div>
-        <p>
-            Wie Sie sehen können, wird in der Spalte "Anteile" nun -1 angezeigt, weil ein Rückkauf der Aktie aussteht.
-            Der Einstandspreis wird als der Preis angezeigt, zu welchem Sie den Blankoverkauf getätigt haben.
-            Wie Sie anhand des Preis-updates ablesen können, ist der Preis der Aktie <b>gesunken</b>.
-            Dies gibt Ihnen die Möglichkeit die Aktie günstiger zurück zu kaufen als Sie diese Verkauft haben,
-            und wird in der "Gewinn/Verlust" Spalte daher als <b>Gewinn</b> angezeigt. Die Abhängigkeit Ihres
-            Gewinns/Verlustes von den Preisbewegungen ist also genau umgekehrt als wenn Sie die Aktie gekauft hätten.
-        </p>
-        <p>
-            Zusammenfassend sollten Sie eine Aktie dann <b>kaufen</b>, wenn Sie der Meinung sind, dass deren Preis
-            <b>steigen</b> wird, während Sie die Aktie <b>blankoverkaufen</b> sollten, wenn Sie eher denken,
-            dass der Preis <b>sinken</b> wird. Es steht Ihnen auch jederzeit frei aus einer Blankoverkauf-position
-            direkt eine Aktie zu halten. In diesem Fall kaufen Sie einfach zwei Anteile (was automatisch passiert,
-            wenn Sie auf "+1 Aktie Halten" klicken). Einen Anteil, welchen Sie zurückgeben, und einen,
-            welchen Sie halten. Dasselbe gilt, wenn Sie eine Aktie halten und direkt einen Blankoverkauf tätigen.
-        </p>
-        <p>
-            Um fortzufahren halten Sie nun wieder eine Aktie (Sie kaufen also 2 Anteile).
-        </p>
-    </div>
-
-    <div class="content trade_interface" id="id_trade_interface2">
-    <!--    trading information table-->
-        <table class = "trade_info_table" id="trade_info_table2" style="text-align:center; width: 100%">
-            <tr style="background: darkgrey">
-                <th></th>
-                <th>Anteil</th>
-                <th>Einstandskurs</th>
-                <th>Aktueller Kurs</th>
-                <th>{% if main_condition == 'probs_shown' %}Wahrscheinlichkeit<br>für Anstieg
-                    {% else %}Aktueller <br> Zustand
-                    {% endif %}
-                </th>
-                <th>Gewinne/Verluste <br>Absolut (in %)</th>
-                <th>Kurswert</th>
-            </tr>
-            <tr class="table_content">
-                <td><b>Bargeld</b></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td id="id_cash2">{{ start_cash }}</td>
-            </tr>
-            <tr class="table_content">
-                <td><b>Aktie</b></td>
-                <td id="id_hold2">0</td>
-                <td id="id_baseprice2">0</td>
-                <td id="id_price2">{{start_price}}</td>
-                <td>-</td>
-                <td id="id_return2">0 (0.0)</td>
-                <td id="id_value2">0</td>
-            </tr>
-            <tr style="background: skyblue;">
-                <td><b>Gesamt</b></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td id="id_value_all2" style="font-weight: bold">{{start_cash}}</td>
-            </tr>
-        </table>
-        <br>
-        <hr>
-        <!--    order forms-->
-        <div id="order_buttons2">
-             <div class="row">
-                 <button class="btn trade_button" id="asset_short_button2" type="button"
-                         onclick="check_tutorial_moves('short', 'short_page')">-1 Aktie Halten</button>
-                 <button class="btn trade_button" id="asset_hold_none_button2" type="button"
-                         onclick="check_tutorial_moves('hold_none', 'short_page')">Keine Aktie Halten</button>
-                 <button class="btn trade_button" id="trading_continue_button2" type="button"
-                         onclick="check_tutorial_moves('hold_one', 'short_page')">+1 Aktie Halten</button>
-             </div>
-         </div>
-    </div>
-
-    <button class="button btn back_button navigation_button" id="shorting_back_button" type="button"
-        onclick="flip_tut_pages('back')">Zurück</button>
-    <button class="button btn continue_button navigation_button" id="shorting_continue_button" type="button"
-            style="display: none" onclick="flip_tut_pages('continue');">Weiter</button>
-</div>
-
-<div class="markov_tutorial content" id="content_markov_tutorial" style="display: none;">
-    <h4>Preis der Aktie</h4>
-    <div class="instr_text tut_part_5" id="instr_text_5">
-        <p>
-            Im folgenden wird erklärt, wie der Preis der Aktie sich im Verlauf der Aufgabe verändert.
-            Die Aktie ist ein Anteil an einer Firma, welche Gewinne, aber auch Verluste erzielen kann.
-            Die Firma ist immer entweder in einem guten oder schlechten Zustand.
-            Wenn es der Firma gut geht, macht diese mit einer höheren Wahrscheinlichkeit ({{raise_prob_good}}%)
-            Gewinne, weswegen der Aktienpreis eher steigen wird. Wenn es der Firma hingegen schlecht geht,
-            wird der Aktienpreis eher sinken ({{raise_prob_good}}%).
-            Zu Beginn der Aufgabe wird zufällig bestimmt in welchem Zustand die Firma
-            startet (mit gleichen Wahrscheinlichkeiten).
-        </p>
-        <p>
-            Die Art wie sich der Zustand der Firma im Verlauf der Aufgabe entwickelt sieht folgendermassen aus:
-            Mit einer Wahrscheinlichkeit von {{non_switch_prob}}% wird der Zustand gleich bleiben wie er in der
-            letzten Runde war. Das heisst, dass ein guter Zustand dann in einer weiteren Runde guten Zustands
-            fortgeführt würde, und ein schlechter Zustand mit weiterhin schlechtem Zustand.
-            Mit einer Wahrscheinlichkeit von {{switch_prob}}% verändert sich jedoch der Zustand vom guten zum
-            schlechten oder umgekehrt. Die folgende Grafik und Tabelle zeigen auf zwei verschiedene Arten wie sich
-            die Zustände entwickeln.
-        </p>
-
-        <img src="{% static 'Tutorial_Investment_Task/Chain_Diagram.PNG' %}" alt=""
-        width="750px" style="margin-left: auto; margin-right: auto; display: block;">
-
-        <table id="id_transition_matrix_table" class="table">
-            <tr><td rowspan="2"></td><td rowspan="2">
-            </td><td colspan="2">Nachher:</td></tr>
-            <tr style="font-weight: bold;">
-                <td>Guter <br> Zustand</td> <td>Schlechter <br> Zustand</td>
-            </tr>
-            <tr><td rowspan="2">Vorher:</td>
-                <td><b>Guter <br> Zustand</b></td>
-                <td>{{ non_switch_prob }}%</td> <td>{{ switch_prob }}%</td>
-            </tr>
-            <tr><td><b>Schlechter <br> Zustand</b></td>
-                <td>{{ switch_prob }}%</td> <td>{{ non_switch_prob }}%</td>
-            </tr>
-        </table>
-    </div>
-    <div class="instr_text tut_part_6" id="instr_text_6" style="display: none;">
-        <p>
-            Der "gute" Zustand bedeutet dabei nichts Anderes, als dass der Preis der Aktie in
-            dieser Runde mit einer Wahrscheinlichkeit von {{raise_prob_good}}% steigen und mit {{fall_prob_good}}%
-            fallen wird. Dies bedeutet, dass wenn die Firma 100 Perioden im guten Zustand wäre, der Preis der
-            Aktie durchschnittlich {{raise_prob_good}} mal steigen und {{fall_prob_good}} mal fallen wird.
-            Befindet sich die Firma im schlechten Zustand, dann steigt der Preis mit {{fall_prob_good}}%
-            Wahrscheinlichkeit an und fällt mit {{raise_prob_good}}% Wahrscheinlichkeit.
-            Er würde also von 100 Perioden im schlechten Zustand
-            durchschnittlich {{fall_prob_good}} mal ansteigen und {{raise_prob_good}} mal fallen.
-        </p>
-        <p>
-            Die Grösse der Preisbewegungen können entweder {{ movements.0 }},
-            {{ movements.1 }} oder {{ movements.2 }} sein.
-            Dies gilt für ansteigende wie auch fallende Preise. Welchen der drei möglichen Schritte
-            der Preis beim nächsten Update macht wird zufällig und mit gleicher Wahrscheinlichkeit gewählt.
-            Lediglich ob der Preis ansteigt oder sinkt wird durch den oben beschriebenen Mechanismus beeinflusst.
-            Als Beispiel: Angenommen der aktuelle Preis der Aktie ist 1000 und der Preis-mechanismus führt zu
-            einem Anstieg des Preises. Es ist nun gleich wahrscheinlich, dass der nächste Preis der Aktie
-            {{ example_move.0 }},  {{ example_move.1 }} oder {{ example_move.2 }} sein wird.
-        </p>
-
-    </div>
-
-<button class="button btn back_button navigation_button" id="markov_back_button" type="button"
-    onclick="flip_tut_pages('back')">Zurück</button>
-<button class="button btn continue_button navigation_button" id="markov_continue_button" type="button"
-        onclick="check_tutorial_moves('continue', 'markov')">Weiter</button>
-</div>
-
-<div class="belief_tutorial content" id="content_belief_tutorial" style="display: none">
-    <h4>Wette und Lotterie</h4>
-    <div class="instr_text tut_part_7" id="insr_text_7">
-        <p>
-            Zwischen den Handelsentscheidungen wird Ihnen jeweils eine weitere Frage gestellt,
-            welche nun hier genauer erklärt wird.
-        </p>
-        <p>
-            In jeder Runde gibt es eine <b>Lotterie</b>, in welcher Sie entweder {{ lottery_bonus }} Bonuspunkte
-            oder gar nichts erhalten können. Die Wahrscheinlichkeit, mit welcher Sie die Bonuspunkte erhalten
-            (Gewinnwahrscheinlichkeit) wird Ihnen aber nicht gezeigt. Sie wird zufällig festgelegt, wobei alle
-            Gewinnwahrscheinlichkeiten zwischen 0 und 100% gleich häufig auftreten.
-        </p>
-        <p>
-            Als Alternative zu dieser Lotterie können Sie auf den Preisanstieg in der nächsten Runde <b>Wetten</b>.
-            Diese Wette würde dann so aussehen:
-        </p>
-        <div class="lottery_text example_box" id="lottery_explanation_text">
+    <div class="trading_tutorial content" id="content_trading_tutorial" style="display: none;">
+        <h4>Making investment decisions</h4>
+        <div class="instr_text tut_part_1" id="instr_text_1">
             <p>
-                Wenn der Preis beim nächsten Preis-Update ansteigen sollte (egal um wie viel), erhalten
-                Sie {{ lottery_bonus }} Bonuspunkte gutgeschrieben, welche am Ende in Ihre Auszahlung einfliessen.
+                In this experiment you will make investment decisions in {{ n_blocks }} blocks of either
+                {{ n_rounds_per_block_list.0 }} or {{ n_rounds_per_block_list.1 }} rounds each.
+                There will be an asset you can invest in. At the start of a block, the asset will always
+                have a value of {{ start_price }} Points. In each round you can decide how many shares of this asset
+                you want to hold. You can hold a maximum of {{ max_hold }} shares and a minimum of {{ min_hold }}.
+                How holding negative shares works will be explained in the following pages.
             </p>
-        </div>
-        <p>
-            In der Lotterie zu gewinnen oder in der Wette zu gewinnen erbringt Ihnen also gleich viele Punkte.
-            Folgendes ist nun die Frage, welche Sie beantworten sollen:
-        </p>
-        <div class="lottery_text example_box" id="belief_question">
             <p>
-                Welche Gewinnwahrscheinlichkeit muss die Lotterie <b>mindestens</b> haben, damit Sie nicht lieber auf
-                den Preisanstieg wetten.
+                Below you can see the screen with which you will interact during the task. The different columns
+                are described here. Please make sure you have looked at each row and understood its meaning before
+                proceeding.
+                <ul>
+                    <li><b>Column I:</b>
+                        Shows how many shares of the asset you are holding. '+3' thus means you are holding three
+                        shares and each price movement will affect the value of your portfolio by three times the
+                        movement. If this collumn shows '0' this means you are not holding any shares and
+                        the value of your portfolio (which in this case would be purely cash) is not affected
+                        by the next price movement.</li>
+                    <li><b>Column II:</b>
+                        This column shows the average buying price of your shares. If the current price is above
+                        this value, your investment will have made a profit. It will be reset whenever you sell all
+                        your shares, or switch from short selling (holding negative shares) to holding shares or
+                        vice versa.</li>
+                    <li><b>Column III:</b>
+                        This column shows the current price of the asset. If you decide to buy or sell in this round,
+                        this is the price at which the asset will be bought or sold.
+                        How this price develops over time will be explained later.</li>
+                    <li><b>Column IV:</b>
+                        This column shows your returns for this investment (how much value your investment has
+                        gained or lost). The value in parenthesis shows the same idea in percentages, where 100% would
+                        mean you have doubled your investment and -50% means it has lost half its value.</li>
+                    <li><b>Column V:</b>
+                        This column shows the current values in your portfolio. It shows your cash, the value of the
+                        assets you are holding (i.e. its price times the amount of assets) and the total amount.</li>
+                </ul>
             </p>
-        </div>
-        <p>
-            Sollte Ihnen die tatsächliche Gewinnwahrscheinlichkeit der Lotterie nicht ausreichen (die
-            Gewinnwahrscheinlichkeit der Lotterie also <i>kleiner</i> sein als die von Ihnen angegebene
-            mindest-Gewinnwahrscheinlichkeit), dann wetten Sie automatisch auf den Preisanstieg und erhalten
-            Bonuspunkte falls dieser eintritt. Sollte die Gewinnwahrscheinlichkeit der Lotterie aber <i>gleich gross</i>
-            oder sogar <i>grösser</i> sein als die von Ihnen angegebene mindest-Gewinnwahrscheinlichkeit,
-            dann wird die Lotterie ausgespielt, und Sie erhalten mit der tatsächlichen Wahrscheinlichkeit der Lotterie
-            die Bonuspunkte.
-        </p>
-        <p>
-            Im Folgenden sehen Sie den Slider mit welchem Sie Ihre Antwort abgeben können. Bevor Sie darauf
-            klicken ist nur die Linie sichtbar. Setzen Sie den Slider nun bitte auf <b>60%</b> und klicken Sie auf
-            "Weiter".
-        </p>
-        <div id="slider_container" class = "example_box">
-            <label for="belief_slider"></label>
-            <span>
-                <i>0%</i>
-                <input type="range" class="slider slider_hidden belief_slider" id="belief_slider"
-                                                          style="width: 500px"
-                                                          oninput="change_slider_value()">
-                <i>100%</i>
-            </span>
             <p>
-                <br>
-                Ich würde lieber die Lotterie spielen, wenn diese eine Gewinnwahrscheinlichkeit von
-                <span id="belief_feedback" style="font-weight: bold">XX</span><b>%</b>
-                oder höher hat.
+                Beneath the table you can find the interface with which you can make your trades.
+                To make yourself familiar with the process, please <b>buy two shares now</b> by entering '2'
+                in the field and clicking the 'Buy' button. Once you have done that, you can confirm that order
+                by clicking the 'Confirm' button. <br>
+{#                TODO: Implement starting with 2 and buying 2 additional ones#}
+{#                TODO: Do I want to get rid of the confirm button?#}
+                Once you have done that the text will continue here and you will be able to scroll down.
             </p>
         </div>
+
+        <div class="instr_text tut_part_2" id="instr_text_2" style="display: none;">
+            <hr>
+            <p>
+                Very good. You now doubled your investment from holding two to holding four shares of the asset.
+                The value of the purchased shares was subtracted from the cash field.
+            </p>
+            <p>
+                To keep you on track with the time there will be a blinking warning after {{ max_time }} seconds
+                in the task to tell you to make a decision. If you make your decisions before this warning appears, you
+                will be able to finish the experiment in the recommended time. However, don't let this put any
+                presure on you. After some rounds {{ max_time }} seconds will be enough time to make a well considered
+                decision.
+{#                TODO (After Pilot): Talk about trying it out in the training rounds#}
+            </p>
+            <div id="timer_warning_field">
+            <p class="blink_text">
+                This is what the warning will look like: "Please decide now!"
+            </p>
+            </div>
+            <p>
+                After deciding on your trade you will see an update about the price for {{ update_time }} seconds.
+                How these updates are decided will be described on the following page. This is what such an update
+                could look like:
+            </p>
+            <div class="price_update_text example_box" id="price_update_text">
+                <p class="price_update_paragraph">
+                    The price of the asset <b>increases</b> by <b>5</b> and is now
+                        <span id="new_value" style="font-weight: bold;"></span>
+                </p>
+            </div>
+            <p>
+                Please take some time to look at how the table has changed, now that you bought additional shares
+                and the price has moved.
+            </p>
+            <p>
+                If you have understood everything so far, sell all your shares by entering the amount of shares you are
+                holding and klicking on the "Sell" button.
+            </p>
+        </div>
+
+        <div class="content trade_interface" id="id_trade_interface">
+        <!--    trading information table-->
+            <table class = "trade_info_table" id="trade_info_table" style="text-align:center; width: 100%">
+                <tr>
+                    <th></th>
+                    <th>I</th>
+                    <th>II</th>
+                    <th>III</th>
+                    <th>IV</th>
+                    <th>V</th>
+                </tr>
+                <tr style="background: darkgrey">
+                    <th></th>
+                    <th>Shares</th>
+                    <th>Average Buying Price</th>
+                    <th>Current Price</th>
+                    <th>Returns (in %)</th>
+                    <th>Total Value</th>
+                </tr>
+                <tr class="table_content">
+                    <td><b>Cash</b></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td id="id_cash">{{ start_cash }}</td>
+                </tr>
+                <tr class="table_content">
+                    <td><b>Asset</b></td>
+                    <td id="id_hold">2</td>
+                    <td id="id_baseprice">{{start_price}}</td>
+                    <td id="id_price">{{start_price}}</td>
+                    <td id="id_return">0 (0.0)</td>
+                    <td id="id_value">0</td>
+{#                    TODO: id_value should start as start_price * 2!#}
+                </tr>
+                <tr style="background: skyblue;">
+                    <td><b>Total</b></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td id="id_value_all" style="font-weight: bold">{{start_cash}}</td>
+                </tr>
+            </table>
+            <br>
+            <hr>
+            <!--    order forms-->
+            <div id="order_buttons">
+                {% include 'investment_task/trading_forms.html' %}
+            </div>
+        </div>
+
+        <button class="button btn continue_button navigation_button" id="trade_continue_button" type="button"
+            style="display: none" onclick="flip_tut_pages('continue')">Continue</button>
     </div>
-    <div class="instr_text tut_part_8" id="insr_text_8" style="display: none;">
-        <hr>
-        <p>Zwei Punkte sind speziell wichtig:</p>
-        <p>
-            <b>Punkt 1:</b> Ihre Antwort hängt nur von der Wahrscheinlichkeit des nächsten Preisanstieges ab.
-            Stellen Sie sich vor, dass Sie mit Sicherheit wüssten, dass der Preis ansteigen wird:
-            Die Lotterie müsste ebenfalls eine garantierte Auszahlung bieten (also 100% Gewinnchance),
-            damit Sie nicht eindeutig die Wette bevorzugen.
-            Falls Sie mit Sicherheit wüssten, dass der Preis sinkt, dann wäre Ihnen jede Lotterie lieber,
-            die Ihnen wenigstens irgend eine Gewinnwahrscheinlichkeit bietet (oder gleichgültig gegenüber einer
-            Lotterie, die keine Gewinnchance bietet). Sie würden in dieser Situation also 0% angeben.
-        </p>
-        <p>
-            Während der Aufgabe werden Sie vermutlich nicht 100% von einem Preisanstieg oder einer Preisreduktion
-            überzeugt sein. Mit dem Slider können Sie daher den Grad Ihrer Überzeugung oder Ihrer Vermutung ausdrücken.
-            Je weiter Sie den Slider nach links oder rechts bewegen, desto sicherer sind Sie sich, dass der Preis
-            ansteigen oder sinken wird.
-        </p>
-        <p>
-            <b>Punkt 2:</b> Es ist für Sie immer vorteilhaft, wahrheitsgetreu anzugeben, was Sie von der Preisbewegung
-            erwarten. Falls Sie eine <i>zu tiefe</i> Wahrscheinlichkeit angeben, kann es sein, dass Sie eine Lotterie
-            spielen, die eine schlechtere Gewinnchance hatte, als auf den Preisanstieg zu wetten.
-            Falls Sie einen <i>zu hohen</i> Wert angeben, kann es sein, dass Sie auf den Preisanstieg wetten,
-            obwohl die Lotterie eine bessere Gewinnchance gehabt hätte.
-        </p>
-        <p>
-            Am Ende des Experiments wird Ihnen neben den Punkten, welche Sie in der Investitionsaufgabe
-            erhalten haben auch der Ertrag aus den Wetten und Lotterien mitgeteilt.
-            {{ lottery_discount }}% dieses Ertrages werden zu Ihrer Gesamtpunktezahl gezählt,
-            aus welcher sich Ihre Bonuszahlung am Ende der Studie berechnet.
-        </p>
+
+    <div class="shorting_tutorial content" id="content_shorting_tutorial" style="display: none;">
+        <h4>Short selling</h4>
+        <div class="instr_text tut_part_3" id="instr_text_3">
+            <p>
+                When investing a profit is made by buying an asset as cheaply as possible and selling it for as much
+                as possible. However, the order in which those actions are taken do not play a role.
+                This means you can sell shares that you do not own yet, usually by borrowing them from a third person
+                (in this case this would be the experiments bank, lending you the shares you need). You then "owe"
+                these shares, which is why it is displayed as negative shares in the interface. This is what is called
+                "short selling".
+            </p>
+            <p>
+                Imagine having sold one share (that you borrowed from the bank) for 100 points.
+                You will have received these 100 points in cash, but you also still have to buy one share to give
+                back to the bank. When short selling you thus make a profit when the price of the asset
+                <b>decreases</b>, because then you can buy the asset back for cheaper than what you have sold it for.
+            </p>
+            <p>
+                Imagine now that in our example the price drops by 20 points. You are now able to buy one share for
+                80 points and return it to the bank. Having received 100 points earlier and spent 80 points now,
+                you have made a profit of 20 points. On the other hand this means that a price increase is <b>not</b>
+                favorable when you have short sold the asset, since you would then have to spend more money to buy
+                it back than what you sold it for.
+            </p>
+            <p>
+                If you think that you have understood this principle, please look at the table below (which has been
+                reset to holding 2 shares) and <i>sell four shares</i>, thus selling two more shares than you currently
+                have. The tutorial will then continue here.
+            </p>
+        </div>
+
+        <div class="instr_text tut_part_4" id="instr_text_4" style="display: none;">
+            <hr>
+            <p>
+                You receive the following price update:
+            </p>
+            <div class="price_update_text example_box" id="price_update_text2">
+                <p class="price_update_paragraph">
+                    The price of the asset <b>decreases</b> by <b>5</b> and is now
+                        <span id="new_value2" style="font-weight: bold;"></span>
+                </p>
+            </div>
+            <p>
+                As you can see, the "Shares" column now shows negative two shares. The average buying price is now
+                displayed as the average price at which you made your short sales. As you can see from the price
+                update, the price of the asset has <b>decreased</b>, which is favorable for your short sale investment.
+                This is also reflected in the "Returns" column, which shows a positive return. When short selling, the
+                dependence of your returns on the price movements is therefore reversed from that of a
+                standard investment.
+            </p>
+            <p>
+                In summary, you should <b>buy</b> shares when you expect the price to <b>increase</b> and
+                <b>short sell</b> the asset when you expect the price to <b>decrease</b>.
+                You are also free to "jump" from holding shares to short selling shares and vice versa at any time.
+            </p>
+            <p>
+                To continue please make an order such that you will hold 5 shares.
+{#                TODO: Implement buying of 7 shares#}
+            </p>
+        </div>
+
+        <div class="content trade_interface" id="id_trade_interface2">
+        <!--    trading information table-->
+            <table class = "trade_info_table" id="trade_info_table2" style="text-align:center; width: 100%">
+                <tr style="background: darkgrey">
+                    <th></th>
+                    <th>Shares</th>
+                    <th>Average Buying Price</th>
+                    <th>Current Price</th>
+                    <th>Returns (in %)</th>
+                    <th>Total Value</th>
+                </tr>
+                <tr class="table_content">
+                    <td><b>Cash</b></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td id="id_cash2">{{ start_cash }}</td>
+                </tr>
+                <tr class="table_content">
+                    <td><b>Asset</b></td>
+                    <td id="id_hold2">2</td>
+                    <td id="id_baseprice2">{{start_price}}</td>
+                    <td id="id_price2">{{start_price}}</td>
+                    <td id="id_return2">0 (0.0)</td>
+                    <td id="id_value2">0</td>
+{#                    TODO: id_value2 should also start as start_price * 2#}
+{#                    TODO: move the inner HTML of the upper table here? Didn't that work in the Sinergia version?#}
+                </tr>
+                <tr style="background: skyblue;">
+                    <td><b>Total</b></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td id="id_value_all2" style="font-weight: bold">{{start_cash}}</td>
+                </tr>
+            </table>
+            <br>
+            <hr>
+            <!--    order forms-->
+            <div id="order_buttons">
+                {% include 'investment_task/trading_forms.html' %}
+            </div>
+        </div>
+
+        <button class="button btn back_button navigation_button" id="shorting_back_button" type="button"
+            onclick="flip_tut_pages('back')">Back</button>
+        <button class="button btn continue_button navigation_button" id="shorting_continue_button" type="button"
+                style="display: none" onclick="flip_tut_pages('continue');">Continue</button>
     </div>
 
-    <button class="button btn back_button navigation_button" id="belief_back_button" type="button"
-        onclick="flip_tut_pages('back')">Zurück</button>
-    <button class="button btn continue_button navigation_button" id="belief_continue_button" type="button"
-            onclick="check_tutorial_moves('continue', 'belief')">Weiter</button>
-</div>
+    <div class="markov_tutorial content" id="content_markov_tutorial" style="display: none;">
+        <h4>Price development</h4>
+        <div class="instr_text tut_part_5" id="instr_text_5">
+            <p>
+                We now turn to the way in which the assets price can develop.
+                To illustrate, imagine that the asset you are buying is a stock that is based on a company which can
+                make a profit but can also loose money.
+                You will either be able to invest in the stock of a company with {{ good_raise_prob }}% probability
+                of a price increase or one with {{ bad_raise_prob }}%.
+                Remember that even if you are given the stock from a company where the price is more likely to decrease,
+                you can still profit from this by short selling the asset.
+            </p>
+{#            <p>#}
+{#                Below you see one of these possible price paths.#}
+{#                TODO: implement Highcharts#}
+{#            </p>#}
+        </div>
+        <div class="instr_text tut_part_6" id="instr_text_6" style="display: none;">
+            <p>
+                In each period, the price can move by either {{ movements.0 }},
+                {{ movements.1 }} or {{ movements.2 }} points. This is true for both increases as well as decreases.
+                Which of these magnitudes the next price moves will take on is determined by chance and with equal
+                probaility. Thus, whether the price in- or decreases is determined by the kind of asset
+                while the magnitude of the change is determined randomly.
+            </p>
+            <p>
+                As an example: Assuming the current price of the asset is 1000 points and the price will increase.
+                It is now equally likely that the next price will be {{ example_move.0 }},  {{ example_move.1 }}
+                or {{ example_move.2 }}.
+            </p>
+{#            # TODO: Talk about the conditions here#}
+        </div>
 
-<div class="structure_tutorial content" id="content_structure_tutorial" style="display: none;">
-    <h4>Ablauf und Auszahlung</h4>
-    <p>
-        Die Aufgabe wird Ihnen in  {{ n_blocks }} "Blöcken" präsentiert.
-        Jeder Block besteht aus {{ n_rounds_per_block }} Runden und ist unabhängig.
-        Das heisst, dass Ihre Entscheidungen und die Entwicklung der Preise im vorherigen Block keinerlei
-        Einfluss auf den aktuellen Block haben. Zwischen den Blöcken können sich Einzelheiten der
-        Aufgabe ändern, worauf Sie vor dem Start jedes Blocks jedoch hingewiesen und instruiert werden.
-    </p>
-    <p>
-        Nach der letzten Runde jedes Blocks wird es noch ein letztes Preis-Update geben.
-        Falls Sie die Aktie in der letzten Runde noch hielten oder noch schuldeten,
-        wird diese nach dem Preis-Update automatisch verkauft oder zurückgekauft,
-        so dass Sie am Ende des Blocks nur noch Bargeld halten. Die Auszahlung geschieht dann nach folgendem Schema:
-    </p>
-    <p>
-        Wichtig für die Auszahlung ist die Differenz zwischen dem Wert Ihres Portfolios (Bargeld plus Aktie) zu Beginn
-        des Blocks und dem Wert zum Schluss (also Ihr Gewinn oder Verlust). Hinzu kommen {{ lottery_discount }}% der
-        Punkte welche Sie für die Einschätzung der Wahrscheinlichkeiten erhalten.
-        Von diese Summe an Punkten wird dann mit einem Wechselkurs von {{ conversion_percent }}% zu einer
-        Basis-Auszahlung von CHF {{ base_bonus }} hinzugezählt, respektive abgezogen.
-        Die {{ showup_fee }} für Ihr Erscheinen erhalten Sie in jedem Fall.
+    <button class="button btn back_button navigation_button" id="markov_back_button" type="button"
+        onclick="flip_tut_pages('back')">Back</button>
+    <button class="button btn continue_button navigation_button" id="markov_continue_button" type="button"
+            onclick="check_tutorial_moves('continue', 'markov')">Continue</button>
+    </div>
+
+    <div class="belief_tutorial content" id="content_belief_tutorial" style="display: none">
+        <h4>Bet and Lottery</h4>
+        <div class="instr_text tut_part_7" id="insr_text_7">
+            <p>
+                Between your trading decisions you will be asked a further question, which will be explained here.
+            </p>
+            <p>
+                In each round there is a <b>lottery</b> in which you can either win {{ lottery_bonus }} or 0
+                bonus-points, which will be added to your payoff in the end.
+                The probability with which you will receive any points (winning probability) is unknown
+                to you. It will be determined randomly and any winning probability between 0% and 100% is equally
+                likely.
+            </p>
+            <p>
+                As an alternative to this lottery, you can take a <b>bet</b> on the next price move.
+                This bet would look like this:
+            </p>
+            <div class="lottery_text example_box" id="lottery_explanation_text">
+                <p>
+                    If the price will increase in the next price update (no matter the amount), you will
+                    receive {{ lottery_bonus }} bonus points, which will be added to your payoff in the end.
+                </p>
+            </div>
+            <p>
+                Thus, winning in this lottery and winning the bet is worth the same amount of bonus points.
+                Your task is now to answer the following question:
+            </p>
+            <div class="lottery_text example_box" id="belief_question">
+                <p>
+                    What <i>minimal</i> winning probability would you require the lottery to have for you to prefer
+                    the lottery over betting on a price increase?
+                </p>
+            </div>
+            <p>
+                In case the hidden winning probability is <i>lower</i> than the requirement you submitted,
+                you will automatically bet on a price increase and will receive the bonus points in case
+                the price increases. If the winning probability is however <i>equal or greater</i> to the minimum
+                you required, the lottery will be played and the bonus points will be allotted to you in case you win.
+            </p>
+            <p>
+                Below you can see the slider with which you can provide your answer. Before clicking on it, you will
+                only see a line. Please place the slider on <b>60%</b> and click the "Continue" button.
+            </p>
+            <div id="slider_container" class = "example_box">
+                <label for="belief_slider"></label>
+                <span>
+                    <i>0%</i>
+                    <input type="range" class="slider slider_hidden belief_slider" id="belief_slider"
+                                                              style="width: 500px"
+                                                              oninput="change_slider_value()">
+                    <i>100%</i>
+                </span>
+                <p>
+                    <br>
+                    I would prefer to play the lottery if the probability of winning is at least
+                    <span id="belief_feedback" style="font-weight: bold">XX</span><b>%</b>.
+                </p>
+            </div>
+        </div>
+        <div class="instr_text tut_part_8" id="insr_text_8" style="display: none;">
+            <hr>
+            <p>Two points are especially important:</p>
+            <p>
+                <b>Point 1:</b>
+                Your answer should only depend on the probability of a price increase.
+                Imagine a situation in which you definitely knew that the price would increase. The lottery would
+                have to provide a similar guarantee for you receiving {{ lottery_bonus }} bonus points for you
+                to not prefer the bet. You therefore should set the slider to 100% in that case. <br>
+                If on the other hand you knew that the price will decrease, you would prefer the lottery no matter how
+                low its winning probability is. You would therefore set the slider to 0%.
+            </p>
+            <p>
+                During the experiment, you will never be able to be completely sure whether the price will increase
+                or decrease. You should therefore use the values between these extremes to express how likely you
+                think a price increase is. More to the left you put the slider, the more certain you are that the price
+                will <i>decrease</i>. The further to the right you put the slider, the more certain you are that the
+                price will <i>increase</i>.
+            </p>
+            <p>
+                <b>Point 2:</b>
+                Providing your true belief about the probability of a price increase will allways maximize your chance
+                to receive the bonus points. If you provide a value that is <i>too low</i>, there is a chance that
+                the lottery will be played out, although you would have assumed that you had a higher chance to get
+                the bonus points if you had bet on the price. If you provide a value that is <i>too high</i>,
+                there is a chance that you will bet on the price increase, although you would have preferred to play
+                the lottery, because its winning probability was sufficiently high.
+            </p>
+            <p>
+                At the end of the experiment you will receive the points you earned in the trading task,
+                as well as {{ lottery_discount }}% of the points you have received in the lottery or betting task.
+                This sum will then determin your final payoff.
+            </p>
+        </div>
+
+        <button class="button btn back_button navigation_button" id="belief_back_button" type="button"
+            onclick="flip_tut_pages('back')">Back</button>
+        <button class="button btn continue_button navigation_button" id="belief_continue_button" type="button"
+                onclick="check_tutorial_moves('continue', 'belief')">Continue</button>
+    </div>
+
+    <div class="structure_tutorial content" id="content_structure_tutorial" style="display: none;">
+        <h4>Blocks and Payoff</h4>
+        <p>
+            The task will consist of {{ n_blocks }} price paths to invest in, each of which consisting of
+            either {{ n_rounds_per_block_list.0 }} or {{ n_rounds_per_block_list.1 }} rounds.
+            Each price path is independent from that before and only determined
+            by the probability of a price increase of the given asset.
+            You will be informed whenever a new price path starts.
         </p>
         <p>
-        Ein Beispiel: Wenn die Wertsteigerung Ihres Portfolios plus der Bonus aus den Wahrscheinlichkeitsschätzungen
-        im Verlauf der Aufgabe 100 Punkte beträgt, dann wird Ihre Auszahlung {{ example_payoff }} sein
-        ({{ showup_fee }} für Ihr Erscheinen und CHF {{ base_bonus }} Basis-Auszahlung plus
-        {{ conversion_percent }}% von 100).
-    </p>
-    <p>
-        Wenn Sie die Instruktionen soweit verstanden haben, können Sie auf "Weiter" klicken um {{ n_rounds }}
-        Übungsrunden zu starten. Diese dienen nur zu Übungszwecken, und haben keinerlei Einfluss auf Ihre
-        Auszahlung am Ende der Studie.
-    </p>
-    <button class="button btn back_button navigation_button" id="structure_back_button" type="button"
-        onclick="flip_tut_pages('back')">Zurück</button>
-    <button class="button btn continue_button navigation_button" id="structure_continue_button" type="button"
-            onclick="check_tutorial_moves('continue', 'structure')">Weiter</button>
-</div>
+            After the last round of each block, there will be one last price update. If you are holding any shares
+            after this last price update, they will automatically be sold, such that you will only hold cash in the end.
+            Similarly any short positions will automatically be bought back. The payoff will be calculated in the
+            following way:
+        </p>
+        <p>
+            The payoff will be based on the difference between the value of your portfolio (cash plus assets)
+            at the start of each block and the value of your portfolio at the end of the block.
+            This therefore reflects the winnings or losses of your investments.
+            Additionaly {{ lottery_discount }}% of the points from the lottry and betting task will be counted towards
+            this final sum. Your final points will then be added or subtracted from the base payoff of CHF
+            {{ base_bonus }} with an exchange rate of {{ conversion_percent }}%.
+            Additionally you will receive the CHF {{ showup_fee }} for completing the study, no matter your performance.
+            </p>
+            <p>
+            As an example: If your total earnings from all blocks plus {{ lottery_discount }}% of the lotter-points
+            adds up to 100 points, your payoff will be {{ example_payoff }}. It will consist from CHF {{ showup_fee }}
+            for completing the study, CHF {{ base_bonus }} base payoff plus {{ conversion_percent }}% of 100 points.
+        </p>
+        <p>
+            If you have understood these instructions, please click the "Continue" button to start the Experiment.
+{#            TODO (after pilot): Include training here!#}
+        </p>
+        <button class="button btn back_button navigation_button" id="structure_back_button" type="button"
+            onclick="flip_tut_pages('back')">Back</button>
+        <button class="button btn continue_button navigation_button" id="structure_continue_button" type="button"
+                onclick="check_tutorial_moves('continue', 'structure')">Continue</button>
+    </div>
 
-<style>
-    .example_box{
-        margin-left: 5%;
-        margin-bottom: 10px;
-        padding-left: 20px;
-        padding-top: 10px;
-        padding-bottom: 1px;
-        background: #eeeeee;"
-    }
+    <style>
+        .example_box{
+            margin-left: 5%;
+            margin-bottom: 10px;
+            padding-left: 20px;
+            padding-top: 10px;
+            padding-bottom: 1px;
+            background: #eeeeee;"
+        }
 
-    .btn{
-        margin-right: 10px;
-    }
+        .btn{
+            margin-right: 10px;
+        }
 
-    .form-group{
-        margin-right: 10px;
-    }
+        .form-group{
+            margin-right: 10px;
+        }
 
-    .row {
-        margin-bottom: 20px;
-    }
+        .row {
+            margin-bottom: 20px;
+        }
 
-    .table_content{
-        background: aliceblue;
-    }
+        .table_content{
+            background: aliceblue;
+        }
 
-    /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
-    .slider_hidden::-webkit-slider-thumb {
-        visibility: hidden;
-    }
+        /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+        .slider_hidden::-webkit-slider-thumb {
+            visibility: hidden;
+        }
 
-    .slider_hidden::-moz-range-thumb {
-        visibility: hidden;
-    }
+        .slider_hidden::-moz-range-thumb {
+            visibility: hidden;
+        }
 
-    #id_transition_matrix_table td{
-        border-color: dimgrey;
-    }
+        #id_transition_matrix_table td{
+            border-color: dimgrey;
+        }
 
-    /* Timer style */
-    .blink_text {
-    animation:1s blinker linear infinite;
-    -webkit-animation:1s blinker linear infinite;
-    -moz-animation:1s blinker linear infinite;
-    color: red;
-    font-weight: bold;
-    }
+        /* Timer style */
+        .blink_text {
+        animation:1s blinker linear infinite;
+        -webkit-animation:1s blinker linear infinite;
+        -moz-animation:1s blinker linear infinite;
+        color: red;
+        font-weight: bold;
+        }
 
-    @-moz-keyframes blinker {
-        0% { opacity: 1.0; }
-        50% { opacity: 0.0; }
-        100% { opacity: 1.0; }
-    }
-    @-webkit-keyframes blinker {
-        0% { opacity: 1.0; }
-        50% { opacity: 0.0; }
-        100% { opacity: 1.0; }
-    }
-    @keyframes blinker {
-        0% { opacity: 1.0; }
-        50% { opacity: 0.0; }
-        100% { opacity: 1.0; }
-    }
-</style>
+        @-moz-keyframes blinker {
+            0% { opacity: 1.0; }
+            50% { opacity: 0.0; }
+            100% { opacity: 1.0; }
+        }
+        @-webkit-keyframes blinker {
+            0% { opacity: 1.0; }
+            50% { opacity: 0.0; }
+            100% { opacity: 1.0; }
+        }
+        @keyframes blinker {
+            0% { opacity: 1.0; }
+            50% { opacity: 0.0; }
+            100% { opacity: 1.0; }
+        }
+    </style>
 
 {% endblock %}

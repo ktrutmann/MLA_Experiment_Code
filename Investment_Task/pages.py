@@ -11,11 +11,10 @@ class condition_page(Page):
     def is_displayed(self):
         if self.round_number == 1:
             return True
-        else:  # Check whether the condition changed
-            return self.player.participant.vars['price_info'].condition_id[self.round_number - 1] !=\
-                self.player.participant.vars['price_info'].condition_id[self.round_number - 2]
+        else:
+            return self.player.participant.vars['price_info'].last_trial_in_path[self.round_number - 2]
 
-    def vars_for_template(self) -> dict:
+    def vars_for_template(self):
         return {'condition': self.player.condition_name}
 
 

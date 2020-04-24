@@ -6,11 +6,11 @@
 {% endblock %}
 
 {% block content %}
-<p>Vielen Dank, die Studie ist nun beendet. <br>
-    Sie haben am Ende der Aufaben folgende Punkte erspielt:</p>
+<p>Thank you for participating in this experiment. <br>
+    The following are your earnings during the task:</p>
     <table id="feedback_table" style="text-align:center; width: 600px; background: aliceblue;">
         <tr style="background: skyblue">
-            <th>Block</th><th>Gewinn/Verlust</th><th>Wetten und Lotterien</th>
+            <th>Block</th><th>Earnings</th><th>Bet / Lottery</th>
         </tr>
         {% for this_trade_payoff, this_belief_payoff in payoff_list %}
             <tr>
@@ -18,28 +18,23 @@
             </tr>
         {% endfor %}
         <tr style="background: skyblue;">
-            <td>Summe:</td><td>{{ end_cash_sum }}</td><td>{{ belief_bonus_sum }}</td>
+            <td>Total:</td><td>{{ end_cash_sum }}</td><td>{{ belief_bonus_sum }}</td>
         </tr>
     </table>
     <p>
         <br>
-        Sie haben also <b>{{ payoff_game|c }}</b> erspielt. Die Auszahlung setzt sich nun wiefolgt zusammen:
-        (der Betrag wird auf die nächsten 5 Rappen gerundet ausbezahlt)
+        You therefore have earned <b>{{ payoff_game|c }}</b>. Your payoff is calculated in the following way:
     </p>
     <p>
-        {{ showup_fee }} für Ihr Erscheinen + CHF {{ base_payoff }} Basisauszahlung + {{ percent_conversion }}% von
-        {{ payoff_game|c }}n +  {{ percent_conversion }}% von {{ ravens_bonus }} von den Matritzenaufgaben =
+        {{ showup_fee }} for completing the study + CHF {{ base_payoff }} base bonus + {{ percent_conversion }}% of
+        {{ payoff_game|c }} +  {{ percent_conversion }}% of {{ ravens_bonus }} from the matrix task =
         <b>{{ payoff_total }}</b>
     </p>
     <p>
-        Ihre Nummer in der Reihenfolge der Auszahlungen ist <b>{{ queue_nr }}</b>.
-        <br>
-        Warten Sie bitte bis entweder diese Nummer ausgerufen wird, oder Sie direkt abgeholt werden.
-        Wärend des Wartens dürfen Sie im lautlosen Modus Ihr Handy benutzen, oder Ihre Sachen zusammenräumen.
-        Verhalten Sie sich dabei aber bitte ruhig, um die anderen Teilnehmer nicht zu stören.
-    </p>
-    <p>
-        Vielen Dank für Ihre Teilnahme an der Studie!
+        If you have activated fullscreen mode you may now leave it by pressing <b><i>F11</i></b>
+        or <i><b>Cmd + Ctrl + F</b></i> again. <br>
+        Thank you very much for participating!
     </p>
 
+{#    TODO (After pilot): For mTurk we need a continue button here!#}
 {% endblock %}

@@ -2,86 +2,29 @@
 {% load otree static %}
 
 {% block title %}
-Investitions-Entscheidungen
+    Investment-decisions
 {% endblock %}
+
 {% block content %}
 
-<!--timeout warning field-->
-<span class="training_hint blink_text" id="training_hint"
-      style="float: right; color: forestgreen; margin-left:30px; font-weight:bold"">
-    <p>Übungsrunde!</p>
-</span>
-<div id="timer_warning_field" style="visibility: hidden; text-align: right; margin-top: -30px">
-    <p class="blink_text" style="align-content: end">
-        Bitte entscheiden Sie sich jetzt!
-    </p>
-</div>
-
-<div class="content">
-<!--    trading information table-->
-    <table id="trade_info_table" style="text-align:center; width: 100%">
-        <tr style="background: darkgrey">
-            <th></th>
-            <th>Anteile</th>
-            <th>Einstandskurs</th>
-            <th>Aktueller Kurs</th>
-{#            Condition row:#}
-            <th>{% if main_condition == 'probs_shown' %}Wahrscheinlichkeit<br>für Anstieg
-                {% else %}Aktueller <br> Zustand
-                {% endif %}
-            </th>
-            <th>Gewinne/Verluste <br>Absolut (in %)</th>
-            <th>Kurswert</th>
-        </tr>
-        <tr class="table_content">
-            <td><b>Bargeld</b></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>{{ cash }}</td>
-        </tr>
-        <tr class="table_content">
-            <td><b>Aktie</b></td>
-            <td>{% if player.hold > 0 %}+{% endif %}{{player.hold}}</td>
-            <td>{{base_price}}</td>
-            <td>{{price}}</td>
-{#            Condition row:#}
-            <td>-</td>
-            <td>{{player.returns}} ({{percentage_returns}})</td>
-            <td>{{all_val}}</td>
-        </tr>
-        <tr style="background: skyblue;">
-            <td><b>Gesamt</b></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td><b>{{wealth}}</b></td>
-        </tr>
-    </table>
-    <hr>
-
-<!--    order forms-->
-    <div id="order_buttons">
-        <div class="row">
-            <button class="btn trade_button" id="asset_buy_two_button" type="button"
-                    onclick="make_trade('short')">-1 Aktien Halten</button>
-            <button class="btn trade_button" id="asset_buy_one_button" type="button"
-                    onclick="make_trade('hold_none')">Keine Aktie Halten</button>
-            <button class="btn trade_button" id="asset_sell_button" type="button"
-                    onclick="make_trade('hold_one')">+1 Aktie Halten</button>
-        </div>
+    <!--timeout warning field-->
+    <span class="training_hint blink_text" id="training_hint"
+          style="float: right; color: forestgreen; margin-left:30px; font-weight:bold"">
+        <p>Übungsrunde!</p>
+    </span>
+    <div id="timer_warning_field" style="visibility: hidden; text-align: right; margin-top: -30px">
+        <p class="blink_text" style="align-content: end">
+            Bitte entscheiden Sie sich jetzt!
+        </p>
     </div>
 
-    <input id="id_transaction" name="transaction" type="hidden" value="0">
-    <input id="id_time_to_order" name="time_to_order" type="hidden" value="0">
-    <input id="id_unfocused_time_to_order" name="unfocused_time_to_order" type="hidden" value="0">
-
-
-</div> <!-- end content --->
+    <div class="content">
+    <!--    trading information table-->
+        {% include 'investment_task/trading_table.html' %}
+        <br>
+        <hr>
+        {% include 'investment_task/trading_forms.html' %}
+    </div>
 
 <style>
 .btn{
@@ -170,31 +113,91 @@ Investitions-Entscheidungen
         unfocused_time = unfocused_time + (get_time() - unfocused_start);
     };
     
-    // Handle the button click
-    make_trade = function(action){
-        if (action === 'short'){
-            if (parseInt('{{player.hold}}') === 1){
-                $$('id_transaction').value = -2
-            } else if (parseInt('{{player.hold}}') === 0) {
-                $$('id_transaction').value = -1
-            }
-        } else if (action === 'hold_none'){
-            if (parseInt('{{player.hold}}') === 1){
-                $$('id_transaction').value = -1
-            } else if (parseInt('{{player.hold}}') === -1) {
-                $$('id_transaction').value = 1
-            }
-         } else if (action === 'hold_one') {
-            if (parseInt('{{player.hold}}') === 0) {
-                $$('id_transaction').value = 1
-            } else if (parseInt('{{player.hold}}') === -1) {
-                $$('id_transaction').value = 2
-            }
+// Handling orders
+    // TODO: Check if I need to adapt something here
+    let order = 0;
+
+    check_order = function(order){
+        let hold = parseInt('{{player.hold}}');
+        let min_hold = parseInt('{{min_hold}}');
+        let max_hold = parseInt('{{max_hold}}');
+        let cash = parseInt('{{player.cash}}');
+        let price = parseInt('{{price}}');
+
+        if (hold + order > max_hold ) {
+            alert('You can\'t hold more than ' + max_hold + ' shares.');
+            $$('id_erroneous_trade').value = 'overbought';
+            return false;
+        } else if (hold + order < min_hold ){
+            alert('You can\'t short more than ' + min_hold * -1 + ' shares.');
+            $$('id_erroneous_trade').value = 'overshorted';
+            return false;
+            {#TODO: Test! This should never happen!#}
+        } else if (Math.max(0, order * price) > cash) {
+            alert('You don\'t have enough cash for this transaction.');
+            $$('id_erroneous_trade').value = 'not_enough_cash';
+            return false;
         }
+        return true;
+    };
+
+    switch_order_display = function(){
+        if ($$("trading_form").style.display !== 'none'){ // We are looking at the trading form
+            $$("trading_form").style.display = 'none';
+            $$("confirm_form").style.display = 'inline';
+            $$("confirm_orders_button").style.display = "inline";
+        } else { // We are looking at the confirmation form
+            $$("trading_form").style.display = 'inline';
+            $$("confirm_form").style.display = 'none';
+            $$("confirm_orders_button").style.display = "none";
+            // Make sure no number is displayed in the input field and record the change of mind
+            $$('id_transaction').value = null;
+            $$('id_changed_mind').value = 'True';
+        }
+    };
+
+    set_confirm_text = function(amount){
+        if (amount < 0) {
+            $$("confirm_text").innerHTML = 'Sell ' + Math.abs(amount) + ' shares';
+        } else {
+            $$("confirm_text").innerHTML = 'Buy ' + Math.abs(amount) + ' shares';
+        }
+    };
+
+    // Then handle the clicky bits
+    buy = function(){
+        if (isNaN($$("id_transaction").valueAsNumber)){
+            order = 0
+        } else{
+            order = $$("id_transaction").valueAsNumber
+        }
+        if(check_order(order)) {
+            switch_order_display();
+            set_confirm_text(order);
+        }
+    };
+
+    sell = function(){
+        if (isNaN($$("id_transaction").valueAsNumber)){
+            order = 0
+        } else {
+            order = $$("id_transaction").valueAsNumber * -1
+        }
+        if (check_order(order)) {
+            switch_order_display();
+            set_confirm_text(order);
+        }
+    };
+
+    submit_order = function(){
+        $$("id_transaction").value = order;
         $$('id_time_to_order').value = (get_time() - load_time) / 1000;
         $$('id_unfocused_time_to_order').value = unfocused_time / 1000;
-        $$('form').submit()
-    }
+        $$('form').submit();
+    };
+
+    </script>
+
 </script>
 
 {% endblock %}

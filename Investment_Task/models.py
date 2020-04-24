@@ -1,5 +1,5 @@
 from otree.api import (
-    models, BaseConstants, BaseSubsession, BaseGroup, BasePlayer, widgets
+    models, BaseConstants, BaseSubsession, BaseGroup, BasePlayer, widgets, Currency as c
 )
 import random as rd
 import pandas as pd
@@ -85,7 +85,7 @@ class Player(BasePlayer):
     distinct_path_id = models.IntegerField()
 
     # TODO: Validate in R!
-    # TODO: Do we need extra rounds for training / burner? Maybe by using an argument "training"?
+    # TODO: After Pilot implement the "burner" blocks
     def make_price_paths(self):
         """
         This function first creates distinct movement sets and then multiplies and scrambles them

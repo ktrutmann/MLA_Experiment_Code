@@ -9,13 +9,13 @@ Update
 <div class="price_update">
     <table id="price_update_table">
         <tr><td>
-            Der Preis der Aktie
+            The assets price
             {% if update_raise %}
-                <b>steigt</b>
+                <b>increases</b>
             {% else %}
-                <b>sinkt</b>
+                <b>decreases</b>
             {% endif %}
-            um <b>{{update}}</b> und beträgt nun <b>{{price}}</b>
+            by <b>{{update}}</b> and is now <b>{{new_price}}</b>
             <br>
         </td></tr>
     </table>
