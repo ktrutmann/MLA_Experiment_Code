@@ -30,6 +30,9 @@ If they are shuffled, the condition page will be displayed each time the conditi
 - `max_time`: Indicates how long the trading screen is shown before a warning appears
 - `max_time_beliefs`: Indicates how long the belief elicitation screen is shown before a warning appears
 
+### Other:
+- `experimenter_email`: Can be displayed in case something goes wrong so
+participants can contact you.
 
 ## Experiment Code
 Because of the way oTree handles the round numbers (beginning with 1), the indices of 
@@ -94,3 +97,4 @@ is sold, the return is reset to 0.
     i_round_in_block = models.IntegerField()
     global_path_id = models.IntegerField()
     distinct_path_id = models.IntegerField()
+    investable

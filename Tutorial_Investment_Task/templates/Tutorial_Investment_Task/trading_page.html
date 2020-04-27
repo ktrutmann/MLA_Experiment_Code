@@ -114,7 +114,6 @@
     };
     
 // Handling orders
-    // TODO: Check if I need to adapt something here
     let order = 0;
 
     check_order = function(order){
@@ -132,7 +131,6 @@
             alert('You can\'t short more than ' + min_hold * -1 + ' shares.');
             $$('id_erroneous_trade').value = 'overshorted';
             return false;
-            {#TODO: Test! This should never happen!#}
         } else if (Math.max(0, order * price) > cash) {
             alert('You don\'t have enough cash for this transaction.');
             $$('id_erroneous_trade').value = 'not_enough_cash';

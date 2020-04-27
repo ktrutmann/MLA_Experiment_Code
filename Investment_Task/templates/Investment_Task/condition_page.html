@@ -3,6 +3,7 @@
 
 {% block title %}
 New Block
+{#    TODO (After pilot): Block counter here#}
 {% endblock %}
 
 {% block content %}
@@ -11,15 +12,49 @@ New Block
     <p>
     </p>
         This means that everything will be reset to its starting value, including the price of the asset.
-        It is again randomly determined what asset you will invest in.
-{#        TODO: Maybe include the possible drifts here?#}
+        It is again randomly determined whether the asset will have <b>a {{ drift_list.0 }}% or a {{ drift_list.1 }}%
+    probability</b> for a price increase.
     </p>
+    <ul>
+        <li>Your portfolio will be fixed for the first {{ periods_per_phase }} rounds.</li>
 
-    {% if condition == 'probs_shown' %}
-        <p>
-{#            TODO: Write about the conditions here! Show it no mather whether it changed or not#}
-        </p>
-    {% endif %}
+        {% if condition == 'full_control' %}
+            <li>After that you will have <b>full control</b> of your portfolio for the next {{ periods_per_phase }}
+                rounds.</li>
+        {% elif condition == 'full_control_with_MLA' %}
+            <li>After that you will have <b>full control</b> of your portfolio for the next {{ periods_per_phase }}
+                rounds.</li>
+            <li>Then you will be asked to <b>make another decision for the subsequent {{ periods_per_phase }}
+                rounds</b>.</li>
+        {% elif condition == 'blocked_full_info' %}
+            <li>After that you will be asked to <b>make a decision for the subsequent {{ periods_per_phase }}
+                rounds</b>.</li>
+            <li>You will be informed about the price changes <b>in each round</b>.</li>
+        {% elif condition == 'blocked_blocked_info' %}
+            <li>After that you will be asked to <b>make a decision for the subsequent {{ periods_per_phase }}
+                rounds</b>.</li>
+            <li>You will be informed about the price changes <b>at the end of these {{ periods_per_phase }}
+                rounds</b>.</li>
+        {% else %}
+            </ul>
+            <p><b>Something went wrong!</b></p>
+            <p>
+                Please contact <a href="mailto:{{ exp_email }}">{{ exp_email }}</a> and report error code 001. <br>
+                Thank you for participating!
+            </p>
+            <ul>
+        {% endif %}
+    </ul>
 
-{% next_button %}
+    <p>Click the "Next" button to start this block.</p>
+
+    {% next_button %}
+
+    <style>
+        {#This is so there is a visual "cut" between the blocks#}
+        body{
+            background-color: #dddddd;
+        }
+
+    </style>
 {% endblock %}

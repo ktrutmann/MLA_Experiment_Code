@@ -3,9 +3,8 @@ from .models import Constants
 
 
 class initializer_page(Page):
-    pass
-    # def before_next_page(self):
-    #     self.player.initialize_round()
+    def before_next_page(self):
+        self.player.initialize_round()
 
 
 class tutorial_page(Page):
@@ -47,31 +46,28 @@ class updating_page(Page):
                 'new_price': self.participant.vars['price_info'].price[self.round_number]
                 }
 
-# TODO (after pilot): Bring back the quizz!
-# class quiz_page(Page):
-#     form_model = 'player'
-#     form_fields = ['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6',
-#                    'wrong_answers']
-#
-#     def is_displayed(self):
-#         return self.round_number == Constants.num_rounds
-#
-#     def vars_for_template(self):
-#         return self.player.get_tutorial_vars()
+
+class quiz_page(Page):
+    form_model = 'player'
+    form_fields = ['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6',
+                   'wrong_answers']
+
+    def is_displayed(self):
+        return self.round_number == Constants.num_rounds
+
+    def vars_for_template(self):
+        return self.player.get_tutorial_vars()
 
 
 class end_page(Page):
     def is_displayed(self):
         return self.round_number == Constants.num_rounds
 
-    def vars_for_template(self):
-        return self.player.get_trading_vars()
 
-
-page_sequence = [initializer_page,
+page_sequence = [# initializer_page,
                  tutorial_page,
-                 trading_page,
-                 belief_page,
-                 updating_page,
+                 # trading_page, # TODO (after pilot): Bring back quizz and training!
+                 # belief_page,
+                 # updating_page,
                  # quiz_page,
                  end_page]

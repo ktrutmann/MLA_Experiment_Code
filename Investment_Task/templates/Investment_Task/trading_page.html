@@ -10,7 +10,11 @@
     <!--timeout warning field-->
     <div id="timer_warning_field" style="visibility: hidden; text-align: right; margin-top: -30px">
         <p class="blink_text" style="align-content: end">
-            Please decide now!
+            {% if investable%}
+                Please decide now!
+            {% else %}
+                Please continue now!
+            {% endif %}
         </p>
     </div>
 
@@ -19,14 +23,22 @@
         {% include 'investment_task/trading_table.html' %}
         <br>
         <hr>
-        {% include 'investment_task/trading_forms.html' %}
+        {% if investable %}
+            {% if n_periods_to_invest == 1 %}
+                <p>You are deciding how to invest for the <b>next period</b>.</p>
+            {% else %}
+                <p>You are deciding how to invest for the <b>next {{ n_periods_to_invest }} periods</b>.</p>
+            {% endif %}
+            {% include 'investment_task/trading_forms.html' %}
+        {% else %}
+            <input id="id_transaction" name="transaction" type="hidden" value="0">
+            {% next_button %}
+        {% endif %}
 
         <input type="hidden" name="changed_mind" id="id_changed_mind" value="False">
         <input type="hidden" name="erroneous_trade" id="id_erroneous_trade" value="none">
         <input id="id_time_to_order" name="time_to_order" type="hidden" value="0">
         <input id="id_unfocused_time_to_order" name="unfocused_time_to_order" type="hidden" value="0">
-
-
     </div> <!-- end content --->
 
     <style>

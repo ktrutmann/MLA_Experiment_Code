@@ -13,7 +13,6 @@ doc = """
 Tutorial for the Trading Task
 """
 
-# TODO: Maybe include some highchart examples in the instructions?
 # TODO (After Pilot): Also update the readme
 # TODO (After Pilot): Put the belief page in a template as well
 
@@ -253,12 +252,13 @@ class Player(BasePlayer):
     def get_tutorial_vars(self):
         return {'n_rounds': Constants.num_rounds,
                 'n_rounds_per_block_list': [Constants.n_periods_per_phase * i for i in set(Constants.n_phases)],
+                'n_rounds_per_phase': Constants.n_periods_per_phase,
                 'min_hold': Constants.hold_range[0],
                 'max_hold': Constants.hold_range[1],
-                'bad_raise_prob': min(Constants.up_probs),
-                'good_raise_prob': max(Constants.up_probs),
+                'good_raise_prob': round(max(Constants.up_probs) * 100),
+                'bad_raise_prob': round(min(Constants.up_probs) * 100),
                 'lottery_bonus': Constants.max_belief_bonus,
-                'lottery_discount': round(Constants.belief_bonus_discount * 100, 2),
+                'lottery_discount': round(Constants.belief_bonus_discount * 100),
                 'movements': Constants.updates,
                 'example_move': [i + 1000 for i in Constants.updates],
                 'n_blocks': Constants.num_blocks,

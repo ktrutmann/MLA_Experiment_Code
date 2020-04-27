@@ -17,14 +17,14 @@ class Constants(BaseConstants):
     players_per_group = None
 
     # Experimental Flow
-    n_periods_per_phase = 5  # How long should the participants be "blocked"?
-    n_distinct_paths = 5  # How many paths should be generated?
-    condition_names = ['full_control', 'full_control_with_MLA',
-                       'blocked_full_info', 'blocked_blocked_info']  # List of the conditions
+    n_periods_per_phase = 2  # How long should the participants be "blocked"?
+    n_distinct_paths = 2  # How many paths should be generated?
+    condition_names = ['blocked_full_info', 'full_control_with_MLA',
+                       'full_control', 'blocked_blocked_info']  # List of the conditions
     n_phases = [2, 3, 2, 2]  # How many phases should there be per condition
     hold_range = [-10, 10]  # What's the minimum and maximum amount of shares that can be held.
     shuffle_conditions = False  # Should the conditions be presented in "blocks" or shuffled?
-    # TODO: mention in the instructions whether conditions are scrambled or not
+    # TODO: Set to true!
 
     num_paths = n_distinct_paths * len(condition_names)
     num_rounds = n_distinct_paths * n_periods_per_phase * sum(n_phases) + (n_distinct_paths * len(condition_names))
@@ -40,9 +40,11 @@ class Constants(BaseConstants):
     belief_bonus_discount = .1  # How many "investment points are the lottery points worth?
 
     # Time:
-    update_time = 3  # Number of seconds to show the price updates
+    update_time = 7  # Number of seconds to show the price updates  # TODO (After pilot) Change with conditions
     max_time = 6  # Number of seconds until a reminder to decide appears
     max_time_beliefs = 5  # Same but for the belief page
+
+    experimenter_email = 'k.trutmann@unibas.ch'
 
 
 class mainSubsession(BaseSubsession):
@@ -75,20 +77,21 @@ class Player(BasePlayer):
     hold = models.IntegerField()
     returns = models.IntegerField()
     transaction = models.IntegerField(label='')
-    base_price = models.IntegerField()
+    base_price = models.FloatField()
     price = models.IntegerField()
     drift = models.FloatField()
+    investable = models.BooleanField()
 
     condition_name = models.StringField()
     i_round_in_path = models.IntegerField()
     global_path_id = models.IntegerField()
     distinct_path_id = models.IntegerField()
 
-    # TODO: Validate in R!
-    # TODO: After Pilot implement the "burner" blocks
+    # TODO (After Pilot): Validate in R!
+    # TODO (After Pilot): implement the "burner" blocks
     def make_price_paths(self):
         """
-        This function first creates distinct movement sets and then multiplies and scrambles them
+        This method first creates distinct movement sets and then multiplies and scrambles them
         (paths within the experiment and movements within phases). In the end it applies the movement sets
         to create the actual price paths. It takes no arguments since everything is handled via the Constants.
         """
@@ -140,7 +143,7 @@ class Player(BasePlayer):
             all_moves_list[i_cond] = [all_moves_list[i_cond][path_id] for path_id in distinct_path_ids[i_cond]]
 
         # Apply the price movements to create actual prices and save them in the participant vars:
-        # Not too elegant with the for loops, but it does the trick...
+        # Not too elegant with the for loops, but it does the trick... ¯\_(ツ)_/¯
         prices = []
         i_path_global = 0
         i_path_global_list = []
@@ -197,16 +200,18 @@ class Player(BasePlayer):
         # Record the relevant price variables into the database:
         for this_var in ['price', 'drift', 'condition_name', 'i_round_in_path', 'global_path_id', 'distinct_path_id']:
             setattr(self, this_var, self.participant.vars['price_info'][this_var][self.round_number - 1])
+        self.investable = self.is_investable()
+
+        self.transaction = 0  # This will be overridden but is necessary for the blocked rounds
 
         # If this is the first round of a new path:
-        if self.participant.vars['price_info'].i_round_in_path[self.round_number - 1] == 0:
+        if self.i_round_in_path == 0:
             self.hold = rd.choice(range(Constants.hold_range[0], Constants.hold_range[1] + 1))
             self.cash = Constants.starting_cash - (self.hold * Constants.start_price)
             self.base_price = Constants.start_price if self.hold != 0 else 0
             self.returns = 0
             self.belief_bonus_cumulative = 0
             self.price = Constants.start_price
-            # TODO: Check if the generated prices ACTUALLY start at the start_price!
         else:
             former_self = self.in_round(self.round_number - 1)
             self.hold = former_self.hold + former_self.transaction
@@ -237,8 +242,8 @@ class Player(BasePlayer):
                 self.belief_bonus = 0
                 self.belief_bonus_cumulative = self.in_round(self.round_number - 1).belief_bonus_cumulative
                 # "Sell everything" for the last price:
-                self.final_cash = self.cash + self.hold *\
-                    self.participant.vars['price_info'].price[self.round_number - 1]
+                self.final_cash = self.cash.item() + self.hold *\
+                    self.participant.vars['price_info'].price[self.round_number - 1].item()
                 self.payoff = (self.final_cash - Constants.starting_cash) + self.belief_bonus_cumulative
 
     def calculate_belief_bonus(self):
@@ -254,6 +259,37 @@ class Player(BasePlayer):
         self.belief_bonus *= Constants.belief_bonus_discount  # Discount the lottery/bet earnings
 
     # For displaying the page
+    def is_investable(self):
+        """Find out whether the participant should be able to make an investment decision in this round."""
+
+        is_phase_start = self.i_round_in_path % Constants.n_periods_per_phase == 0
+        is_block_start = self.i_round_in_path == 0
+        is_first_phase = self.i_round_in_path < Constants.n_periods_per_phase
+        is_blocked_condition = self.condition_name in ['blocked_full_info', 'blocked_blocked_info']
+
+        return (is_phase_start and not is_block_start) or (not is_first_phase and not is_blocked_condition)
+
+    def should_display_infos(self):
+        """Figures out whether this is a 'blocked info' trial, and should therefore be completely skipped."""
+        last_round = self.participant.vars['price_info'].last_trial_in_path[self.round_number - 1]
+        blocked_condition = self.condition_name == 'blocked_blocked_info'
+        after_first_phase = self.round_number > Constants.n_periods_per_phase
+
+        # FIXME: Is also not shown in first phase of low info blocked conditions
+        return not last_round and not (blocked_condition and after_first_phase)
+
+    def get_investment_span(self):
+        """Given you can invest in this round, how many periods into the future is this investment for?"""
+        rounds_in_this_path = Constants.n_periods_per_phase * Constants.n_phases[
+            self.participant.vars['price_info'].condition_id[self.round_number - 1]]
+
+        if self.condition_name == 'full_control':
+            return 1
+        elif self.condition_name in ['blocked_full_info', 'blocked_blocked_info']:
+            return Constants.n_periods_per_phase if (self.i_round_in_path + 1) < rounds_in_this_path else 1
+        elif self.condition_name == 'full_control_with_MLA':
+            return 1 if (self.i_round_in_path + 1) < rounds_in_this_path else Constants.n_periods_per_phase
+
     def get_trading_vars(self):
         price = self.participant.vars['price_info'].price[self.round_number - 1]
 
@@ -271,27 +307,50 @@ class Player(BasePlayer):
                 'all_val': price * self.hold,
                 'wealth': int(price * self.hold + self.cash),
                 'max_time': Constants.max_time,
-                'condition': self.participant.vars['price_info'].condition_name[self.round_number - 1]
+                'condition': self.participant.vars['price_info'].condition_name[self.round_number - 1],
+                'investable': self.is_investable(),
+                'n_periods_to_invest': self.get_investment_span()
                 }
+
+    def make_update_list(self):
+        """Creates a zipped list for django to display as the updates. The length depends on the condition."""
+        if self.condition_name != 'blocked_blocked_info':
+            was_increase = self.participant.vars['price_info'].price[self.round_number] > self.price
+            difference = abs(self.participant.vars['price_info'].price[self.round_number] - self.price)
+            new_price = self.participant.vars['price_info'].price[self.round_number]
+            return was_increase, difference, new_price
+        elif self.i_round_in_path == Constants.n_periods_per_phase *\
+                Constants.n_phases[self.participant.vars['price_info'].condition_id[self.round_number - 1]]:
+            # We are at the last decision of the blocked and low info condition, so show a list of updates:
+            price_list = self.participant.vars['price_info'].price
+            past_indexes = [self.round_number - i for i in range(-Constants.n_periods_per_phase, 0)]
+
+            was_increase = [price_list[i + 1] > price_list[i] for i in past_indexes]
+            differences = [abs(price_list[i + 1] - price_list[i]) for i in past_indexes]
+            new_price = [price_list[i + 1] for i in past_indexes]
+
+            return zip(was_increase, differences, new_price)
 
     # In the very last round, calculate how much was earned
     def calculate_final_payoff(self):
-        end_cash_list = [self.player.in_round(i).final_cash - Constants.starting_cash for
+        end_cash_list = [self.in_round(i + 1).final_cash - Constants.starting_cash for
                          i in range(Constants.num_rounds) if self.participant.vars['price_info'].last_trial_in_path[i]]
         sum_end_cash = sum(end_cash_list)
 
-        end_belief_bonus_list = [self.player.in_round(i).belief_bonus_cumulative for
+        end_belief_bonus_list = [self.in_round(i).belief_bonus_cumulative for
                                  i in range(Constants.num_rounds) if
                                  self.participant.vars['price_info'].last_trial_in_path[i]]
         sum_end_belief_bonus = sum(end_belief_bonus_list)
 
         # Add the base_payoff to the game-payoff and make sure that it is floored at 0
-        self.player.payoff = self.session.config['base_bonus'] / self.session.config['real_world_currency_per_point']
+        self.participant.payoff = c(self.session.config['base_bonus'] /
+                                    self.session.config['real_world_currency_per_point'] +
+                                    sum_end_cash + sum_end_belief_bonus)
 
         if self.participant.payoff < 0:
             self.participant.payoff -= self.participant.payoff  # For some reason 0 didn't work.
 
-        self.player.participant.vars['payoff_dict'] =\
+        self.participant.vars['payoff_dict'] =\
             {'payoff_list': zip(end_cash_list, end_belief_bonus_list),
              'end_cash_sum': sum_end_cash,
              'belief_bonus_sum': sum_end_belief_bonus,

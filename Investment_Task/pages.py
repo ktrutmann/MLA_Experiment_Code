@@ -9,13 +9,14 @@ class initializer_page(Page):
 
 class condition_page(Page):
     def is_displayed(self):
-        if self.round_number == 1:
-            return True
-        else:
-            return self.player.participant.vars['price_info'].last_trial_in_path[self.round_number - 2]
+        return self.player.i_round_in_path == 0
 
     def vars_for_template(self):
-        return {'condition': self.player.condition_name}
+        return {'condition': self.player.condition_name,
+                'drift_list': [round(i * 100) for i in Constants.up_probs],
+                'periods_per_phase': Constants.n_periods_per_phase,
+                'exp_email': Constants.experimenter_email}
+
 
 
 class trading_page(Page):
@@ -28,20 +29,20 @@ class trading_page(Page):
                    ]
 
     def is_displayed(self):
-        return not self.player.participant.vars['price_info'].last_trial_in_path[self.round_number - 1]
+        return self.player.should_display_infos()
 
     def vars_for_template(self):
         return self.player.get_trading_vars()
 
 
-class belief_page(Page):
+class belief_page(Page):  # TODO (After Pilot): Rethink when to ask for beliefs
     form_model = 'player'
     form_fields = ['belief',
                    'time_to_belief_report',
                    'unfocused_time_to_belief_report']
 
     def is_displayed(self):
-        return not self.player.participant.vars['price_info'].last_trial_in_path[self.round_number - 1]
+        return self.player.should_display_infos()
 
     def vars_for_template(self):
         return {'max_time': Constants.max_time_beliefs}
@@ -56,16 +57,10 @@ class update_page(Page):
     timeout_seconds = Constants.update_time
 
     def is_displayed(self):
-        return not self.player.participant.vars['price_info'].last_trial_in_path[self.round_number - 1]
+        return self.player.should_display_infos()
 
     def vars_for_template(self):
-        update = self.player.participant.vars['price_info'].price[self.round_number] - \
-            self.player.participant.vars['price_info'].price[self.round_number - 1]
-
-        return {'update_raise': update >= 0,
-                'update': abs(update),
-                'new_price': self.participant.vars['price_info'].price[self.round_number],
-                }
+        return {'update_list': self.player.make_update_list()}
 
 
 class end_page(Page):
@@ -73,6 +68,7 @@ class end_page(Page):
         return self.round_number == Constants.num_rounds
 
     def before_next_page(self):
+        print('Calling before_next_page of the end_page!')
         self.player.calculate_final_payoff()
 
 

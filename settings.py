@@ -24,6 +24,15 @@ SESSION_CONFIGS = [
     },
 
     {
+        'name': 'Investment_Task_bots',
+        'num_demo_participants': 1,
+        'app_sequence': ['Investment_Task'],
+        'real_world_currency_per_point': .06,
+        'participation_fee': 10,
+        'use_browser_bots': True
+    },
+
+    {
         'name': 'Demographics',
         'num_demo_participants': 1,
         'app_sequence': ['Demographics'],
@@ -102,5 +111,7 @@ INSTALLED_APPS = ['otree']
     # They should make screenshots and send them or write into the general comments section at the end of the study
     # They should be done till wednessday evening. The mail should be sent on monday
     # Write that they don't get any money
-# TODO: Translate everything to english
 # TODO: Test with other browsers!
+# TODO: Ask about their matricle nr.
+
+# TODO (After pilot): Update readme.md

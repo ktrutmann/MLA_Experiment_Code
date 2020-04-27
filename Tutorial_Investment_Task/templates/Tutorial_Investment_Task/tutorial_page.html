@@ -23,6 +23,12 @@
             If you are using a Mac you can press <i><b>Cmd + Ctrl + F</b></i>.
         </p>
         <p>
+            Lastly before we start, there are rare cases in which browsers can load scripts in the wrong order
+            or have other "hiccups" which would prevent you from continuing.
+            If you ever become stuck or think that something is wrong, you can always reload the page (in most
+            browsers this can be done using the <i><b>F5</b></i> key).
+        </p>
+        <p>
             Please click the continue button to start the tutorial.
         </p>
         <button class="button btn continue_button navigation_button" id="welcome_continue_button" type="button"
@@ -74,8 +80,6 @@
                 To make yourself familiar with the process, please <b>buy two shares now</b> by entering '2'
                 in the field and clicking the 'Buy' button. Once you have done that, you can confirm that order
                 by clicking the 'Confirm' button. <br>
-{#                TODO: Implement starting with 2 and buying 2 additional ones#}
-{#                TODO: Do I want to get rid of the confirm button?#}
                 Once you have done that the text will continue here and you will be able to scroll down.
             </p>
         </div>
@@ -168,6 +172,7 @@
             <br>
             <hr>
             <!--    order forms-->
+            <p>You are deciding how to invest for the <b>next period</b>.</p>
             <div id="order_buttons">
                 {% include 'investment_task/trading_forms.html' %}
             </div>
@@ -234,7 +239,6 @@
             </p>
             <p>
                 To continue please make an order such that you will hold 5 shares.
-{#                TODO: Implement buying of 7 shares#}
             </p>
         </div>
 
@@ -265,7 +269,6 @@
                     <td id="id_return2">0 (0.0)</td>
                     <td id="id_value2">0</td>
 {#                    TODO: id_value2 should also start as start_price * 2#}
-{#                    TODO: move the inner HTML of the upper table here? Didn't that work in the Sinergia version?#}
                 </tr>
                 <tr style="background: skyblue;">
                     <td><b>Total</b></td>
@@ -278,9 +281,36 @@
             </table>
             <br>
             <hr>
+            <p>You are deciding how to invest for the <b>next period</b>.</p>
             <!--    order forms-->
-            <div id="order_buttons">
-                {% include 'investment_task/trading_forms.html' %}
+            <div id="order_forms_content">
+                <div class="row">
+                    <div class="col-md-9" id="trading_form">
+                        <div class="row">
+                        <span style="margin-right: 10px">Your Order: </span>
+                        <div class="form-group">
+                            <div class="controls  field-transaction">
+                                <input type="number" name="transaction2" id="id_transaction2" class="form-control">
+                            </div>
+                        </div>
+                        <button class="btn trade_button buy_button" id="asset_buy_button" type="button"
+                                onclick="buy()">Buy</button>
+                        <button class="btn trade_button sell_button" id="asset_sell_button" type="button"
+                                onclick="sell()">Sell</button>
+                        </div>
+                    </div>
+                    <div class="col-md-9" id="confirm_form" style="display: none;">
+                        <p id="confirm_text" style="display: inline; font-weight: bold">
+                            bux X shares
+                        </p>
+                        <br>
+                        <br>
+                        <button class="btn change_button" id="change_order_button" type="button"
+                                onclick="switch_order_display()">Change Order</button>
+                        <button class="btn confirm_button" id="confirm_orders_button" style="display: none;" type="button"
+                            onclick="submit_order()">Confirm Order</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -297,20 +327,18 @@
                 We now turn to the way in which the assets price can develop.
                 To illustrate, imagine that the asset you are buying is a stock that is based on a company which can
                 make a profit but can also loose money.
-                You will either be able to invest in the stock of a company with {{ good_raise_prob }}% probability
-                of a price increase or one with {{ bad_raise_prob }}%.
+                You will either be able to invest in the stock of a company with <b>{{ good_raise_prob }}%</b>
+                probability of a price increase or one with <b>{{ bad_raise_prob }}%</b>.
                 Remember that even if you are given the stock from a company where the price is more likely to decrease,
                 you can still profit from this by short selling the asset.
             </p>
 {#            <p>#}
 {#                Below you see one of these possible price paths.#}
-{#                TODO: implement Highcharts#}
+{#                TODO (after pilot): implement Highcharts#}
 {#            </p>#}
-        </div>
-        <div class="instr_text tut_part_6" id="instr_text_6" style="display: none;">
             <p>
-                In each period, the price can move by either {{ movements.0 }},
-                {{ movements.1 }} or {{ movements.2 }} points. This is true for both increases as well as decreases.
+                In each period, the price can move by either <b>{{ movements.0 }},
+                {{ movements.1 }} or {{ movements.2 }}</b> points. This is true for both increases as well as decreases.
                 Which of these magnitudes the next price moves will take on is determined by chance and with equal
                 probaility. Thus, whether the price in- or decreases is determined by the kind of asset
                 while the magnitude of the change is determined randomly.
@@ -320,7 +348,34 @@
                 It is now equally likely that the next price will be {{ example_move.0 }},  {{ example_move.1 }}
                 or {{ example_move.2 }}.
             </p>
-{#            # TODO: Talk about the conditions here#}
+        </div>
+        <div class="instr_text tut_part_6" id="instr_text_6" style="display: none;">
+            <hr>
+            <p>
+                You may have noticed a line of text above the order form on the previous page saying
+                <i>"You are deciding how to invest for the <b>next period</b>"</i> (feel free to click back if you
+                missed it). This is because you will be investing under many different conditions throughout the
+                different rounds. The page that indicates when a new price path is started will also tell you
+                what the conditions for the upcoming price path are. Similarly, whenever you are asked to make an
+                investment decision, the line below the table will tell you under what conditions you are now investing.
+            </p>
+                <ul>
+                    <li>The first {{ n_rounds_per_phase}} periods will always be "pre-decided", meaning you can only
+                        observe the price movement.</li>
+                    <li>After that, in some cases you will be able to make a decision for each individual period of the
+                        remaining periods.</li>
+                    <li>In some cases you will have to make an investment that will then be "fixed" for the next
+                        {{ n_rounds_per_phase }} periods (i.e. if you decide to hold 5 shares, you will hold 5 shares
+                        throughout the next {{ n_rounds_per_phase }} price movements).</li>
+                    <li>There are also price paths in which you can first decide freely and then have to make a decision
+                        for the next {{ n_rounds_per_phase }} rounds.</li>
+                    <li>In some of the cases in which you can not freely trade you will be informed about the price
+                        movements in each period, in others you will only be informed about the price movements
+                        after they all already happened.</li>
+                </ul>
+            <p>
+                It therefore makes sense to <b>pay good attention</b> to which decision you are currently making.
+            </p>
         </div>
 
     <button class="button btn back_button navigation_button" id="markov_back_button" type="button"
@@ -403,7 +458,7 @@
             <p>
                 During the experiment, you will never be able to be completely sure whether the price will increase
                 or decrease. You should therefore use the values between these extremes to express how likely you
-                think a price increase is. More to the left you put the slider, the more certain you are that the price
+                think a price increase is. The more to the left you put the slider, the more certain you are that the price
                 will <i>decrease</i>. The further to the right you put the slider, the more certain you are that the
                 price will <i>increase</i>.
             </p>
@@ -417,9 +472,13 @@
                 the lottery, because its winning probability was sufficiently high.
             </p>
             <p>
+                To maximize your chances for the bonus points your best act is therefore to always report your
+                genuine belief about the probability of a price increase.
+            </p>
+            <p>
                 At the end of the experiment you will receive the points you earned in the trading task,
                 as well as {{ lottery_discount }}% of the points you have received in the lottery or betting task.
-                This sum will then determin your final payoff.
+                This sum will then determine your final payoff.
             </p>
         </div>
 
@@ -432,7 +491,7 @@
     <div class="structure_tutorial content" id="content_structure_tutorial" style="display: none;">
         <h4>Blocks and Payoff</h4>
         <p>
-            The task will consist of {{ n_blocks }} price paths to invest in, each of which consisting of
+            The task will consist of <b>{{ n_blocks }} price paths</b> to invest in, each of which consisting of
             either {{ n_rounds_per_block_list.0 }} or {{ n_rounds_per_block_list.1 }} rounds.
             Each price path is independent from that before and only determined
             by the probability of a price increase of the given asset.
@@ -450,16 +509,17 @@
             This therefore reflects the winnings or losses of your investments.
             Additionaly {{ lottery_discount }}% of the points from the lottry and betting task will be counted towards
             this final sum. Your final points will then be added or subtracted from the base payoff of CHF
-            {{ base_bonus }} with an exchange rate of {{ conversion_percent }}%.
-            Additionally you will receive the CHF {{ showup_fee }} for completing the study, no matter your performance.
+            {{ base_bonus }}.00 with an exchange rate of {{ conversion_percent }}%.
+            Additionally you will receive the {{ showup_fee }} for completing the study, no matter your performance.
             </p>
             <p>
-            As an example: If your total earnings from all blocks plus {{ lottery_discount }}% of the lotter-points
-            adds up to 100 points, your payoff will be {{ example_payoff }}. It will consist from CHF {{ showup_fee }}
-            for completing the study, CHF {{ base_bonus }} base payoff plus {{ conversion_percent }}% of 100 points.
+            As an example: If your total earnings from all blocks plus {{ lottery_discount }}% of the lottery-points
+            adds up to 100 points, your payoff will be {{ example_payoff }}. It will consist from {{ showup_fee }}
+            for completing the study, CHF {{ base_bonus }}.00 base payoff plus {{ conversion_percent }}% of the
+            100 points you earned.
         </p>
         <p>
-            If you have understood these instructions, please click the "Continue" button to start the Experiment.
+            If you have understood these instructions, please click the "Continue" button to start the experiment.
 {#            TODO (after pilot): Include training here!#}
         </p>
         <button class="button btn back_button navigation_button" id="structure_back_button" type="button"
