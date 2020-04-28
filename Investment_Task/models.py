@@ -24,11 +24,13 @@ class Constants(BaseConstants):
                        'blocked_blocked_info',
                        'full_control']  # List of the conditions
     n_phases = [2, 3, 2, 2]  # How many phases should there be per condition
+    extra_inv_phase = [1, 0, 1, 1]  # Whether to add "one last question" after the last phase # TODO: Implement
     hold_range = [-10, 10]  # What's the minimum and maximum amount of shares that can be held.
     shuffle_conditions = True  # Should the conditions be presented in "blocks" or shuffled?
 
     num_paths = n_distinct_paths * len(condition_names)
-    num_rounds = n_distinct_paths * n_periods_per_phase * sum(n_phases) + (n_distinct_paths * len(condition_names))
+    num_rounds = n_distinct_paths * n_periods_per_phase * sum(n_phases) + (n_distinct_paths * len(condition_names)) +\
+        sum(extra_inv_phase) * n_distinct_paths
 
     # The parameters for the price path
     up_probs = [.4, .6]  # The possible probabilities of a price increase (i.e. "drifts")

@@ -1,4 +1,3 @@
-from otree.api import Currency as c, currency_range
 from . import pages
 from ._builtin import Bot
 from otree.api import Submission
@@ -14,7 +13,9 @@ class PlayerBot(Bot):
             yield pages.condition_page
 
         if self.player.should_display_infos():
-            yield Submission(pages.trading_page, {'transaction': 0,
+            min_transaction = min(Constants.hold_range) - self.player.hold
+            max_transaction = max(Constants.hold_range) - self.player.hold
+            yield Submission(pages.trading_page, {'transaction': rd.randint(min_transaction, max_transaction + 1),
                                                   'time_to_order': 2,
                                                   'unfocused_time_to_order': 0,
                                                   'changed_mind': False,
