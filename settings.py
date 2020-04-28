@@ -1,17 +1,18 @@
 from os import environ
 import dj_database_url
 
+# TODO (After pilot): Update readme.md
+
 # if you set a property in SESSION_CONFIG_DEFAULTS, it will be inherited by all configs
 # in SESSION_CONFIGS, except those that explicitly override it.
 # the session config can be accessed from methods in your apps as self.session.config,
 # e.g. self.session.config['participation_fee']
 
 SESSION_CONFIG_DEFAULTS = {
-    'real_world_currency_per_point': 0.06,
+    'real_world_currency_per_point': 0.02,
     'participation_fee': 10,
     'base_bonus': 20,
     'doc': "",
-    # 'use_browser_bots': True
 }
 
 SESSION_CONFIGS = [
@@ -19,16 +20,12 @@ SESSION_CONFIGS = [
         'name': 'Investment_Task',
         'num_demo_participants': 1,
         'app_sequence': ['Investment_Task'],
-        'real_world_currency_per_point': .06,
-        'participation_fee': 10
     },
 
     {
         'name': 'Investment_Task_bots',
         'num_demo_participants': 1,
         'app_sequence': ['Investment_Task'],
-        'real_world_currency_per_point': .06,
-        'participation_fee': 10,
         'use_browser_bots': True
     },
 
@@ -41,14 +38,16 @@ SESSION_CONFIGS = [
     {
         'name': 'Investment_Task_Full',
         'num_demo_participants': 1,
-        'app_sequence': ['Tutorial_Investment_Task', 'Investment_Task', 'Get_Payment_Info',
-                         'Demographics', 'Show_Payoff'],
-        'real_world_currency_per_point': .05,
-        'participation_fee': 10,
-        'base_bonus': 15,
-        'n_probs_shown_participants': 10,
-        'n_states_shown_participants': 10,
-        'n_baseline_participants': 10,
+        'app_sequence': ['Tutorial_Investment_Task', 'Investment_Task',
+                         'Demographics', 'Get_Payment_Info', 'Show_Payoff'],
+    },
+
+    {
+        'name': 'Investment_Task_Full_bots',
+        'num_demo_participants': 1,
+        'app_sequence': ['Tutorial_Investment_Task', 'Investment_Task',
+                         'Demographics', 'Get_Payment_Info', 'Show_Payoff'],
+        'use_browser_bots': True
     },
 ]
 
@@ -104,11 +103,3 @@ INSTALLED_APPS = ['otree']
 
 # Database: This is so that devserver can still be used
 # DATABASES = {'default': dj_database_url.config(default='sqlite:///db.sqlite3')}
-
-# TODO: Make it ready for the students: Write email with invitation and betatester instructions!
-    # They should make screenshots and send them or write into the general comments section at the end of the study
-    # They should be done till wednessday evening. The mail should be sent on monday
-    # Write that they don't get any money
-# TODO: Test with other browsers!
-
-# TODO (After pilot): Update readme.md

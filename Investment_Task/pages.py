@@ -67,7 +67,6 @@ class end_page(Page):
         return self.round_number == Constants.num_rounds
 
     def before_next_page(self):
-        print('Calling before_next_page of the end_page!')
         self.player.calculate_final_payoff()
 
 

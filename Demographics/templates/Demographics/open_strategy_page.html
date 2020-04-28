@@ -2,17 +2,17 @@
 {% load otree static %}
 
 {% block title %}
-    Endfragebogen
+    Ending questionnaire
 {% endblock %}
 
 {% block content %}
     <p>
-    Sie sind nun fast am Ende der Studie angelangt.
-    Gerne möchten wir Sie bitten, uns noch kurz einige Fragen zu beantworten.
+        You have now almost reached the end of the study.
+        We like to ask you some concluding questions.
     </p>
     <p>
-        Verfolgten Sie während der Aufgabe eine bestimmte Strategie? Falls ja, beschreiben Sie diese kurz.<br>
-        Falls nicht, versuchen Sie kurz zu beschreiben, worauf Sie Ihre Entscheidungen basiert haben.
+        Did you use any particular strategy during the task? If so, please shortly describe it here. <br>
+        If you did not use any particular strategy, please try to describe what you based your decisions on.
     </p>
     {% formfield player.strategy label=''%}
     {% next_button %}

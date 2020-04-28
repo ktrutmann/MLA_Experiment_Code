@@ -1,6 +1,4 @@
-from otree.api import Currency as c, currency_range
-from ._builtin import Page, WaitPage
-from .models import Constants
+from ._builtin import Page
 
 
 class payment_info_page(Page):

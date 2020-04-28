@@ -502,16 +502,17 @@
             following way:
         </p>
         <p>
-            The payoff will be based on the difference between the value of your portfolio (cash plus assets)
-            at the start of each block and the value of your portfolio at the end of the block.
+            The payoff will be based on <b>the difference</b> between the value of your portfolio (cash plus assets)
+            <i>at the start</i> of each block and the value of your portfolio <i>at the end</i> of the block.
             This therefore reflects the winnings or losses of your investments.
-            Additionaly {{ lottery_discount }}% of the points from the lottry and betting task will be counted towards
+            Additionally, {{ lottery_discount }}% of the points from the lottery and betting task will be counted towards
             this final sum. Your final points will then be added or subtracted from the base payoff of CHF
             {{ base_bonus }}.00 with an exchange rate of {{ conversion_percent }}%.
             Additionally you will receive the {{ showup_fee }} for completing the study, no matter your performance.
             </p>
             <p>
-            As an example: If your total earnings from all blocks plus {{ lottery_discount }}% of the lottery-points
+            As an example: <br>
+            If your total earnings from all blocks plus {{ lottery_discount }}% of the lottery-points
             adds up to 100 points, your payoff will be {{ example_payoff }}. It will consist from {{ showup_fee }}
             for completing the study, CHF {{ base_bonus }}.00 base payoff plus {{ conversion_percent }}% of the
             100 points you earned.

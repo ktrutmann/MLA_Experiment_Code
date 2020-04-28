@@ -2,15 +2,14 @@
 {% load otree static %}
 
 {% block title %}
-    Endfragebogen
+    Ending questionnaire
 {% endblock %}
 
 {% block content %}
     <p>
-    Unten sehen Sie einige mögliche Strategien, welche Sie verfolgt haben könnten.
-    Bitte geben Sie an, wie sehr jede dieser Strategien Ihr Verhalten beschreiben würden.
-    1 bedeutet dabei, dass diese Strategie für Sie gar nicht zutrifft, 7 bedeutet, dass Sie genau diese Strategie
-    verwendet haben.
+        Below you can see some possible strategies, which you might have used during the investing task.
+        Please indicate how much these strategies match the way in which you made your decisions.
+        1 means that this strategy does not apply at all, 7 means you used exactly this strategy.
     </p>
     {% formfield player.strategy_random %}
     {% formfield player.strategy_DE %}
@@ -44,9 +43,9 @@
 
         for (let this_scale of scale_elements){
             let scale_html = this_scale.innerHTML;
-            this_scale.innerHTML = "<span style='margin-right: 10px; background: #eeeeee'>Trift gar nicht zu</span>" +
+            this_scale.innerHTML = "<span style='margin-right: 10px; background: #eeeeee'>Agree not at all</span>" +
                 scale_html +
-                "<span style='background: #eeeeee'>Trift vollkommen zu</span>";
+                "<span style='background: #eeeeee'>Agree completely</span>";
             console.log(this_scale);
         }
     }

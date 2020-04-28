@@ -17,8 +17,8 @@ class Constants(BaseConstants):
     players_per_group = None
 
     # Experimental Flow
-    n_periods_per_phase = 3  # How long should the participants be "blocked"?
-    n_distinct_paths = 4  # How many paths should be generated?
+    n_periods_per_phase = 4  # How long should the participants be "blocked"?
+    n_distinct_paths = 5  # How many paths should be generated?
     condition_names = ['blocked_full_info',
                        'full_control_with_MLA',
                        'blocked_blocked_info',
@@ -32,9 +32,9 @@ class Constants(BaseConstants):
 
     # The parameters for the price path
     up_probs = [.4, .6]  # The possible probabilities of a price increase (i.e. "drifts")
-    start_price = 100  # The first price in the price path
+    start_price = 1000  # The first price in the price path  # TODO (After pilot) Random starting value?
     updates = [5, 10, 15]  # List of possible price movements
-    starting_cash = 25000  # How much cash does the participant own at the start
+    starting_cash = 50000  # How much cash does the participant own at the start
 
     # Belief elicitation
     max_belief_bonus = 10  # How many points can be won in the belief elicitation task?
@@ -191,11 +191,11 @@ class Player(BasePlayer):
         if Constants.shuffle_conditions:
             grouped_df = [group.copy() for _, group in price_df.groupby('global_path_id')]
             rd.shuffle(grouped_df)
-            price_df = pd.concat(grouped_df.copy()).reset_index()
+            price_df = pd.concat(grouped_df.copy()).reset_index(drop=True)
 
         self.participant.vars['price_info'] = price_df
-        pd.set_option('display.max_rows', None)
-        print(price_df)
+        # pd.set_option('display.max_rows', None)
+        # print(price_df)
 
     def initialize_round(self):
         # If this is the very first round
@@ -208,7 +208,6 @@ class Player(BasePlayer):
         self.investable = self.is_investable()
 
         # This will be overridden but is necessary for the blocked rounds:
-        self.transaction = 0
         self.belief_bonus = 0
 
         # If this is the first round of a new path:
@@ -346,12 +345,15 @@ class Player(BasePlayer):
     # In the very last round, calculate how much was earned
     def calculate_final_payoff(self):
         end_cash_list = [self.in_round(i + 1).final_cash - Constants.starting_cash for
-                         i in range(Constants.num_rounds) if self.participant.vars['price_info'].last_trial_in_path[i]]
+                         i in range(Constants.num_rounds) if
+                         self.participant.vars['price_info'].last_trial_in_path[i]]
+        print(end_cash_list)
         sum_end_cash = sum(end_cash_list)
 
-        end_belief_bonus_list = [self.in_round(i).belief_bonus_cumulative for
+        end_belief_bonus_list = [self.in_round(i + 1).belief_bonus_cumulative for
                                  i in range(Constants.num_rounds) if
                                  self.participant.vars['price_info'].last_trial_in_path[i]]
+        print(end_belief_bonus_list)
         sum_end_belief_bonus = sum(end_belief_bonus_list)
 
         # Add the base_payoff to the game-payoff and make sure that it is floored at 0
@@ -370,5 +372,5 @@ class Player(BasePlayer):
              'payoff_total': self.participant.payoff_plus_participation_fee(),
              'showup_fee': self.session.config['participation_fee'],
              'base_payoff': self.session.config['base_bonus'],
-             'percent_conversion': self.session.config['real_world_currency_per_point'] * 100
+             'percent_conversion': round(self.session.config['real_world_currency_per_point'] * 100, 2)
              }

@@ -2,17 +2,17 @@
 {% load otree static %}
 
 {% block title %}
-    Endfragebogen
+    Ending questionnaire
 {% endblock %}
 
 {% block content %}
-    <p>Bitte beantworten Sie die folgenden Fragen:</p>
-{% formfield player.age label='Alter'%}
-{% formfield player.gender label='Geschlecht'%}
-{% formfield player.is_student label='Sind Sie aktuell Student?'%}
-{% formfield player.study_field label='Falls ja, geben Sie Bitte Ihre Studienrichtung an.'%}
+    <p>Please answer the following questions:</p>
+{% formfield player.age label='Age'%}
+{% formfield player.gender label='Gender'%}
+{% formfield player.is_student label='Are you a student?'%}
+{% formfield player.study_field label='If so, in what subject?'%}
 {% formfield player.investment_experience %}
-    <p>Haben Sie eine Idee, um was es in dieser Studie ging?</p>
+    <p>Do you have an idea what the purpose of this study is?</p>
 {% formfield player.purpose %}
 {% formfield player.interest %}
 {% formfield player.engagement %}
@@ -37,9 +37,9 @@
 
             for (let this_scale of scale_elements){
                 let scale_html = this_scale.innerHTML;
-                this_scale.innerHTML = "<span style='margin-right: 10px; background: #eeeeee'>Gar keine Erfahrung</span>" +
+                this_scale.innerHTML = "<span style='margin-right: 10px; background: #eeeeee'>No experience</span>" +
                     scale_html +
-                    "<span style='background: #eeeeee'>Professionell</span>";
+                    "<span style='background: #eeeeee'>Professional</span>";
                 console.log(this_scale);
             }
 
@@ -48,9 +48,9 @@
 
             for (let this_scale of scale_elements){
                 let scale_html = this_scale.innerHTML;
-                this_scale.innerHTML = "<span style='margin-right: 10px; background: #eeeeee'>Gar nicht spannend</span>" +
+                this_scale.innerHTML = "<span style='margin-right: 10px; background: #eeeeee'>Not engaging</span>" +
                     scale_html +
-                    "<span style='background: #eeeeee'>Sehr spannend</span>";
+                    "<span style='background: #eeeeee'>Very engaging</span>";
                 console.log(this_scale);
             }
 
@@ -59,9 +59,9 @@
 
             for (let this_scale of scale_elements){
                 let scale_html = this_scale.innerHTML;
-                this_scale.innerHTML = "<span style='margin-right: 10px; background: #eeeeee'>Gar nicht aufmerksam</span>" +
+                this_scale.innerHTML = "<span style='margin-right: 10px; background: #eeeeee'>Inattentive</span>" +
                     scale_html +
-                    "<span style='background: #eeeeee'>Sehr aufmerksam</span>";
+                    "<span style='background: #eeeeee'>Very attentive</span>";
                 console.log(this_scale);
             }
         }

@@ -2,12 +2,14 @@
 {% load otree static %}
 
 {% block title %}
-    Endfragebogen
+    Ending questionnaire
 {% endblock %}
 
 {% block content %}
-    <p>Sie sind nun fast am Ende der Studie angelangt. Falls Sie noch generelle Kommentare zur Studie haben,
-    geben Sie diese bitte hier ab. </p>
+    <p>
+        You are now almost at the end of the study. <br>
+        If you have some general comments, please provide them here.
+    </p>
 {% formfield player.general_comments%}
 
     {% next_button %}

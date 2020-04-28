@@ -90,6 +90,9 @@
 
         //first some layout corrections that oTree wouldn't allow otherwise
         $$("id_transaction").placeholder = "Amount";
+        if ($$('id_transaction').type === 'hidden') {
+            $$("id_transaction").value = 0;
+        }
 
         // Disable the enter key for this page
         window.addEventListener('keydown',function(e){
@@ -150,7 +153,6 @@
             alert('You can\'t short more than ' + min_hold * -1 + ' shares.');
             $$('id_erroneous_trade').value = 'overshorted';
             return false;
-            {#TODO: Test! This should never happen!#}
         } else if (Math.max(0, order * price) > cash) {
             alert('You don\'t have enough cash for this transaction.');
             $$('id_erroneous_trade').value = 'not_enough_cash';
