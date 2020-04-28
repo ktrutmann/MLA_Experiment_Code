@@ -12,7 +12,7 @@ Your app description
 
 
 class Constants(BaseConstants):
-    name_in_url = 'get_payment_info'
+    name_in_url = 'get_info'
     players_per_group = None
     num_rounds = 1
 
@@ -26,4 +26,4 @@ class Group(BaseGroup):
 
 
 class Player(BasePlayer):
-    booth_nr = models.IntegerField(label='Sitzplatznummer', min=0, max=36)
+    matr_nr = models.StringField(label='Matricle-Nr')

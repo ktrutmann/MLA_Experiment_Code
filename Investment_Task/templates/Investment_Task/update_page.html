@@ -7,15 +7,15 @@ Update
 
 {% block content %}
     <div class="price_update">
-        {% for updates in update_list %}
+        {% for is_increase, amount, new_price in update_list %}
             <p>
                 The assets price
-                {% if updates.0 %}
+                {% if is_increase %}
                     <b>increases</b>
                 {% else %}
                     <b>decreases</b>
                 {% endif %}
-                by <b>{{ update.1 }}</b> and is now <b>{{ updates.2 }}</b>
+                by <b>{{ amount }}</b> and is now <b>{{ new_price }}</b>
             </p>
         {% endfor %}
     {% next_button %}

@@ -91,10 +91,8 @@ ADMIN_USERNAME = 'admin'
 # for security, best to set admin password in an environment variable
 ADMIN_PASSWORD = environ.get('OTREE_ADMIN_PASSWORD')
 
-# TODO: Change to production!
 # Consider '', None, and '0' to be empty/false
-# DEBUG = (environ.get('OTREE_PRODUCTION') in {None, '', '0'})
-DEBUG = True
+DEBUG = (environ.get('OTREE_PRODUCTION') in {None, '', '0'})
 
 DEMO_PAGE_INTRO_HTML = """ """
 
@@ -112,6 +110,5 @@ INSTALLED_APPS = ['otree']
     # They should be done till wednessday evening. The mail should be sent on monday
     # Write that they don't get any money
 # TODO: Test with other browsers!
-# TODO: Ask about their matricle nr.
 
 # TODO (After pilot): Update readme.md

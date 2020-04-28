@@ -2,16 +2,17 @@
 {% load otree static %}
 
 {% block title %}
-    Informationen für die Auszahlung
+    Information for the Seminar
 {% endblock %}
 
 {% block content %}
-        <p>
-        Es folgen nun noch ein paar Fragebögen. Bevor Sie diese ausfüllen,
-        geben Sie bitte die Nr. ihres Sitzplatzes ein.
-        Diese Information wird für die Auszahlung am Schluss benötigt.
+    <p>
+        Please enter your matricle-nr. here so we can verify you participated in the study.
+        This information will of course never be used to connect your responses to your person and will be
+        deleted afterwards.
     </p>
-    {% formfield player.booth_nr %}
+{#    TODO (After Pilot): Change for "real" participants#}
+    {% formfield player.matr_nr %}
 
     {% next_button %}
 

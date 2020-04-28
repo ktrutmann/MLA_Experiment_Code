@@ -26,12 +26,13 @@ class Group(BaseGroup):
 class Player(BasePlayer):
     strategy = models.LongStringField()
     strategy_random = models.IntegerField(choices=[i+1 for i in range(7)], widget=widgets.RadioSelectHorizontal(),
-                                          label='Ich habe die Aktie per Zufallsprinzip gekauft und verkauft.')
+                                          label='I sold and bought the asset mainly randomly.')
     strategy_feeling = models.IntegerField(choices=[i+1 for i in range(7)], widget=widgets.RadioSelectHorizontal(),
-                                           label='Ich vertraute meinem Bauchgefühl über die Preisentwicklung.')
+                                           label='I trusted my feelings about the price development.')
     strategy_rational = models.IntegerField(choices=[i+1 for i in range(7)], widget=widgets.RadioSelectHorizontal(),
-                                            label='Ich investierte, wenn ich der Überzeugung war, dass es '
-                                                  'wahrscheinlicher als 50% ist, dass der Preis ansteigen wird.')
+                                            label='I invested whenever I thought it was more likely than 50% that'
+                                                  'the price will increase.')
+    # TODO: Continue translating from here
     strategy_short_rational = models.IntegerField(choices=[i+1 for i in range(7)],
                                                   widget=widgets.RadioSelectHorizontal(),
                                                   label='Ich tätigte einen Blankoverkauf, wenn ich der Überzeugung war,'

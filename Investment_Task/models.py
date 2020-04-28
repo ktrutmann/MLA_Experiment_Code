@@ -17,14 +17,15 @@ class Constants(BaseConstants):
     players_per_group = None
 
     # Experimental Flow
-    n_periods_per_phase = 2  # How long should the participants be "blocked"?
-    n_distinct_paths = 2  # How many paths should be generated?
-    condition_names = ['blocked_full_info', 'full_control_with_MLA',
-                       'full_control', 'blocked_blocked_info']  # List of the conditions
+    n_periods_per_phase = 3  # How long should the participants be "blocked"?
+    n_distinct_paths = 4  # How many paths should be generated?
+    condition_names = ['blocked_full_info',
+                       'full_control_with_MLA',
+                       'blocked_blocked_info',
+                       'full_control']  # List of the conditions
     n_phases = [2, 3, 2, 2]  # How many phases should there be per condition
     hold_range = [-10, 10]  # What's the minimum and maximum amount of shares that can be held.
-    shuffle_conditions = False  # Should the conditions be presented in "blocks" or shuffled?
-    # TODO: Set to true!
+    shuffle_conditions = True  # Should the conditions be presented in "blocks" or shuffled?
 
     num_paths = n_distinct_paths * len(condition_names)
     num_rounds = n_distinct_paths * n_periods_per_phase * sum(n_phases) + (n_distinct_paths * len(condition_names))
@@ -58,6 +59,7 @@ class Subsession(mainSubsession):
 
 class Group(BaseGroup):
     pass
+
 
 class Player(BasePlayer):
     time_to_order = models.FloatField()
@@ -102,7 +104,7 @@ class Player(BasePlayer):
 
         # How many rounds are there per path?
         # One more phase for the MLA treatment.
-        max_moves_per_path = Constants.n_periods_per_phase * max(Constants.n_phases) + 1
+        max_moves_per_path = Constants.n_periods_per_phase * max(Constants.n_phases)
 
         for this_drift in drift_list:
             moves = []
@@ -115,15 +117,16 @@ class Player(BasePlayer):
             distinct_path_moves_list += [moves]
 
         # Scramble the moves differently for each condition:
-        all_moves_list = [distinct_path_moves_list] * len(Constants.condition_names)
-        all_drifts_list = [drift_list] * len(Constants.condition_names)
+        all_moves_list = [[i for i in distinct_path_moves_list] for _, _ in enumerate(Constants.condition_names)]
+        all_drifts_list = [[i for i in drift_list] for _, _ in enumerate(Constants.condition_names)]
         # The levels here are [condition][path][period]
 
         for i_cond, _ in enumerate(Constants.condition_names):
             for i_path in range(Constants.n_distinct_paths):
                 # Trim the path if the last phase is not needed in this condition:
-                all_moves_list[i_cond][i_path] = all_moves_list[i_cond][i_path][:Constants.n_periods_per_phase *
-                                                                                Constants.n_phases[i_cond] + 1]
+                all_moves_list[i_cond][i_path] = \
+                    [i for i in all_moves_list[i_cond][i_path][:(Constants.n_periods_per_phase *
+                                                                 Constants.n_phases[i_cond] + 1)]]
 
                 # Create a moving window to scramble the movements:
                 for i_phase in range(Constants.n_phases[i_cond]):
@@ -186,11 +189,13 @@ class Player(BasePlayer):
                                      condition_name=condition_name))
 
         if Constants.shuffle_conditions:
-            grouped_df = [group for _, group in price_df.groupby('condition_id')]
+            grouped_df = [group.copy() for _, group in price_df.groupby('global_path_id')]
             rd.shuffle(grouped_df)
-            price_df = pd.concat(grouped_df).reset_index
+            price_df = pd.concat(grouped_df.copy()).reset_index()
 
         self.participant.vars['price_info'] = price_df
+        pd.set_option('display.max_rows', None)
+        print(price_df)
 
     def initialize_round(self):
         # If this is the very first round
@@ -202,7 +207,9 @@ class Player(BasePlayer):
             setattr(self, this_var, self.participant.vars['price_info'][this_var][self.round_number - 1])
         self.investable = self.is_investable()
 
-        self.transaction = 0  # This will be overridden but is necessary for the blocked rounds
+        # This will be overridden but is necessary for the blocked rounds:
+        self.transaction = 0
+        self.belief_bonus = 0
 
         # If this is the first round of a new path:
         if self.i_round_in_path == 0:
@@ -265,18 +272,21 @@ class Player(BasePlayer):
         is_phase_start = self.i_round_in_path % Constants.n_periods_per_phase == 0
         is_block_start = self.i_round_in_path == 0
         is_first_phase = self.i_round_in_path < Constants.n_periods_per_phase
-        is_blocked_condition = self.condition_name in ['blocked_full_info', 'blocked_blocked_info']
+        is_blocked_condition = self.condition_name in ['blocked_full_info', 'blocked_blocked_info'] or\
+            self.condition_name == 'full_control_with_MLA' and self.i_round_in_path >\
+            (Constants.n_phases[self.participant.vars['price_info'].condition_id[self.round_number - 1]] - 1) *\
+            Constants.n_periods_per_phase
 
         return (is_phase_start and not is_block_start) or (not is_first_phase and not is_blocked_condition)
 
     def should_display_infos(self):
         """Figures out whether this is a 'blocked info' trial, and should therefore be completely skipped."""
         last_round = self.participant.vars['price_info'].last_trial_in_path[self.round_number - 1]
+        start_of_phase = self.i_round_in_path % Constants.n_periods_per_phase == 0
         blocked_condition = self.condition_name == 'blocked_blocked_info'
-        after_first_phase = self.round_number > Constants.n_periods_per_phase
+        first_phase = self.round_number <= Constants.n_periods_per_phase
 
-        # FIXME: Is also not shown in first phase of low info blocked conditions
-        return not last_round and not (blocked_condition and after_first_phase)
+        return ((not blocked_condition) or first_phase or start_of_phase) and not last_round
 
     def get_investment_span(self):
         """Given you can invest in this round, how many periods into the future is this investment for?"""
@@ -288,7 +298,8 @@ class Player(BasePlayer):
         elif self.condition_name in ['blocked_full_info', 'blocked_blocked_info']:
             return Constants.n_periods_per_phase if (self.i_round_in_path + 1) < rounds_in_this_path else 1
         elif self.condition_name == 'full_control_with_MLA':
-            return 1 if (self.i_round_in_path + 1) < rounds_in_this_path else Constants.n_periods_per_phase
+            return 1 if self.i_round_in_path < rounds_in_this_path - Constants.n_periods_per_phase\
+                else Constants.n_periods_per_phase
 
     def get_trading_vars(self):
         price = self.participant.vars['price_info'].price[self.round_number - 1]
@@ -314,22 +325,23 @@ class Player(BasePlayer):
 
     def make_update_list(self):
         """Creates a zipped list for django to display as the updates. The length depends on the condition."""
-        if self.condition_name != 'blocked_blocked_info':
+        if self.condition_name == 'blocked_blocked_info' and self.i_round_in_path  == Constants.n_periods_per_phase:
+            # We are at the last decision of the blocked and low info condition, so show a list of updates:
+            price_list = self.participant.vars['price_info'].price
+            # This is shown right after the blocked trade has been made. Hence "future".
+            future_indexes = range(self.round_number - 1, self.round_number + Constants.n_periods_per_phase - 1)
+
+            was_increase = [price_list[i + 1] > price_list[i] for i in future_indexes]
+            differences = [abs(price_list[i + 1] - price_list[i]) for i in future_indexes]
+            new_price = [price_list[i + 1] for i in future_indexes]
+
+            return zip(was_increase, differences, new_price)
+        else:
             was_increase = self.participant.vars['price_info'].price[self.round_number] > self.price
             difference = abs(self.participant.vars['price_info'].price[self.round_number] - self.price)
             new_price = self.participant.vars['price_info'].price[self.round_number]
-            return was_increase, difference, new_price
-        elif self.i_round_in_path == Constants.n_periods_per_phase *\
-                Constants.n_phases[self.participant.vars['price_info'].condition_id[self.round_number - 1]]:
-            # We are at the last decision of the blocked and low info condition, so show a list of updates:
-            price_list = self.participant.vars['price_info'].price
-            past_indexes = [self.round_number - i for i in range(-Constants.n_periods_per_phase, 0)]
 
-            was_increase = [price_list[i + 1] > price_list[i] for i in past_indexes]
-            differences = [abs(price_list[i + 1] - price_list[i]) for i in past_indexes]
-            new_price = [price_list[i + 1] for i in past_indexes]
-
-            return zip(was_increase, differences, new_price)
+            return zip([was_increase], [difference], [new_price])
 
     # In the very last round, calculate how much was earned
     def calculate_final_payoff(self):

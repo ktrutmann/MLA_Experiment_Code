@@ -264,6 +264,7 @@ class Player(BasePlayer):
                 'n_blocks': Constants.num_blocks,
                 'max_time': Constants.max_time,
                 'start_price': Constants.start_price,
+                'start_price_twice': Constants.start_price * 2,
                 'start_cash': Constants.starting_cash,
                 'update_time': Constants.update_time,
                 'max_belief_bonus': Constants.max_belief_bonus,

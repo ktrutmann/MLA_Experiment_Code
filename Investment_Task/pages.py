@@ -18,7 +18,6 @@ class condition_page(Page):
                 'exp_email': Constants.experimenter_email}
 
 
-
 class trading_page(Page):
     form_model = 'player'
     form_fields = ['transaction',
