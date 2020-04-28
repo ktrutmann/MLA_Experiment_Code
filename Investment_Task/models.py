@@ -220,6 +220,8 @@ class Player(BasePlayer):
             self.price = Constants.start_price
         else:
             former_self = self.in_round(self.round_number - 1)
+            if former_self.transaction is None:  # TODO (After pilot) This is a hot-fix. Could be better.
+                former_self.transaction = 0
             self.hold = former_self.hold + former_self.transaction
             self.cash = former_self.cash - former_self.transaction *\
                 self.participant.vars['price_info'].price[self.round_number - 2]
