@@ -8,7 +8,7 @@ import pandas as pd
 author = 'Kevin Trutmann'
 
 doc = """
-
+    This is the main investment task app. See the readme.md for more information.
 """
 
 
@@ -48,6 +48,10 @@ class Constants(BaseConstants):
     max_time_beliefs = 5  # Same but for the belief page
 
     experimenter_email = 'k.trutmann@unibas.ch'
+
+    # Bot testing:
+    bot_type = 'custom'  # Indicates what browser bots to use (if active). See the readme for details.
+    # TODO: Implement!
 
 
 class mainSubsession(BaseSubsession):
@@ -271,6 +275,7 @@ class Player(BasePlayer):
     # For displaying the page
     def is_investable(self):
         """Find out whether the participant should be able to make an investment decision in this round."""
+        # FIXME: The last round of an MLA condition is marked as investbale!
 
         is_phase_start = self.i_round_in_path % Constants.n_periods_per_phase == 0
         is_block_start = self.i_round_in_path == 0

@@ -103,3 +103,14 @@ INSTALLED_APPS = ['otree']
 
 # Database: This is so that devserver can still be used
 # DATABASES = {'default': dj_database_url.config(default='sqlite:///db.sqlite3')}
+
+# TODO: Steve feedback summary:
+# •   Fortschritt deutlicher kennzeichnen
+# •   Belief elicitations task 
+# o   Beispiel einfügen
+# o   Klarer ausführen wie das die Auszahlung beeinflusst
+# •   Short selling schien okay
+# •   Das die entscheidung über 4 Runden geschieht wurde nicht erkannt!!!!!
+
+
+# TODO: Consider working with the same paths for all participants? Or just a subset of paths?

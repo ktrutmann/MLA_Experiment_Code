@@ -10,7 +10,7 @@ from Investment_Task.models import Constants as mainConstants, mainSubsession
 author = 'Kevin Trutmann'
 
 doc = """
-Tutorial for the Trading Task
+Tutorial for the investment Task
 """
 
 # TODO (After Pilot): Also update the readme

@@ -33,6 +33,12 @@ If they are shuffled, the condition page will be displayed each time the conditi
 ### Other:
 - `experimenter_email`: Can be displayed in case something goes wrong so
 participants can contact you.
+- `bot_type`: Given browser bots are active, this string will determine how they behave.
+`'optimal'` will lead to rational behavior. `'model'` leads to a reinforcement learning
+model being used to generate the answers. `'random'` will provide random answers.
+Lastly, `'custom'` returns extreme answers that
+simulate the desired effect of the study for sanity checking the analysis script with the
+generated data.
 
 ## Experiment Code
 Because of the way oTree handles the round numbers (beginning with 1), the indices of 

@@ -6,7 +6,8 @@ from otree.api import (
 author = 'Kevin Trutmann'
 
 doc = """
-Demographics questionnaire"""
+Demographics questionnaire
+"""
 
 
 class Constants(BaseConstants):
@@ -39,9 +40,10 @@ class Player(BasePlayer):
     strategy_risk_averse = models.IntegerField(choices=[i+1 for i in range(7)], widget=widgets.RadioSelectHorizontal(),
                                                label='I only invested when I was very certain that the price would '
                                                      'increase.')
-    strategy_short_risk_averse = models.IntegerField(choices=[i+1 for i in range(7)], widget=widgets.RadioSelectHorizontal(),
-                                               label='I only short sold when I was very certain that the price would '
-                                                     'increase.')
+    strategy_short_risk_averse = models.IntegerField(choices=[i+1 for i in range(7)],
+                                                     widget=widgets.RadioSelectHorizontal(),
+                                                     label='I only short sold when I was very certain that the price'
+                                                           'would increase.')
     strategy_inertia = models.IntegerField(choices=[i+1 for i in range(7)], widget=widgets.RadioSelectHorizontal(),
                                            label='I tried to keep an investment or short position for as long as'
                                                  ' possible.')
@@ -51,8 +53,6 @@ class Player(BasePlayer):
     strategy_anti_DE = models.IntegerField(choices=[i+1 for i in range(7)], widget=widgets.RadioSelectHorizontal(),
                                            label='If I had made a loss, I tried to get rid of that investment as '
                                                  'quick as possible.')
-
-
 
     age = models.IntegerField(min=10, max=100)
     gender = models.StringField(choices=['Male', 'Female', 'Other', 'No Answer'],

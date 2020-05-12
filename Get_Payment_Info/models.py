@@ -7,7 +7,7 @@ from otree.api import (
 author = 'Kevin Trutmann'
 
 doc = """
-Your app description
+Whatever information we need to pay the participants
 """
 
 

@@ -7,6 +7,7 @@ from otree.api import (
 author = 'Kevin Trutmann'
 
 doc = """
+Showing what participants have earned in which block.
 """
 
 
