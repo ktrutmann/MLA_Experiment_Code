@@ -2,44 +2,45 @@
 {% load otree static %}
 
 {% block title %}
-New Block
-{#    TODO (After pilot): Block counter here#}
+Block {{ player.global_path_id }} of {{ Constants.num_paths }}
 {% endblock %}
 
 {% block content %}
     <p>
-        A new round of the investment task starts now.
+        A new block of the investment task starts now.
     <p>
     </p>
         This means that everything will be reset to its starting value, including the price of the asset.
         It is again randomly determined whether the asset will have <b>a {{ drift_list.0 }}% or a {{ drift_list.1 }}%
     probability</b> for a price increase.
     </p>
+{#    TODO now: Maybe add a graphical representation of what they can do when? #}
     <ul>
-        <li>Your portfolio will be fixed for the first {{ periods_per_phase }} rounds.</li>
+        <li>Your portfolio will be fixed for the first {{ Constants.n_periods_per_phase }} rounds.</li>
 
-        {% if condition == 'full_control' %}
-            <li>After that you will have <b>full control</b> of your portfolio for the next {{ periods_per_phase }}
-                rounds.</li>
-        {% elif condition == 'full_control_with_MLA' %}
-            <li>After that you will have <b>full control</b> of your portfolio for the next {{ periods_per_phase }}
-                rounds.</li>
-            <li>Then you will be asked to <b>make another decision for the subsequent {{ periods_per_phase }}
-                rounds</b>.</li>
-        {% elif condition == 'blocked_full_info' %}
-            <li>After that you will be asked to <b>make a decision for the subsequent {{ periods_per_phase }}
-                rounds</b>.</li>
+        {% if player.condition_name == 'full_control' %}
+            <li>After that you will have <b>full control</b> of your portfolio for the next
+                {{ Constants.n_periods_per_phase }} rounds.</li>
+        {% elif player.condition_name == 'full_control_with_MLA' %}
+            <li>After that you will have <b>full control</b> of your portfolio for the next
+                {{ Constants.n_periods_per_phase }} rounds.</li>
+            <li>Then you will be asked to <b>make another decision for the subsequent
+                {{ Constants.n_periods_per_phase }} rounds</b>.</li>
+        {% elif player.condition_name == 'blocked_full_info' %}
+            <li>After that you will be asked to <b>make a decision for the subsequent
+                {{ Constants.n_periods_per_phase }} rounds</b>.</li>
             <li>You will be informed about the price changes <b>in each round</b>.</li>
-        {% elif condition == 'blocked_blocked_info' %}
-            <li>After that you will be asked to <b>make a decision for the subsequent {{ periods_per_phase }}
-                rounds</b>.</li>
-            <li>You will be informed about the price changes <b>at the end of these {{ periods_per_phase }}
-                rounds</b>.</li>
+        {% elif player.condition_name == 'blocked_blocked_info' %}
+            <li>After that you will be asked to <b>make a decision for the subsequent
+                {{ Constants.n_periods_per_phase }} rounds</b>.</li>
+            <li>You will be informed about the price changes <b>at the end of these
+                {{ Constants.n_periods_per_phase }} rounds</b>.</li>
         {% else %}
             </ul>
             <p><b>Something went wrong!</b></p>
             <p>
-                Please contact <a href="mailto:{{ exp_email }}">{{ exp_email }}</a> and report error code 001. <br>
+                Please contact <a href="mailto:{{ Constants.experimenter_email }}">
+                {{ Constants.experimenter_email }}</a> and report error code 001. <br>
                 Thank you for participating!
             </p>
             <ul>

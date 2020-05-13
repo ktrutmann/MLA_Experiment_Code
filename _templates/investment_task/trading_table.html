@@ -13,14 +13,14 @@
         <td></td>
         <td></td>
         <td></td>
-        <td>{{ cash }}</td>
+        <td>{{ player.cash }}</td>
     </tr>
     <tr class="table_content">
         <td><b>Asset</b></td>
         <td>{% if player.hold > 0 %}+{% endif %}{{player.hold}}</td>
-        <td>{{base_price}}</td>
-        <td>{{price}}</td>
-        <td>{{player.returns}} ({{percentage_returns}})</td>
+        <td>{{player.base_price}}</td>
+        <td>{{player.price}}</td>
+        <td style = "color: {{ return_color }}">{{player.returns}} ({{percentage_returns}})</td>
         <td>{{all_val}}</td>
     </tr>
     <tr style="background: skyblue;">

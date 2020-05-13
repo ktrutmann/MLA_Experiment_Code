@@ -1,10 +1,10 @@
 from otree.api import (
-    models, BaseGroup, BasePlayer, widgets
+    models, BaseGroup, BasePlayer, BaseSubsession, widgets
 )
 import random as rd
 import pandas as pd
 
-from Investment_Task.models import Constants as mainConstants, mainSubsession
+from Investment_Task.models import Constants as mainConstants
 
 
 author = 'Kevin Trutmann'
@@ -14,11 +14,10 @@ Tutorial for the investment Task
 """
 
 # TODO (After Pilot): Also update the readme
-# TODO (After Pilot): Put the belief page in a template as well
 
 class Constants(mainConstants):
     name_in_url = 'Tutorial_Investment_Task'
-    # TODO (After Pilot): Bring back training rounds!
+    # TODO now: Bring back training rounds!
     num_rounds = 1  # Number of training rounds
 
     # Parameters specifically for the tutorial text
@@ -26,7 +25,7 @@ class Constants(mainConstants):
     n_conditions = len(set(mainConstants.condition_names))
 
 
-class Subsession(mainSubsession):
+class Subsession(BaseSubsession):
     pass
 
 
@@ -38,7 +37,7 @@ class Player(BasePlayer):
     participant_name = models.StringField(label='Vor und Nachname')
     transaction = models.IntegerField(label='', blank=True)
 
-    # TODO (After Pilot): Bring back the quizz
+    # TODO now: Bring back the quizz
     Q1 = models.StringField(widget=widgets.RadioSelect, blank=True,
                             label='Wenn die Firma in einem guten Zustand ist, '
                                   'dann ist die Wahrscheinlichkeit, dass der Preis der Aktie um 5 steigt...',
@@ -250,25 +249,12 @@ class Player(BasePlayer):
 
     # Display functions:
     def get_tutorial_vars(self):
-        return {'n_rounds': Constants.num_rounds,
+        return {
                 'n_rounds_per_block_list': [Constants.n_periods_per_phase * i for i in set(Constants.n_phases)],
-                'n_rounds_per_phase': Constants.n_periods_per_phase,
-                'min_hold': Constants.hold_range[0],
-                'max_hold': Constants.hold_range[1],
                 'good_raise_prob': round(max(Constants.up_probs) * 100),
                 'bad_raise_prob': round(min(Constants.up_probs) * 100),
-                'lottery_bonus': Constants.max_belief_bonus,
-                'lottery_discount': round(Constants.belief_bonus_discount * 100),
-                'movements': Constants.updates,
                 'example_move': [i + 1000 for i in Constants.updates],
-                'n_blocks': Constants.num_blocks,
-                'max_time': Constants.max_time,
-                'start_price': Constants.start_price,
                 'start_price_twice': Constants.start_price * 2,
-                'start_cash': Constants.starting_cash,
-                'update_time': Constants.update_time,
-                'max_belief_bonus': Constants.max_belief_bonus,
-                'belief_bonus_discount': round(Constants.belief_bonus_discount * 100, 2),
                 'base_bonus': self.session.config['base_bonus'],
                 'conversion_percent': round(self.session.config['real_world_currency_per_point'] * 100, 2),
                 'showup_fee': self.session.config['participation_fee'],

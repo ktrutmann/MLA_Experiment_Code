@@ -1,5 +1,8 @@
-{% extends "Tutorial_Investment_Task/Page.html" %}
+{% extends "global/Page.html" %}
 {% load otree static %}
+
+{# TODO: Mention that the experiment now takes about 1.5 hours #}
+{# TODO: Change the belief elicitation explanation #}
 
 {% block title %}
     Investment decision experiment
@@ -14,7 +17,7 @@
             This is the tutorial part of the experiment, where you will be shown how to make your investments,
             how the asset you're investing in works, how you will be asked about your expectations, and how this
             all affects the bonus payment at the end.
-{#            TODO (After Pilot): Mention Quizz and training rounds#}
+{# TODO now: Mention Quizz and training rounds#}
         </p>
         <p>
             Please try to stay focused during the whole experiment and do not leave this browser window.
@@ -39,12 +42,13 @@
         <h4>Making investment decisions</h4>
         <div class="instr_text tut_part_1" id="instr_text_1">
             <p>
-                In this experiment you will make investment decisions in {{ n_blocks }} blocks of either
+                In this experiment you will make investment decisions in {{ Constants.num_paths }} blocks of either
                 {{ n_rounds_per_block_list.0 }} or {{ n_rounds_per_block_list.1 }} rounds each.
                 There will be an asset you can invest in. At the start of a block, the asset will always
-                have a value of {{ start_price }} Points. In each round you can decide how many shares of this asset
-                you want to hold. You can hold a maximum of {{ max_hold }} shares and a minimum of {{ min_hold }}.
-                How holding negative shares works will be explained in the following pages.
+                have a value of {{ Constants.start_price }} Points. In each round you can decide how many
+                shares of this asset you want to hold. You can hold a maximum of {{ Constants.hold_range.1 }}
+                shares and a minimum of {{ Constants.hold_range.0 }}. How holding negative shares works
+                will be explained in the following pages.
             </p>
             <p>
                 Below you can see the screen with which you will interact during the task. The different columns
@@ -91,12 +95,12 @@
                 The value of the purchased shares was subtracted from the cash field.
             </p>
             <p>
-                To keep you on track with the time there will be a blinking warning after {{ max_time }} seconds
-                in the task to tell you to make a decision. If you make your decisions before this warning appears, you
-                will be able to finish the experiment in the recommended time. However, don't let this put any
-                presure on you. After some rounds {{ max_time }} seconds will be enough time to make a well considered
-                decision.
-{#                TODO (After Pilot): Talk about trying it out in the training rounds#}
+                To keep you on track with the time there will be a blinking warning after {{ Constants.max_time }}
+                seconds in the task to tell you to make a decision. If you make your decisions before this
+                warning appears, you will be able to finish the experiment in the recommended time.
+                However, don't let this put any pressure on you. After some rounds {{ Constants.max_time }}
+                seconds will be enough time to make a well considered decision.
+{#                TODO now: Talk about trying it out in the training rounds#}
             </p>
             <div id="timer_warning_field">
             <p class="blink_text">
@@ -104,7 +108,8 @@
             </p>
             </div>
             <p>
-                After deciding on your trade you will see an update about the price for {{ update_time }} seconds.
+                After deciding on your trade you will see an update about the price for {{ Constants.update_time }}
+                seconds.
                 How these updates are decided will be described on the following page. This is what such an update
                 could look like:
             </p>
@@ -149,13 +154,13 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td id="id_cash">{{ start_cash }}</td>
+                    <td id="id_cash">{{ Constants.starting_cash }}</td>
                 </tr>
                 <tr class="table_content">
                     <td><b>Asset</b></td>
                     <td id="id_hold">2</td>
-                    <td id="id_baseprice">{{start_price}}</td>
-                    <td id="id_price">{{start_price}}</td>
+                    <td id="id_baseprice">{{Constants.start_price}}</td>
+                    <td id="id_price">{{Constants.start_price}}</td>
                     <td id="id_return">0 (0.0)</td>
                     <td id="id_value">{{ start_price_twice }}</td>
                 </tr>
@@ -165,7 +170,7 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td id="id_value_all" style="font-weight: bold">{{start_cash}}</td>
+                    <td id="id_value_all" style="font-weight: bold">{{Constants.starting_cash}}</td>
                 </tr>
             </table>
             <br>
@@ -258,13 +263,13 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td id="id_cash2">{{ start_cash }}</td>
+                    <td id="id_cash2">{{ Constants.starting_cash }}</td>
                 </tr>
                 <tr class="table_content">
                     <td><b>Asset</b></td>
                     <td id="id_hold2">2</td>
-                    <td id="id_baseprice2">{{start_price}}</td>
-                    <td id="id_price2">{{start_price}}</td>
+                    <td id="id_baseprice2">{{Constants.start_price}}</td>
+                    <td id="id_price2">{{Constants.start_price}}</td>
                     <td id="id_return2">0 (0.0)</td>
                     <td id="id_value2">{{ start_price_twice}} </td>
                 </tr>
@@ -274,7 +279,7 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td id="id_value_all2" style="font-weight: bold">{{start_cash}}</td>
+                    <td id="id_value_all2" style="font-weight: bold">{{Constants.starting_cash}}</td>
                 </tr>
             </table>
             <br>
@@ -332,11 +337,12 @@
             </p>
 {#            <p>#}
 {#                Below you see one of these possible price paths.#}
-{#                TODO (after pilot): implement Highcharts#}
+{#                TODO now: implement Highcharts#}
 {#            </p>#}
             <p>
-                In each period, the price can move by either <b>{{ movements.0 }},
-                {{ movements.1 }} or {{ movements.2 }}</b> points. This is true for both increases as well as decreases.
+                In each period, the price can move by either <b>{{ Constants.updates.0 }},
+                {{ Constants.updates.1 }} or {{ Constants.updates.2 }}</b> points.
+                This is true for both increases as well as decreases.
                 Which of these magnitudes the next price moves will take on is determined by chance and with equal
                 probaility. Thus, whether the price in- or decreases is determined by the kind of asset
                 while the magnitude of the change is determined randomly.
@@ -358,15 +364,16 @@
                 investment decision, the line below the table will tell you under what conditions you are now investing.
             </p>
                 <ul>
-                    <li>The first {{ n_rounds_per_phase}} periods will always be "pre-decided", meaning you can only
-                        observe the price movement.</li>
+                    <li>The first {{ Constants.n_periods_per_phase }} periods will always be "pre-decided",
+                        meaning you can only observe the price movement.</li>
                     <li>After that, in some cases you will be able to make a decision for each individual period of the
                         remaining periods.</li>
                     <li>In some cases you will have to make an investment that will then be "fixed" for the next
-                        {{ n_rounds_per_phase }} periods (i.e. if you decide to hold 5 shares, you will hold 5 shares
-                        throughout the next {{ n_rounds_per_phase }} price movements).</li>
+                        {{ Constants.n_periods_per_phase }} periods (i.e. if you decide to hold 5 shares,
+                        you will hold 5 shares throughout the next {{ Constants.n_periods_per_phase }}
+                        price movements).</li>
                     <li>There are also price paths in which you can first decide freely and then have to make a decision
-                        for the next {{ n_rounds_per_phase }} rounds.</li>
+                        for the next {{ Constants.n_periods_per_phase }} rounds.</li>
                     <li>In some of the cases in which you can not freely trade you will be informed about the price
                         movements in each period, in others you will only be informed about the price movements
                         after they all already happened.</li>
@@ -389,7 +396,7 @@
                 Between your trading decisions you will be asked a further question, which will be explained here.
             </p>
             <p>
-                In each round there is a <b>lottery</b> in which you can either win {{ lottery_bonus }} or 0
+                In each round there is a <b>lottery</b> in which you can either win  or 0
                 bonus-points, which will be added to your payoff in the end.
                 The probability with which you will receive any points (winning probability) is unknown
                 to you. It will be determined randomly and any winning probability between 0% and 100% is equally
@@ -402,7 +409,7 @@
             <div class="lottery_text example_box" id="lottery_explanation_text">
                 <p>
                     If the price will increase in the next price update (no matter the amount), you will
-                    receive {{ lottery_bonus }} bonus points, which will be added to your payoff in the end.
+                    receive  bonus points, which will be added to your payoff in the end.
                 </p>
             </div>
             <p>
@@ -448,7 +455,7 @@
                 <b>Point 1:</b>
                 Your answer should only depend on the probability of a price increase.
                 Imagine a situation in which you definitely knew that the price would increase. The lottery would
-                have to provide a similar guarantee for you receiving {{ lottery_bonus }} bonus points for you
+                have to provide a similar guarantee for you receiving  bonus points for you
                 to not prefer the bet. You therefore should set the slider to 100% in that case. <br>
                 If on the other hand you knew that the price will decrease, you would prefer the lottery no matter how
                 low its winning probability is. You would therefore set the slider to 0%.
@@ -475,7 +482,7 @@
             </p>
             <p>
                 At the end of the experiment you will receive the points you earned in the trading task,
-                as well as {{ lottery_discount }}% of the points you have received in the lottery or betting task.
+                as well as  of the points you have received in the lottery or betting task.
                 This sum will then determine your final payoff.
             </p>
         </div>
@@ -489,7 +496,7 @@
     <div class="structure_tutorial content" id="content_structure_tutorial" style="display: none;">
         <h4>Blocks and Payoff</h4>
         <p>
-            The task will consist of <b>{{ n_blocks }} price paths</b> to invest in, each of which consisting of
+            The task will consist of <b>{{ Constants.num_blocks }} price paths</b> to invest in, each of which consisting of
             either {{ n_rounds_per_block_list.0 }} or {{ n_rounds_per_block_list.1 }} rounds.
             Each price path is independent from that before and only determined
             by the probability of a price increase of the given asset.
@@ -502,30 +509,38 @@
             following way:
         </p>
         <p>
+{#            TODO now: Remove lottery references!#}
             The payoff will be based on <b>the difference</b> between the value of your portfolio (cash plus assets)
             <i>at the start</i> of each block and the value of your portfolio <i>at the end</i> of the block.
             This therefore reflects the winnings or losses of your investments.
-            Additionally, {{ lottery_discount }}% of the points from the lottery and betting task will be counted towards
+            Additionally,% of the points from the lottery and betting task will be counted towards
             this final sum. Your final points will then be added or subtracted from the base payoff of CHF
             {{ base_bonus }}.00 with an exchange rate of {{ conversion_percent }}%.
             Additionally you will receive the {{ showup_fee }} for completing the study, no matter your performance.
             </p>
             <p>
             As an example: <br>
-            If your total earnings from all blocks plus {{ lottery_discount }}% of the lottery-points
+            If your total earnings from all blocks plus of the lottery-points
             adds up to 100 points, your payoff will be {{ example_payoff }}. It will consist from {{ showup_fee }}
             for completing the study, CHF {{ base_bonus }}.00 base payoff plus {{ conversion_percent }}% of the
             100 points you earned.
         </p>
         <p>
             If you have understood these instructions, please click the "Continue" button to start the experiment.
-{#            TODO (after pilot): Include training here!#}
+{#            TODO now: Include training here!#}
         </p>
         <button class="button btn back_button navigation_button" id="structure_back_button" type="button"
             onclick="flip_tut_pages('back')">Back</button>
         <button class="button btn continue_button navigation_button" id="structure_continue_button" type="button"
                 onclick="check_tutorial_moves('continue', 'structure')">Continue</button>
     </div>
+
+    <script>
+        // This is so that these values can be used in tutorial_logic.js
+        let start_price = parseInt({{ Constants.start_price|json }});
+        let start_cash = parseInt({{ Constants.starting_cash|json }});
+    </script>
+    <script src="{% static 'Tutorial_Investment_Task/tutorial_logic.js' %}"></script>
 
     <style>
         .example_box{

@@ -24,6 +24,7 @@
         <br>
         <hr>
         {% if investable %}
+{#            TODO now: Make more visible!#}
             {% if n_periods_to_invest == 1 %}
                 <p>You are deciding how to invest for the <b>next period</b>.</p>
             {% else %}
@@ -114,7 +115,7 @@
             function () {
                 $$('timer_warning_field').style.visibility = 'visible'
             },
-            parseInt('{{max_time}}')*1000
+            parseInt('{{Constants.max_time}}')*1000
         );
 
         // Timetracking
@@ -140,10 +141,10 @@
 
     check_order = function(order){
         let hold = parseInt('{{player.hold}}');
-        let min_hold = parseInt('{{min_hold}}');
-        let max_hold = parseInt('{{max_hold}}');
+        let min_hold = parseInt('{{Constants.hold_range.0}}');
+        let max_hold = parseInt('{{Constants.hold_range.1}}');
         let cash = parseInt('{{player.cash}}');
-        let price = parseInt('{{price}}');
+        let price = parseInt('{{player.price}}');
 
         if (hold + order > max_hold ) {
             alert('You can\'t hold more than ' + max_hold + ' shares.');

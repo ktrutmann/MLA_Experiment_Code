@@ -66,7 +66,7 @@ class end_page(Page):
 
 page_sequence = [# initializer_page,
                  tutorial_page,
-                 # trading_page, # TODO (after pilot): Bring back quizz and training!
+                 # trading_page,
                  # belief_page,
                  # updating_page,
                  # quiz_page,

@@ -12,8 +12,7 @@ class condition_page(Page):
         return self.player.i_round_in_path == 0
 
     def vars_for_template(self):
-        return {'condition': self.player.condition_name,
-                'drift_list': [round(i * 100) for i in Constants.up_probs],
+        return {'drift_list': [round(i * 100) for i in Constants.up_probs],
                 'periods_per_phase': Constants.n_periods_per_phase,
                 'exp_email': Constants.experimenter_email}
 
@@ -34,7 +33,7 @@ class trading_page(Page):
         return self.player.get_trading_vars()
 
 
-class belief_page(Page):  # TODO (After Pilot): Rethink when to ask for beliefs
+class belief_page(Page):  # TODO now: Rethink when to ask for beliefs
     form_model = 'player'
     form_fields = ['belief',
                    'time_to_belief_report',
@@ -45,9 +44,6 @@ class belief_page(Page):  # TODO (After Pilot): Rethink when to ask for beliefs
 
     def vars_for_template(self):
         return {'max_time': Constants.max_time_beliefs}
-
-    def before_next_page(self):
-        self.player.calculate_belief_bonus()
 
 
 class update_page(Page):

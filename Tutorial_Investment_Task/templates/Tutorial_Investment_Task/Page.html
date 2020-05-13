@@ -3,7 +3,7 @@
 
 {% block app_scripts %}
 {#    This page contains all the js that makes the tutorial work#}
-{#    TODO (After pilot): Put this in a propper .js file#}
+{#    TODO now: Put this in a propper .js file#}
 
 <!--Button logic and order handling happens here><-->
 <script>
@@ -45,7 +45,7 @@
                     $$('timer_warning_field').style.visibility = 'shown';  // The one for demonstration purposes
                     $$('id_transaction').value = '';
                 } else {
-                    {#TODO (After Pilot): Maybe some more specific alert for max_hold here as well?#}
+                    {#TODO now: Maybe some more specific alert for max_hold here as well?#}
                     alert('Please buy two shares of the asset.')
                 }
             break;
@@ -123,7 +123,7 @@
         let page_seq = [$$('content_welcome_page'),
                         $$('content_trading_tutorial'),
                         $$('content_shorting_tutorial'),
-                        $$('content_markov_tutorial'), // TODO (After Pilot): Rename this!
+                        $$('content_markov_tutorial'), // TODO now: Rename this!
                         $$('content_belief_tutorial'),
                         $$('content_structure_tutorial')];
 
