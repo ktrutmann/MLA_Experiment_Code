@@ -7,10 +7,10 @@ import random as rd
 
 class PlayerBot(Bot):
 
-    def __init__(self):
-        print('Using Bot in "{}" mode.'.format(Constants.bot_type))
-
     def play_round(self):
+        if self.round_number == 1:
+            print('@@@@@@ Using Bot in "{}" mode.'.format(Constants.bot_type))
+
         yield Submission(pages.initializer_page, check_html=False)
 
         if self.player.i_round_in_path == 0:
@@ -71,8 +71,6 @@ class PlayerBot(Bot):
         else:
             # I don't think this is the "correct" updating mechanism, but it does the job.
             previous_self = self.player.in_round(self.round_number - 1)
-            previous_belief = previous_self.belief
-            previous_price = previous_self.price
 
             if self.player.condition_name == 'full_control':
                 # Be very conservative:
@@ -81,6 +79,12 @@ class PlayerBot(Bot):
                 # Be less conservative:
                 alpha = .75
             elif self.player.condition_name == 'blocked_blocked_info':
+                # If we're jumping rounds use last reported belief and price as a reference:
+                i = 2
+                while previous_self.belief is None:
+                    previous_self = self.player.in_round(self.round_number - i)
+                    i += 1
+
                 # Be least conservative:
                 alpha = .9
             else:
@@ -88,9 +92,11 @@ class PlayerBot(Bot):
                 alpha = 1
 
             if self.player.price > previous_self.price:
-                return previous_belief + alpha * (100 - previous_belief) / (self.player.i_round_in_path + 1)
+                return int(previous_self.belief + alpha * (100 - previous_self.belief) /
+                           (self.player.i_round_in_path + 1))
             else:
-                return previous_belief + alpha * (0 - previous_belief) / (self.player.i_round_in_path + 1)
+                return int(previous_self.belief + alpha * (0 - previous_self.belief) /
+                           (self.player.i_round_in_path + 1))
 
     def get_random_trade(self):
         min_transaction = min(Constants.hold_range) - self.player.hold

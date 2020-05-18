@@ -10,24 +10,24 @@
     The following are your earnings during the task:</p>
     <table id="feedback_table" style="text-align:center; width: 600px; background: aliceblue;">
         <tr style="background: skyblue">
-            <th>Block</th><th>Earnings</th><th>Bet / Lottery</th>
+            <th>Block</th><th>Earnings</th>
         </tr>
-        {% for this_trade_payoff, this_belief_payoff in payoff_list %}
+        {% for this_trade_payoff in payoff_list %}
             <tr>
-                <td>{{ forloop.counter }}</td><td>{{ this_trade_payoff }}</td><td>{{ this_belief_payoff }}</td>
+                <td>{{ forloop.counter }}</td><td>{{ this_trade_payoff }}</td>
             </tr>
         {% endfor %}
         <tr style="background: skyblue;">
-            <td>Total:</td><td>{{ end_cash_sum }}</td><td>{{ belief_bonus_sum }}</td>
+            <td>Total:</td><td>{{ end_cash_sum }}</td>
         </tr>
     </table>
     <p>
         <br>
-        You therefore have earned <b>{{ payoff_game|c }}</b>. Your payoff is calculated in the following way:
+        You therefore have earned <b>{{ end_cash_sum|c }}</b>. Your payoff is calculated in the following way:
     </p>
     <p>
         {{ showup_fee }} for completing the study + CHF {{ base_payoff }} base bonus + {{ percent_conversion }}% of
-        {{ payoff_game|c }} =
+        {{ end_cash_sum|c }} =
         <b>{{ payoff_total }}</b>
     </p>
     <p>

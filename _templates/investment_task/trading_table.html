@@ -18,7 +18,7 @@
     <tr class="table_content">
         <td><b>Asset</b></td>
         <td>{% if player.hold > 0 %}+{% endif %}{{player.hold}}</td>
-        <td>{{player.base_price}}</td>
+        <td>{{disp_base_price}}</td>
         <td>{{player.price}}</td>
         <td style = "color: {{ return_color }}">{{player.returns}} ({{percentage_returns}})</td>
         <td>{{all_val}}</td>

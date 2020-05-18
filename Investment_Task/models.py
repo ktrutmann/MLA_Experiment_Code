@@ -49,7 +49,7 @@ class Constants(BaseConstants):
     # Bot testing:
     bot_type = 'custom'  # Indicates what browser bots to use (if active). See the readme for details.
 
-    show_debug_msg = True  # Whether to print current states to the console
+    show_debug_msg = False  # Whether to print current states to the console
 
 
 class Subsession(BaseSubsession):
@@ -194,7 +194,10 @@ class MainPlayer(BasePlayer):
             rd.shuffle(grouped_df)
             price_df = pd.concat(grouped_df.copy()).reset_index(drop=True)
 
-        self.participant.vars['price_info'] = price_df
+        # Note: Django breaks when generating new price paths and storing them as pandas df since it's trying to compare
+        # two dfs with different indexes. So I only use pandas for the condition scrambling and go back to dicts.
+        self.participant.vars['price_info'] = price_df.to_dict(orient='list')
+
         if Constants.show_debug_msg:
             print('### Created Price Paths!')
             pd.set_option('display.max_rows', None)
@@ -204,6 +207,7 @@ class MainPlayer(BasePlayer):
         # If this is the very first round
         if self.round_number == 1:
             self.make_price_paths(n_distinct_paths=n_distinct_paths)
+            self.participant.vars['earnings_list'] = []
             self.global_path_id = 1
         else:
             self.global_path_id = self.in_round(self.round_number - 1).global_path_id
@@ -229,30 +233,31 @@ class MainPlayer(BasePlayer):
                 former_self.transaction = 0
             self.hold = former_self.hold + former_self.transaction
             self.cash = former_self.cash - former_self.transaction * \
-                self.participant.vars['price_info'].price[self.round_number - 2]
+                self.participant.vars['price_info']['price'][self.round_number - 2]
 
             # Base price:
             if self.hold == 0:
                 self.base_price = 0
             elif (self.hold > 0) is not (former_self.hold > 0):  # "Crossed" the 0 hold line
-                self.base_price = self.participant.vars['price_info'].price[self.round_number - 2]
+                self.base_price = self.participant.vars['price_info']['price'][self.round_number - 2]
             elif former_self.transaction == 0 or abs(former_self.hold) - abs(self.hold) > 0:  # Only sales or nothing
                 self.base_price = former_self.base_price
             else:
                 self.base_price = (abs(former_self.hold) * former_self.base_price +
                                    abs(former_self.transaction) *
-                                   self.participant.vars['price_info'].price[self.round_number - 2]) / \
+                                   self.participant.vars['price_info']['price'][self.round_number - 2]) / \
                                   abs(self.hold)
 
-            self.returns = self.hold * \
-                (self.participant.vars['price_info'].price[self.round_number - 1] - self.base_price)
+            self.returns = int(self.hold *
+                (self.participant.vars['price_info']['price'][self.round_number - 1] - self.base_price))
 
             # If this is the last round of a block:
-            if self.participant.vars['price_info'].last_trial_in_path[self.round_number - 1]:
+            if self.participant.vars['price_info']['last_trial_in_path'][self.round_number - 1]:
                 # "Sell everything" for the last price:
-                self.final_cash = self.cash.item() + self.hold * \
-                                  self.participant.vars['price_info'].price[self.round_number - 1].item()
+                self.final_cash = self.cash + self.hold * \
+                                  self.participant.vars['price_info']['price'][self.round_number - 1]
                 self.payoff = (self.final_cash - Constants.starting_cash)
+                self.participant.vars['earnings_list'].append(self.payoff)
 
         if Constants.show_debug_msg:
             print('### Initialized round {} ################'.format(self.round_number))
@@ -264,7 +269,7 @@ class MainPlayer(BasePlayer):
         is_block_start = self.i_round_in_path == 0
         is_first_phase = self.i_round_in_path < Constants.n_periods_per_phase
         is_last_mla_phase = self.condition_name == 'full_control_with_MLA' and self.i_round_in_path > \
-            (Constants.n_phases[self.participant.vars['price_info'].condition_id[self.round_number - 1]] - 1) * \
+            (Constants.n_phases[self.participant.vars['price_info']['condition_id'][self.round_number - 1]] - 1) * \
             Constants.n_periods_per_phase
         is_blocked_condition = self.condition_name in ['blocked_full_info', 'blocked_blocked_info'] or is_last_mla_phase
 
@@ -278,7 +283,7 @@ class MainPlayer(BasePlayer):
 
     def should_display_infos(self):
         """Figures out whether this is a 'blocked info' trial, and should therefore be completely skipped."""
-        last_round = self.participant.vars['price_info'].last_trial_in_path[self.round_number - 1]
+        last_round = self.participant.vars['price_info']['last_trial_in_path'][self.round_number - 1]
         start_of_phase = self.i_round_in_path % Constants.n_periods_per_phase == 0
         blocked_condition = self.condition_name == 'blocked_blocked_info'
         first_phase = self.i_round_in_path < Constants.n_periods_per_phase
@@ -293,7 +298,7 @@ class MainPlayer(BasePlayer):
     def get_investment_span(self):
         """Given you can invest in this round, how many periods into the future is this investment for?"""
         rounds_in_this_path = Constants.n_periods_per_phase * Constants.n_phases[
-            self.participant.vars['price_info'].condition_id[self.round_number - 1]]
+            self.participant.vars['price_info']['condition_id'][self.round_number - 1]]
 
         if self.condition_name == 'full_control':
             return 1
@@ -315,11 +320,12 @@ class MainPlayer(BasePlayer):
         else:
             return_color = 'black'
 
-        return {'return_color': return_color,
+        return {'disp_base_price': round(self.base_price, 2),
+                'return_color': return_color,
                 'percentage_returns': percentage_returns,
                 'all_val': self.price * self.hold,
                 'wealth': int(self.price * self.hold + self.cash),
-                'condition': self.participant.vars['price_info'].condition_name[self.round_number - 1],
+                'condition': self.participant.vars['price_info']['condition_name'][self.round_number - 1],
                 'investable': self.is_investable(),
                 'n_periods_to_invest': self.get_investment_span()
                 }
@@ -328,7 +334,7 @@ class MainPlayer(BasePlayer):
         """Creates a zipped list for django to display as the updates. The length depends on the condition."""
         if self.condition_name == 'blocked_blocked_info' and self.i_round_in_path == Constants.n_periods_per_phase:
             # We are at the last decision of the blocked and low info condition, so show a list of updates:
-            price_list = self.participant.vars['price_info'].price
+            price_list = self.participant.vars['price_info']['price']
             # This is shown right after the blocked trade has been made. Hence "future".
             future_indexes = range(self.round_number - 1, self.round_number + Constants.n_periods_per_phase - 1)
 
@@ -338,29 +344,28 @@ class MainPlayer(BasePlayer):
 
             return zip(was_increase, differences, new_price)
         else:
-            was_increase = self.participant.vars['price_info'].price[self.round_number] > self.price
-            difference = abs(self.participant.vars['price_info'].price[self.round_number] - self.price)
-            new_price = self.participant.vars['price_info'].price[self.round_number]
+            was_increase = self.participant.vars['price_info']['price'][self.round_number] > self.price
+            difference = abs(self.participant.vars['price_info']['price'][self.round_number] - self.price)
+            new_price = self.participant.vars['price_info']['price'][self.round_number]
 
             return zip([was_increase], [difference], [new_price])
 
     # In the very last round, calculate how much was earned
     def calculate_final_payoff(self):
-        end_cash_list = [self.in_round(i + 1).final_cash - Constants.starting_cash for
-                         i in range(Constants.num_rounds) if
-                         self.participant.vars['price_info'].last_trial_in_path[i]]
-        sum_end_cash = sum(end_cash_list)
+        if Constants.show_debug_msg:
+            print('##### Earnings list is {}'.format(self.participant.vars['earnings_list']))
 
         # Add the base_payoff to the game-payoff and make sure that it is floored at 0
         self.participant.payoff = c(self.session.config['base_bonus'] /
-                                    self.session.config['real_world_currency_per_point'] + sum_end_cash)
+                                    self.session.config['real_world_currency_per_point'] +
+                                    sum(self.participant.vars['earnings_list']))
 
         if self.participant.payoff < 0:
             self.participant.payoff -= self.participant.payoff  # For some reason 0 didn't work.
 
         self.participant.vars['payoff_dict'] = \
-            {'payoff_list': zip(end_cash_list),
-             'end_cash_sum': sum_end_cash,
+            {'payoff_list': zip(self.participant.vars['earnings_list']),
+             'end_cash_sum': sum(self.participant.vars['earnings_list']),
              'payoff_total': self.participant.payoff_plus_participation_fee(),
              'showup_fee': self.session.config['participation_fee'],
              'base_payoff': self.session.config['base_bonus'],
