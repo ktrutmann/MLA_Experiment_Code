@@ -39,7 +39,6 @@ check_tutorial_moves = function(action) {
                 $$('timer_warning_field').style.visibility = 'shown';  // The one for demonstration purposes
                 $$('id_transaction').value = '';
             } else {
-                // TODO now: Maybe some more specific alert for max_hold here as well?
                 alert('Please buy two shares of the asset.')
             }
         break;
@@ -64,12 +63,12 @@ check_tutorial_moves = function(action) {
             }
                 break;
         case 4: // Jump to holding five shares on page 2 to reveal page 3
-            if (action === 'buy' && $$('id_transaction2').valueAsNumber === 7 && tutorial_page === 3) {
+            if (action === 'buy' && $$('id_transaction2').valueAsNumber === max_hold + 2 && tutorial_page === 3) {
                 reveal_next_tutorial_part();
                 flip_tut_pages('continue');
                 $$('shorting_continue_button').style.display = 'inline';
             } else {
-                alert('Please buy enough shares such that you are holding 5.')
+                alert('Please buy enough shares such that you are holding ' + max_hold + '.')
             }
         break;
         case 5:
@@ -117,7 +116,7 @@ flip_tut_pages = function(move){
     let page_seq = [$$('content_welcome_page'),
                     $$('content_trading_tutorial'),
                     $$('content_shorting_tutorial'),
-                    $$('content_markov_tutorial'), // TODO now: Rename this!
+                    $$('content_price_movement_tutorial'),
                     $$('content_belief_tutorial'),
                     $$('content_structure_tutorial')];
 
@@ -145,8 +144,9 @@ update_trade_table = function(){
         $$('new_value').innerHTML = $$('id_price').innerHTML = (start_price + 5).toString();
         $$('id_cash').innerHTML = (start_cash - start_price * 2).toString();
         $$('id_hold').innerHTML = '+4';
-        $$('id_return').innerHTML = '20 (' + Math.round((((start_price + 5) / start_price) - 1) * 1000) / 10 + ')';
-        $$('id_return').style.color = 'green';
+        $$('id_return').innerHTML = '20 (' + Math.round((((start_price + 5) /
+            start_price) - 1) * 1000) / 10 + ')';
+        $$('id_return').style.color = 'limegreen';
         $$('id_baseprice').innerHTML = start_price.toString();
         $$('id_value').innerHTML = ((start_price + 5) * 4).toString();
         $$('id_value_all').innerHTML = (start_cash + 20).toString();
@@ -154,8 +154,9 @@ update_trade_table = function(){
         $$('new_value2').innerHTML = $$('id_price2').innerHTML = (start_price - 5).toString();
         $$('id_cash2').innerHTML = (start_cash + start_price).toString();
         $$('id_hold2').innerHTML = '-2';
-        $$('id_return2').innerHTML = '5 (' + Math.round((((start_price + 5) / start_price) - 1) * 1000) / 10 + ')';
-        $$('id_return2').style.color = 'green';
+        $$('id_return2').innerHTML = '10 (' + Math.round((((start_price + 10) /
+            start_price) - 1) *1000) / 10 + ')';
+        $$('id_return2').style.color = 'limegreen';
         $$('id_baseprice2').innerHTML = start_price.toString();
         $$('id_value2').innerHTML = (start_price - 5 * -2).toString();
         $$('id_value_all2').innerHTML = (start_cash + 5).toString();

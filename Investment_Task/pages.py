@@ -4,7 +4,7 @@ from .models import Constants
 
 class initializer_page(Page):
     def before_next_page(self):
-        self.player.initialize_round()
+        self.player.initialize_round(n_distinct_paths=Constants.n_distinct_paths)
 
 
 class condition_page(Page):
@@ -33,7 +33,7 @@ class trading_page(Page):
         return self.player.get_trading_vars()
 
 
-class belief_page(Page):  # TODO now: Rethink when to ask for beliefs
+class belief_page(Page):
     form_model = 'player'
     form_fields = ['belief',
                    'time_to_belief_report',
@@ -49,10 +49,14 @@ class belief_page(Page):  # TODO now: Rethink when to ask for beliefs
 class update_page(Page):
     form_model = 'player'
     form_fields = ['update_time_used']
-    timeout_seconds = Constants.update_time
 
     def is_displayed(self):
         return self.player.should_display_infos()
+
+    def get_timeout_seconds(self):
+        # Give more time if a list is presented:
+        return Constants.update_time * 2 if self.player.condition_name == 'blocked_blocked_info' and\
+            self.player.i_round_in_path == Constants.n_periods_per_phase else Constants.update_time
 
     def vars_for_template(self):
         return {'update_list': self.player.make_update_list()}
