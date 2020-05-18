@@ -19,10 +19,11 @@ class Constants(BaseConstants):
     # Experimental Flow
     n_periods_per_phase = 4  # How long should the participants be "blocked"?
     n_distinct_paths = 7  # How many paths should be generated?
-    condition_names = ['full_control',
+    condition_names = [
+                       'full_control',
+                       'full_control_with_MLA',  # TODO (After Pilot): Remove this condition...
                        'blocked_full_info',
                        'blocked_blocked_info',
-                       'full_control_with_MLA',  # TODO (After Pilot): Remove this condition...
                        ]  # List of the conditions
     n_phases = [2, 3, 2, 2]  # How many phases should there be per condition
     extra_inv_phase = [1, 0, 1, 1]  # Whether to add "one last question" after the last phase
@@ -265,6 +266,7 @@ class MainPlayer(BasePlayer):
     # For displaying the page
     def is_investable(self):
         """Find out whether the participant should be able to make an investment decision in this round."""
+        # FIXME Now: MLA only has one  "investable" round
         is_phase_start = self.i_round_in_path % Constants.n_periods_per_phase == 0
         is_block_start = self.i_round_in_path == 0
         is_first_phase = self.i_round_in_path < Constants.n_periods_per_phase
