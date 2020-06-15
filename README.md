@@ -1,3 +1,4 @@
 # MLA Trading
-Implementation of the planned experiment in oTree
-
+Implementation of a trading experiment in oTree.
+See the `readme.md` files within the app folders for details
+about the code.

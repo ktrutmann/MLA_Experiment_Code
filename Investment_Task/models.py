@@ -30,6 +30,7 @@ class Constants(BaseConstants):
     hold_range = [-4, 4]  # What's the minimum and maximum amount of shares that can be held.
     shuffle_conditions = True  # Should the conditions be presented in "blocks" or shuffled?
 
+    # Derivative constants
     num_paths = n_distinct_paths * len(condition_names)
     num_rounds = n_distinct_paths * n_periods_per_phase * sum(n_phases) + (n_distinct_paths * len(condition_names)) +\
         sum(extra_inv_phase) * n_distinct_paths
@@ -48,7 +49,8 @@ class Constants(BaseConstants):
     experimenter_email = 'k.trutmann@unibas.ch'
 
     # Bot testing:
-    bot_type = 'custom'  # Indicates what browser bots to use (if active). See the readme for details.
+    bot_base_alpha = .35  # What's the base learning rate for the RL model
+    bot_learning_effect = .1  # How much should the learning rate change for the model bot?
 
     show_debug_msg = False  # Whether to print current states to the console
 
@@ -66,30 +68,31 @@ class MainPlayer(BasePlayer):
     class Meta:
         abstract = True
 
+    transaction = models.IntegerField(label='')
     time_to_order = models.FloatField()
     unfocused_time_to_order = models.FloatField()
     changed_mind = models.BooleanField()
     erroneous_trade = models.StringField()
-    time_to_belief_report = models.FloatField()
-    unfocused_time_to_belief_report = models.FloatField()
-    update_time_used = models.FloatField()
 
     belief = models.IntegerField(min=0, max=100, widget=widgets.Slider, label='')
+    time_to_belief_report = models.FloatField()
+    unfocused_time_to_belief_report = models.FloatField()
+
+    update_time_used = models.FloatField()
+
+    price = models.IntegerField()
     cash = models.IntegerField()
+    hold = models.IntegerField()
+    base_price = models.FloatField()
+    returns = models.IntegerField()
     final_cash = models.CurrencyField()
 
-    hold = models.IntegerField()
-    returns = models.IntegerField()
-    transaction = models.IntegerField(label='')
-    base_price = models.FloatField()
-    price = models.IntegerField()
-    drift = models.FloatField()
-    investable = models.BooleanField()
-
-    condition_name = models.StringField()
     i_round_in_path = models.IntegerField()
+    investable = models.BooleanField()
     global_path_id = models.IntegerField()
     distinct_path_id = models.IntegerField()
+    drift = models.FloatField()
+    condition_name = models.StringField()
 
     def make_price_paths(self, n_distinct_paths):
         """
@@ -230,7 +233,7 @@ class MainPlayer(BasePlayer):
                 self.global_path_id = self.in_round(self.round_number - 1).global_path_id + 1
         else:
             former_self = self.in_round(self.round_number - 1)
-            if former_self.transaction is None:  # TODO (After pilot) This is a hot-fix. Could be better.
+            if former_self.transaction is None:
                 former_self.transaction = 0
             self.hold = former_self.hold + former_self.transaction
             self.cash = former_self.cash - former_self.transaction * \
@@ -266,17 +269,15 @@ class MainPlayer(BasePlayer):
     # For displaying the page
     def is_investable(self):
         """Find out whether the participant should be able to make an investment decision in this round."""
-        # FIXME Now: MLA only has one  "investable" round
-        is_phase_start = self.i_round_in_path % Constants.n_periods_per_phase == 0
-        is_block_start = self.i_round_in_path == 0
+        is_phase_start = self.i_round_in_path % Constants.n_periods_per_phase == 0 and not self.i_round_in_path == 0
         is_first_phase = self.i_round_in_path < Constants.n_periods_per_phase
         is_last_mla_phase = self.condition_name == 'full_control_with_MLA' and self.i_round_in_path > \
             (Constants.n_phases[self.participant.vars['price_info']['condition_id'][self.round_number - 1]] - 1) * \
             Constants.n_periods_per_phase
-        is_blocked_condition = self.condition_name in ['blocked_full_info', 'blocked_blocked_info'] or is_last_mla_phase
+        is_blocked_condition = self.condition_name in ['blocked_full_info', 'blocked_blocked_info']
 
-        is_investable = (is_phase_start and not is_block_start and not is_last_mla_phase) or \
-                        (not is_first_phase and not is_blocked_condition)
+        is_investable = (not (is_first_phase or is_last_mla_phase or is_blocked_condition)) or\
+                        (is_phase_start and not is_last_mla_phase)
 
         if Constants.show_debug_msg:
             print('### Checked investablility: {}'.format(is_investable))

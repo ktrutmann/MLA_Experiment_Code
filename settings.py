@@ -1,7 +1,6 @@
 from os import environ
 import dj_database_url
 
-# TODO (After pilot): Update readme.md of task and tutorial
 
 SESSION_CONFIG_DEFAULTS = {
     'real_world_currency_per_point': 0.02,
