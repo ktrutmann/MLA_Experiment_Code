@@ -1,2 +1,7 @@
 /venv/
 .pyc
+.rdb
+/.idea/
+*/__pycache__/
+/__temp_migrations/
+/__temp_static_root/

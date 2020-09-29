@@ -21,9 +21,9 @@ class Constants(BaseConstants):
     n_distinct_paths = 7  # How many paths should be generated?
     condition_names = [
                        'full_control',
-                       'full_control_with_MLA',  # TODO (After Pilot): Remove this condition...
+                       'full_control_with_MLA',  # TODO: Remove this condition...
                        'blocked_full_info',
-                       'blocked_blocked_info',
+                       'blocked_blocked_info', # TODO: Present info as one sentence!
                        ]  # List of the conditions
     n_phases = [2, 3, 2, 2]  # How many phases should there be per condition
     extra_inv_phase = [1, 0, 1, 1]  # Whether to add "one last question" after the last phase
