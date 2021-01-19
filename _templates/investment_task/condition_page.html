@@ -3,7 +3,10 @@
 
 {% block title %}
     {% if Constants.name_in_url == 'Tutorial_Investment_Task' %}Training {% endif %}
-    Block {{ player.global_path_id }} of {{ Constants.num_paths }}
+    Block {{ player.global_path_id }} of
+    {% if Constants.name_in_url == 'Tutorial_Investment_Task' %}{{ Constants.num_tutorial_paths }}
+    {% else %}{{ Constants.num_paths }}{% endif %}
+
 {% endblock %}
 
 {% block content %}
@@ -25,11 +28,6 @@
 
         {% if player.condition_name == 'full_control' %}
             <li>After that you will have <b>full control</b> of your portfolio until the end of the block.</li>
-        {% elif player.condition_name == 'full_control_with_MLA' %}
-            <li>After that you will have <b>full control</b> of your portfolio for the next
-                {{ Constants.n_periods_per_phase }} rounds.</li>
-            <li>Then you will be asked to <b>make another decision for the subsequent
-                {{ Constants.n_periods_per_phase }} rounds</b>.</li>
         {% elif player.condition_name == 'blocked_full_info' %}
             <li>After that you will be asked to <b>make a decision for the subsequent
                 {{ Constants.n_periods_per_phase }} rounds</b>.</li>
@@ -64,8 +62,6 @@
 {#    Use the "export as graphic" feature to get the transparent .png#}
     {% if player.condition_name == 'full_control'%}
         <img src= "{% static 'Investment_Task/full_control.png' %}" class="example-pic">
-    {% elif player.condition_name == 'full_control_with_MLA' %}
-        <img src= "{% static 'Investment_Task/mla.png' %}" class="example-pic">
     {% else %}
         <img src= "{% static 'Investment_Task/blocked.png' %}" class="example-pic">
     {% endif %}

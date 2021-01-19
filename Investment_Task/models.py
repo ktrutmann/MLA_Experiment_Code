@@ -21,22 +21,21 @@ class Constants(BaseConstants):
     n_distinct_paths = 7  # How many paths should be generated?
     condition_names = [
                        'full_control',
-                       'full_control_with_MLA',  # TODO: Remove this condition...
                        'blocked_full_info',
-                       'blocked_blocked_info', # TODO: Present info as one sentence!
+                       'blocked_blocked_info',  # TODO: Present info as one sentence!
                        ]  # List of the conditions
-    n_phases = [2, 3, 2, 2]  # How many phases should there be per condition
-    extra_inv_phase = [1, 0, 1, 1]  # Whether to add "one last question" after the last phase
+    n_phases = 2  # How many phases should there be per condition
     hold_range = [-4, 4]  # What's the minimum and maximum amount of shares that can be held.
     shuffle_conditions = True  # Should the conditions be presented in "blocks" or shuffled?
 
     # Derivative constants
     num_paths = n_distinct_paths * len(condition_names)
-    num_rounds = n_distinct_paths * n_periods_per_phase * sum(n_phases) + (n_distinct_paths * len(condition_names)) +\
-        sum(extra_inv_phase) * n_distinct_paths
+    n_rounds_per_path = n_phases * n_periods_per_phase + 1
+    num_rounds = n_distinct_paths * n_periods_per_phase * n_phases * len(condition_names) +\
+        n_distinct_paths * len(condition_names) * 2
 
     # The parameters for the price path
-    up_probs = [.2, .8]  # The possible probabilities of a price increase (i.e. "drifts")
+    up_probs = [.35, .65]  # The possible probabilities of a price increase (i.e. "drifts")
     start_price = 1000  # The first price in the price path
     updates = [5, 10, 15]  # List of possible price movements
     starting_cash = 50000  # How much cash does the participant own at the start
@@ -106,14 +105,10 @@ class MainPlayer(BasePlayer):
         drift_list = rd.choices(Constants.up_probs, k=n_distinct_paths)
         distinct_path_moves_list = []  # Will be a list of lists
 
-        # How many rounds are there per path?
-        # One more phase for the MLA treatment.
-        max_moves_per_path = Constants.n_periods_per_phase * max(Constants.n_phases) + 1
-
         for this_drift in drift_list:
             moves = []
 
-            for _ in range(max_moves_per_path):
+            for _ in range(Constants.n_rounds_per_path):
                 movement_direction = rd.choices([1, -1], weights=[this_drift, 1 - this_drift])[0]
                 movement_magnitude = rd.choice(Constants.updates)
                 moves += [movement_direction * movement_magnitude]
@@ -127,14 +122,8 @@ class MainPlayer(BasePlayer):
 
         for i_cond, _ in enumerate(Constants.condition_names):
             for i_path in range(n_distinct_paths):
-                # Trim the move list if the last phase is not needed in this condition:
-                all_moves_list[i_cond][i_path] = \
-                    copy.deepcopy(all_moves_list[i_cond][i_path][:(Constants.n_periods_per_phase *
-                                                                   Constants.n_phases[i_cond] +
-                                                                   Constants.extra_inv_phase[i_cond])])
-
                 # Create a moving window to scramble the movements:
-                for i_phase in range(Constants.n_phases[i_cond]):
+                for i_phase in range(Constants.n_phases):
                     win_start_ix = i_phase * Constants.n_periods_per_phase
                     win_end_ix = (i_phase + 1) * Constants.n_periods_per_phase
                     these_moves = all_moves_list[i_cond][i_path][win_start_ix:win_end_ix]
@@ -271,13 +260,9 @@ class MainPlayer(BasePlayer):
         """Find out whether the participant should be able to make an investment decision in this round."""
         is_phase_start = self.i_round_in_path % Constants.n_periods_per_phase == 0 and not self.i_round_in_path == 0
         is_first_phase = self.i_round_in_path < Constants.n_periods_per_phase
-        is_last_mla_phase = self.condition_name == 'full_control_with_MLA' and self.i_round_in_path > \
-            (Constants.n_phases[self.participant.vars['price_info']['condition_id'][self.round_number - 1]] - 1) * \
-            Constants.n_periods_per_phase
         is_blocked_condition = self.condition_name in ['blocked_full_info', 'blocked_blocked_info']
 
-        is_investable = (not (is_first_phase or is_last_mla_phase or is_blocked_condition)) or\
-                        (is_phase_start and not is_last_mla_phase)
+        is_investable = (not (is_first_phase or is_blocked_condition)) or is_phase_start
 
         if Constants.show_debug_msg:
             print('### Checked investablility: {}'.format(is_investable))
@@ -300,16 +285,10 @@ class MainPlayer(BasePlayer):
 
     def get_investment_span(self):
         """Given you can invest in this round, how many periods into the future is this investment for?"""
-        rounds_in_this_path = Constants.n_periods_per_phase * Constants.n_phases[
-            self.participant.vars['price_info']['condition_id'][self.round_number - 1]]
-
         if self.condition_name == 'full_control':
             return 1
         elif self.condition_name in ['blocked_full_info', 'blocked_blocked_info']:
-            return Constants.n_periods_per_phase if (self.i_round_in_path + 1) < rounds_in_this_path else 1
-        elif self.condition_name == 'full_control_with_MLA':
-            return 1 if self.i_round_in_path < rounds_in_this_path - Constants.n_periods_per_phase \
-                else Constants.n_periods_per_phase
+            return Constants.n_periods_per_phase if (self.i_round_in_path + 1) < Constants.n_rounds_per_path else 1
 
     def get_trading_vars(self):
         percentage_returns = 0

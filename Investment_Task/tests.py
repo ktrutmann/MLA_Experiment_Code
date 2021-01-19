@@ -159,8 +159,7 @@ class PlayerBot(Bot):
             alpha = Constants.bot_base_alpha
             return int(belief_last_round + alpha * (100 * price_up - belief_last_round))
         else:
-            # Do whatever in the MLA case:
-            alpha = Constants.bot_base_alpha
+            raise ValueError('Invalid Experimental Condition!')
 
         return int(previous_self.belief + alpha * (100 * price_up - previous_self.belief))
 

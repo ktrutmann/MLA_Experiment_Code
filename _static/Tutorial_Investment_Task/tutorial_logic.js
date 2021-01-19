@@ -1,5 +1,7 @@
 // This file contains all the js that makes the tutorial work
 
+// FIXME: There's some math errors in the tutorial table!
+
 // Button logic and order handling happens here
 $$ = function(x){return document.getElementById(x)};
 
@@ -149,7 +151,7 @@ update_trade_table = function(){
         $$('id_return').style.color = 'limegreen';
         $$('id_baseprice').innerHTML = start_price.toString();
         $$('id_value').innerHTML = ((start_price + 5) * 4).toString();
-        $$('id_value_all').innerHTML = (start_cash + 20).toString();
+        $$('id_value_all').innerHTML = (start_cash + 2 * start_price + 4 * 5).toString();
     } else {  // tutorial_page is 3 and we're on the shorting page
         $$('new_value2').innerHTML = $$('id_price2').innerHTML = (start_price - 5).toString();
         $$('id_cash2').innerHTML = (start_cash + start_price).toString();

@@ -28,7 +28,7 @@
             browsers this can be done using the <i><b>F5</b></i> key).
         </p>
         <p>
-            In the unlikely event that you get stuck and can't solve it by reloading the page,
+            In the unlikely event that you get stuck and can't resolve the issue by reloading the page,
             always feel free to send an email to <a href="mailto:{{ Constants.experimenter_email }}">
                 {{ Constants.experimenter_email }}</a>.
         </p>
@@ -43,8 +43,8 @@
         <h4>Making investment decisions</h4>
         <div class="instr_text tut_part_1" id="instr_text_1">
             <p>
-                In this experiment you will make investment decisions in {{ Constants.num_paths }} blocks of either
-                {{ n_rounds_per_block_list.0 }} or {{ n_rounds_per_block_list.1 }} rounds each.
+                In this experiment you will make investment decisions in {{ Constants.num_paths }} blocks with
+                {{ n_rounds_per_block }} rounds each.
                 There will be an asset you can invest in. At the start of a block, the asset will always
                 have a value of {{ Constants.start_price }} Points. In each round you can decide how many
                 shares of this asset you want to hold. You can hold a maximum of {{ Constants.hold_range.1 }}
@@ -176,7 +176,7 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td id="id_value_all" style="font-weight: bold">{{Constants.starting_cash}}</td>
+                    <td id="id_value_all" style="font-weight: bold">{{ start_value }}</td>
                 </tr>
             </table>
             <br>
@@ -450,8 +450,8 @@
         <h4>Blocks and Payoff</h4>
         <p>
             The task will consist of <b>{{ Constants.num_blocks }} price paths</b> to invest in,
-            each of which consisting of either {{ n_rounds_per_block_list.0 }} or {{ n_rounds_per_block_list.1 }}
-            rounds. Each price path is independent from that before and only determined by the probability of a
+            each of which consisting {{ n_rounds_per_block }} rounds.
+            Each price path is independent from that before and only determined by the probability of a
             price increase of the given asset. You will be informed whenever a new price path starts.
         </p>
         <p>
