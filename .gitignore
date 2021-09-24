@@ -5,3 +5,4 @@
 **/__pycache__/
 /__temp_migrations/
 /__temp_static_root/
+*.sqlite3
