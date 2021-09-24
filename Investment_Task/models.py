@@ -62,18 +62,14 @@ class Group(BaseGroup):
     pass
 
 
-class MainPlayer(BasePlayer):
-    # This is so the player class can be inherited by the tutorial
-    class Meta:
-        abstract = True
-
+class Player(BasePlayer):
     transaction = models.IntegerField(label='')
     time_to_order = models.FloatField()
     unfocused_time_to_order = models.FloatField()
     changed_mind = models.BooleanField()
     erroneous_trade = models.StringField()
 
-    belief = models.IntegerField(min=0, max=100, widget=widgets.Slider, label='')
+    belief = models.IntegerField(min=0, max=100, label='')
     time_to_belief_report = models.FloatField()
     unfocused_time_to_belief_report = models.FloatField()
 
@@ -353,7 +349,3 @@ class MainPlayer(BasePlayer):
              'base_payoff': self.session.config['base_bonus'],
              'percent_conversion': round(self.session.config['real_world_currency_per_point'] * 100, 2)
              }
-
-
-class Player(MainPlayer):
-    pass

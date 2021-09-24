@@ -1,5 +1,4 @@
 from os import environ
-import dj_database_url
 
 
 SESSION_CONFIG_DEFAULTS = {
@@ -23,7 +22,7 @@ SESSION_CONFIGS = [
         'use_browser_bots': True
     },
 
-    {
+   {
         'name': 'Demographics',
         'num_demo_participants': 1,
         'app_sequence': ['Demographics'],
@@ -96,5 +95,3 @@ SECRET_KEY = '$x%_exnjos2tzdh*zkh!b8v)vx0a2+j)ocjs060#9*-u6-_4##'
 # if an app is included in SESSION_CONFIGS, you don't need to list it here
 INSTALLED_APPS = ['otree']
 
-# Database: This is so that devserver can still be used
-# DATABASES = {'default': dj_database_url.config(default='sqlite:///db.sqlite3')}

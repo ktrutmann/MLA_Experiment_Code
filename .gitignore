@@ -2,7 +2,10 @@
 .pyc
 .rdb
 /.idea/
+**/_builtin/
 **/__pycache__/
 /__temp_migrations/
 /__temp_static_root/
 *.sqlite3
+*.sublime-workspace
+*.sublime-project

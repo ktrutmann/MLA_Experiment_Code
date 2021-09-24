@@ -29,8 +29,8 @@
     <label for="id_belief"></label>
     <span>
         <i>0%</i>
-        <input type="range" class="slider slider_hidden belief_slider belief"
-               id="id_belief" name="belief"
+        <input type="range" class="slider slider_hidden belief_slider belief",
+               min="0" max="100" step="1" id="id_belief" name="belief"
                style = "width: 500px; margin-top: 10px; margin-bottom: 20px; "
 
                oninput="change_slider_value()">
