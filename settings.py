@@ -28,20 +28,20 @@ SESSION_CONFIGS = [
         'app_sequence': ['Demographics'],
     },
 
-    {
-        'name': 'Investment_Task_Full',
-        'num_demo_participants': 1,
-        'app_sequence': ['Tutorial_Investment_Task', 'Investment_Task',
-                         'Demographics', 'Get_Payment_Info', 'Show_Payoff'],
-    },
-
-    {
-        'name': 'Investment_Task_Full_bots',
-        'num_demo_participants': 1,
-        'app_sequence': ['Tutorial_Investment_Task', 'Investment_Task',
-                         'Demographics', 'Get_Payment_Info', 'Show_Payoff'],
-        'use_browser_bots': True
-    },
+#    {
+#        'name': 'Investment_Task_Full',
+#        'num_demo_participants': 1,
+#        'app_sequence': ['Tutorial_Investment_Task', 'Investment_Task',
+#                         'Demographics', 'Get_Payment_Info', 'Show_Payoff'],
+#    },
+#
+#    {
+#        'name': 'Investment_Task_Full_bots',
+#        'num_demo_participants': 1,
+#        'app_sequence': ['Tutorial_Investment_Task', 'Investment_Task',
+#                         'Demographics', 'Get_Payment_Info', 'Show_Payoff'],
+#        'use_browser_bots': True
+#    },
 ]
 
 

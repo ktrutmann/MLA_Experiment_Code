@@ -1,6 +1,6 @@
 from otree.api import Submission
-from . import pages
-from ._builtin import Bot
+from . import *
+from otree.api import Bot
 import time
 
 class PlayerBot(Bot):
@@ -8,4 +8,4 @@ class PlayerBot(Bot):
     def play_round(self):
         # Wait for an while:
         time.sleep(60)
-        yield Submission(pages.payoff_page, check_html=False)
+        yield Submission(payoff_page, check_html=False)

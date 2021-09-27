@@ -9,3 +9,4 @@
 *.sqlite3
 *.sublime-workspace
 *.sublime-project
+/_REMOVE_SELF_BACKUP/

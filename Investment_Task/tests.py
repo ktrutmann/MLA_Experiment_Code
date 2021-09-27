@@ -1,7 +1,7 @@
-from . import pages
-from ._builtin import Bot
+from . import *
+from otree.api import Bot
 from otree.api import Submission
-from .models import Constants
+
 import random as rd
 import numpy as np
 
@@ -13,7 +13,7 @@ class PlayerBot(Bot):
 
     def play_round(self):
 
-        yield Submission(pages.initializer_page, check_html=False)
+        yield Submission(initializer_page, check_html=False)
 
         if self.round_number == 1:
             print('@@@@@@ Using Bot in "{}" mode.'.format(self.case))
@@ -21,7 +21,7 @@ class PlayerBot(Bot):
             self.update_optimal_belief()
 
         if self.player.i_round_in_path == 0:
-            yield pages.condition_page
+            yield condition_page
 
         # Trading page:
         if self.player.should_display_infos():
@@ -35,7 +35,7 @@ class PlayerBot(Bot):
             else:
                 transaction = self.get_random_trade()
 
-            yield Submission(pages.trading_page, {'transaction': transaction,
+            yield Submission(trading_page, {'transaction': transaction,
                                                   'time_to_order': 2,
                                                   'unfocused_time_to_order': 0,
                                                   'changed_mind': False,
@@ -52,16 +52,16 @@ class PlayerBot(Bot):
                 belief = int(self.get_optimal_belief() * 100)
             else:
                 belief = rd.randint(0, 100)
-            yield Submission(pages.belief_page, {'belief': belief,
+            yield Submission(belief_page, {'belief': belief,
                                                  'time_to_belief_report': 3,
                                                  'unfocused_time_to_belief_report': 0},
                              check_html=False)
 
         if self.player.should_display_infos():
-            yield pages.update_page, {'update_time_used': 2}
+            yield update_page, {'update_time_used': 2}
 
         if self.round_number == Constants.num_rounds:
-            yield pages.end_page
+            yield end_page
 
     def update_optimal_belief(self):
         if self.player.i_round_in_path == 0:

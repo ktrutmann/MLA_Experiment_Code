@@ -1,48 +1,38 @@
-{% extends "global/Page.html" %}
-{% load otree static %}
+<div class="price_update">
+    {% for is_increase, amount, new_price in update_list %}
+        <p>
+            The assets price
+            {% if is_increase %}
+                <b>increases</b>
+            {% else %}
+                <b>decreases</b>
+            {% endif %}
+            by <b>{{ amount }}</b> and is now <b>{{ new_price }}</b>
+        </p>
+    {% endfor %}
+{% next_button %}
+</div>
+<input type="hidden" id="id_update_time_used" name="update_time_used" value="0">
 
-{% block title %}
-Update
-{% endblock %}
+<style>
+    .otree-timer {
+        display: none;
+    }
+</style>
 
-{% block content %}
-    <div class="price_update">
-        {% for is_increase, amount, new_price in update_list %}
-            <p>
-                The assets price
-                {% if is_increase %}
-                    <b>increases</b>
-                {% else %}
-                    <b>decreases</b>
-                {% endif %}
-                by <b>{{ amount }}</b> and is now <b>{{ new_price }}</b>
-            </p>
-        {% endfor %}
-    {% next_button %}
-    </div>
-    <input type="hidden" id="id_update_time_used" name="update_time_used" value="0">
+<script>
+    let t_start = 0;
 
-    <style>
-        .otree-timer {
-            display: none;
-        }
-    </style>
+    get_time = function(){
+        let timer = new Date();
+        return timer.getTime();
+    };
 
-    <script>
-        let t_start = 0;
+    window.onload = function(){
+        t_start = get_time()
+    };
 
-        get_time = function(){
-            let timer = new Date();
-            return timer.getTime();
-        };
-
-        window.onload = function(){
-            t_start = get_time()
-        };
-
-        document.getElementById('form').onsubmit = function(){
-            document.getElementById('id_update_time_used').value = get_time() - t_start;
-        }
-    </script>
-
-{% endblock %}
+    document.getElementById('form').onsubmit = function(){
+        document.getElementById('id_update_time_used').value = get_time() - t_start;
+    }
+</script>
