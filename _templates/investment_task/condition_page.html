@@ -1,15 +1,10 @@
-{% extends "global/Page.html" %}
-{% load otree static %}
-
 {% block title %}
     {% if Constants.name_in_url == 'Tutorial_Investment_Task' %}Training {% endif %}
     Block {{ player.global_path_id }} of
     {% if Constants.name_in_url == 'Tutorial_Investment_Task' %}{{ Constants.num_tutorial_paths }}
     {% else %}{{ Constants.num_paths }}{% endif %}
-
 {% endblock %}
 
-{% block content %}
     <p>
         {% if Constants.name_in_url == 'Investment_Task' %}
             A new block of the investment task starts now.
@@ -83,4 +78,3 @@
         }
 
     </style>
-{% endblock %}
