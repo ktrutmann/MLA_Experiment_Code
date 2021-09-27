@@ -1,0 +1,40 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block title %}
+    Auszahlung
+{% endblock %}
+
+{% block content %}
+<p>Thank you for participating in this experiment. <br>
+    The following are your earnings during the task:</p>
+    <table id="feedback_table" style="text-align:center; width: 600px; background: aliceblue;">
+        <tr style="background: skyblue">
+            <th>Block</th><th>Earnings</th>
+        </tr>
+        {% for this_trade_payoff in payoff_list %}
+            <tr>
+                <td>{{ forloop.counter }}</td><td>{{ this_trade_payoff }}</td>
+            </tr>
+        {% endfor %}
+        <tr style="background: skyblue;">
+            <td>Total:</td><td>{{ end_cash_sum }}</td>
+        </tr>
+    </table>
+    <p>
+        <br>
+        You therefore have earned <b>{{ end_cash_sum|c }}</b>. Your payoff is calculated in the following way:
+    </p>
+    <p>
+        {{ showup_fee }} for completing the study + CHF {{ base_payoff }} base bonus + {{ percent_conversion }}% of
+        {{ end_cash_sum|c }} =
+        <b>{{ payoff_total }}</b>
+    </p>
+    <p>
+        If you have activated fullscreen mode you may now leave it by pressing <b><i>F11</i></b>
+        or <i><b>Cmd + Ctrl + F</b></i> again. <br>
+        Thank you very much for participating!
+    </p>
+
+{#    TODO (After pilot): For mTurk we need a continue button here!#}
+{% endblock %}

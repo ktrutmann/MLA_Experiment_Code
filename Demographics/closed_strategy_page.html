@@ -1,0 +1,55 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block title %}
+    Ending questionnaire
+{% endblock %}
+
+{% block content %}
+    <p>
+        Below you can see some possible strategies, which you might have used during the investing task.
+        Please indicate how much these strategies match the way in which you made your decisions.
+        1 means that this strategy does not apply at all, 7 means you used exactly this strategy.
+    </p>
+    {% formfield player.strategy_random %}
+    {% formfield player.strategy_DE %}
+    {% formfield player.strategy_anti_DE %}
+    {% formfield player.strategy_feeling %}
+    {% formfield player.strategy_risk_averse %}
+    {% formfield player.strategy_short_risk_averse %}
+    {% formfield player.strategy_rational %}
+    {% formfield player.strategy_short_rational %}
+    {% formfield player.strategy_inertia %}
+    {% next_button %}
+
+    <style>
+    #id_strategy {
+        height: 150px;
+    }
+
+    .controls {
+        margin-left: 10px;
+    }
+
+    .col-form-label {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+    </style>
+
+    <script>
+    window.onload = function () {
+        let scale_elements = document.getElementsByClassName('controls');
+
+        for (let this_scale of scale_elements){
+            let scale_html = this_scale.innerHTML;
+            this_scale.innerHTML = "<span style='margin-right: 10px; background: #eeeeee'>Agree not at all</span>" +
+                scale_html +
+                "<span style='background: #eeeeee'>Agree completely</span>";
+            console.log(this_scale);
+        }
+    }
+
+    </script>
+
+{% endblock %}
