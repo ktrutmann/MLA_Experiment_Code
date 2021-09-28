@@ -24,7 +24,7 @@ class PlayerBot(Bot):
             yield condition_page
 
         # Trading page:
-        if self.player.should_display_infos():
+        if should_display_infos(self.player):
             if self.case == 'custom':
                 transaction = self.get_wishful_trade()
             elif self.case == 'model':
@@ -43,7 +43,7 @@ class PlayerBot(Bot):
                              check_html=False)
 
         # Belief page:
-        if self.player.should_display_infos():
+        if should_display_infos(self.player):
             if self.case == 'custom':
                 belief = self.get_wishful_belief()
             elif self.case == 'model':
@@ -57,7 +57,7 @@ class PlayerBot(Bot):
                                                  'unfocused_time_to_belief_report': 0},
                              check_html=False)
 
-        if self.player.should_display_infos():
+        if should_display_infos(self.player):
             yield update_page, {'update_time_used': 2}
 
         if self.round_number == Constants.num_rounds:
@@ -141,12 +141,12 @@ class PlayerBot(Bot):
             # It's not too elegant, but this "goes back" to the last known belief and updates from there.
             # Sadly oTree doesn't let us change attributes of past rounds, so it's only stored temporarely.
 
-            belief_last_round = previous_self.belief
+            belief_last_round = previous_self.field_maybe_none('belief')
             i = 1
 
             while belief_last_round is None:  # Backwards search
                 i += 1
-                belief_last_round = self.player.in_round(self.round_number - i).belief
+                belief_last_round = self.player.in_round(self.round_number - i).field_maybe_none('belief')
 
             while i > 1:  # Forwards "solve"
                 temp_self = self.player.in_round(self.round_number - i)
@@ -199,7 +199,7 @@ class PlayerBot(Bot):
         elif self.player.condition_name == 'blocked_blocked_info':
             # If we're jumping rounds use last reported belief and price as a reference:
             i = 2
-            while previous_self.belief is None:
+            while previous_self.field_maybe_none('belief') is None:
                 previous_self = self.player.in_round(self.round_number - i)
                 i += 1
 

@@ -208,7 +208,7 @@ def initialize_round(player: Player, n_distinct_paths):
             player.global_path_id = player.in_round(player.round_number - 1).global_path_id + 1
     else:
         former_self = player.in_round(player.round_number - 1)
-        if former_self.transaction is None:
+        if former_self.field_maybe_none('transaction') is None:
             former_self.transaction = 0
         player.hold = former_self.hold + former_self.transaction
         player.cash = (
@@ -351,7 +351,7 @@ def calculate_final_payoff(player: Player):
     if Constants.show_debug_msg:
         print('##### Earnings list is {}'.format(player.participant.vars['earnings_list']))
     # Add the base_payoff to the game-payoff and make sure that it is floored at 0
-    player.participant.payoff = c(
+    player.participant.payoff = cu(
         player.session.config['base_bonus'] / player.session.config['real_world_currency_per_point']
         + sum(player.participant.vars['earnings_list'])
     )
