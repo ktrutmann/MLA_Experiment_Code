@@ -9,7 +9,7 @@ import numpy as np
 class PlayerBot(Bot):
 
     rational_belief_up_asset = .5
-    cases = ['custom', 'model', 'optimal']  # Can be 'custom', 'model', 'optimal', or 'random'. See `Readme.md`.
+    cases = ['model']  # Can be 'custom', 'model', 'optimal', or 'random'. See `Readme.md`.
 
     def play_round(self):
 

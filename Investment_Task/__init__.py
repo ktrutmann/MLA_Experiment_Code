@@ -16,7 +16,8 @@ class Constants(BaseConstants):
     players_per_group = None
     # Experimental Flow
     n_periods_per_phase = 4  # How long should the participants be "blocked"?
-    n_distinct_paths = 7  # How many paths should be generated?
+    n_distinct_paths = 2  # How many paths should be generated?
+    # FIXME: (1) revert to 7! (Or what ever number is correct!)
     condition_names = [
         'full_control',
         'blocked_full_info',
@@ -262,10 +263,12 @@ def is_investable(player: Player):
         and not player.i_round_in_path == 0
     )
     is_first_phase = player.i_round_in_path < Constants.n_periods_per_phase
+    is_last_round = player.i_round_in_path == Constants.n_rounds_per_path 
     is_blocked_condition = player.condition_name in ['blocked_full_info', 'blocked_blocked_info']
-    is_investable = (not (is_first_phase or is_blocked_condition)) or is_phase_start
+    is_investable = ((not (is_first_phase or is_blocked_condition)) or is_phase_start) and not is_last_round
     if Constants.show_debug_msg:
         print('### Checked investablility: {}'.format(is_investable))
+        print(f'@@@@ i_round_in_path: {player.i_round_in_path}, n_rounds: {Constants.n_rounds_per_path}')
     return is_investable
 
 
