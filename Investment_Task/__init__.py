@@ -16,7 +16,7 @@ class Constants(BaseConstants):
     players_per_group = None
     # Experimental Flow
     n_periods_per_phase = 4  # How long should the participants be "blocked"?
-    n_distinct_paths = 2  # How many paths should be generated?
+    n_distinct_paths = 7  # How many paths should be generated?
     # FIXME: (1) revert to 7! (Or what ever number is correct!)
     condition_names = [
         'full_control',

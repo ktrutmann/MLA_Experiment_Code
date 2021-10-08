@@ -90,7 +90,7 @@ class PlayerBot(Bot):
         alpha = .88  # Risk aversion parameter
         theta = 1  # Soft-max sensitivity
 
-        up_belief = self.get_model_belief()
+        up_belief = self.get_model_belief() / 100
         portfolio_value = self.player.cash + self.player.hold * self.player.price
         n_moves = len(Constants.updates)
 
@@ -124,9 +124,17 @@ class PlayerBot(Bot):
         previous_self = self.player.in_round(self.round_number - 1)
         price_up = self.player.price > previous_self.price
 
+        favorable_move = price_up == (previous_self.hold > 0)
+
         if self.player.condition_name == 'full_control':
             # Interaction effect dependent on returns:
-            if self.player.returns > 0 and price_up or self.player.returns > 0 and not price_up:
+            # Some trades "reset" returns:
+            this_return = previous_self.returns
+            if self.player.hold == 0 or ((previous_self.hold > 0) != (self.player.hold > 0)):
+                alpha = Constants.bot_base_alpha
+            # Otherwise check whether the interaction sets in:
+            elif previous_self.returns > 0 and favorable_move or \
+                    previous_self.returns < 0 and not favorable_move:
                 alpha = Constants.bot_base_alpha - Constants.bot_learning_effect
             else:
                 alpha = Constants.bot_base_alpha
