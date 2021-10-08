@@ -24,7 +24,7 @@ class PlayerBot(Bot):
             yield condition_page
 
         # Trading page:
-        if should_display_infos(self.player):
+        if is_investable(self.player):
             if self.case == 'custom':
                 transaction = self.get_wishful_trade()
             elif self.case == 'model':
@@ -36,6 +36,13 @@ class PlayerBot(Bot):
                 transaction = self.get_random_trade()
 
             yield Submission(trading_page, {'transaction': transaction,
+                                                  'time_to_order': 2,
+                                                  'unfocused_time_to_order': 0,
+                                                  'changed_mind': False,
+                                                  'erroneous_trade': 'none'},
+                             check_html=False)
+        elif should_display_infos(self.player):
+            yield Submission(trading_page, {'transaction': 0,
                                                   'time_to_order': 2,
                                                   'unfocused_time_to_order': 0,
                                                   'changed_mind': False,
@@ -88,7 +95,7 @@ class PlayerBot(Bot):
         low parameter will lead to completely random choices.
         """
         alpha = .88  # Risk aversion parameter
-        theta = 1  # Soft-max sensitivity
+        theta = 30  # Soft-max sensitivity
 
         up_belief = self.get_model_belief() / 100
         portfolio_value = self.player.cash + self.player.hold * self.player.price
@@ -128,8 +135,6 @@ class PlayerBot(Bot):
 
         if self.player.condition_name == 'full_control':
             # Interaction effect dependent on returns:
-            # Some trades "reset" returns:
-            this_return = previous_self.returns
             if self.player.hold == 0 or ((previous_self.hold > 0) != (self.player.hold > 0)):
                 alpha = Constants.bot_base_alpha
             # Otherwise check whether the interaction sets in:
@@ -139,8 +144,11 @@ class PlayerBot(Bot):
             else:
                 alpha = Constants.bot_base_alpha
         elif self.player.condition_name == 'blocked_full_info':
+            if self.player.hold == 0 or ((previous_self.hold > 0) != (self.player.hold > 0)):
+                alpha = Constants.bot_base_alpha
             # less interaction effect, but still there:
-            if self.player.returns > 0 and price_up or self.player.returns > 0 and not price_up:
+            elif previous_self.returns > 0 and favorable_move or \
+                    previous_self.returns < 0 and not favorable_move:
                 alpha = Constants.bot_base_alpha - Constants.bot_learning_effect / 2
             else:
                 alpha = Constants.bot_base_alpha

@@ -17,7 +17,6 @@ class Constants(BaseConstants):
     # Experimental Flow
     n_periods_per_phase = 4  # How long should the participants be "blocked"?
     n_distinct_paths = 7  # How many paths should be generated?
-    # FIXME: (1) revert to 7! (Or what ever number is correct!)
     condition_names = [
         'full_control',
         'blocked_full_info',
@@ -44,8 +43,8 @@ class Constants(BaseConstants):
     max_time_beliefs = 5  # Same but for the belief page
     experimenter_email = 'k.trutmann@unibas.ch'
     # Bot testing:
-    bot_base_alpha = 0.35  # What's the base learning rate for the RL model
-    bot_learning_effect = 0.1  # How much should the learning rate change for the model bot?
+    bot_base_alpha = 0.25  # What's the base learning rate for the RL model
+    bot_learning_effect = 0.08  # How much should the learning rate change for the model bot?
     show_debug_msg = False  # Whether to print current states to the console
 
 
@@ -268,7 +267,6 @@ def is_investable(player: Player):
     is_investable = ((not (is_first_phase or is_blocked_condition)) or is_phase_start) and not is_last_round
     if Constants.show_debug_msg:
         print('### Checked investablility: {}'.format(is_investable))
-        print(f'@@@@ i_round_in_path: {player.i_round_in_path}, n_rounds: {Constants.n_rounds_per_path}')
     return is_investable
 
 
