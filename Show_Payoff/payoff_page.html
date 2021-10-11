@@ -2,7 +2,7 @@
 {% load otree static %}
 
 {% block title %}
-    Auszahlung
+    Payment
 {% endblock %}
 
 {% block content %}
@@ -33,8 +33,7 @@
     <p>
         If you have activated fullscreen mode you may now leave it by pressing <b><i>F11</i></b>
         or <i><b>Cmd + Ctrl + F</b></i> again. <br>
+        Please return to the mTurk window and enter the code <b>{{ completion_code }}</b> to confirm that you finished the study.
         Thank you very much for participating!
     </p>
-
-{#    TODO (After pilot): For mTurk we need a continue button here!#}
 {% endblock %}

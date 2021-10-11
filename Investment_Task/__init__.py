@@ -1,5 +1,6 @@
 import copy
 import random as rd
+import string
 
 import pandas as pd
 from otree.api import *
@@ -78,6 +79,7 @@ class Player(BasePlayer):
     distinct_path_id = models.IntegerField()
     drift = models.FloatField()
     condition_name = models.StringField()
+    completion_code = models.StringField(default='0000')
 
 
 # FUNCTIONS
@@ -358,6 +360,9 @@ def calculate_final_payoff(player: Player):
     )
     if player.participant.payoff < 0:
         player.participant.payoff -= player.participant.payoff  # For some reason 0 didn't work.
+
+    player.completion_code = ''.join(rd.sample(string.ascii_uppercase + '1234567890', k = 5))
+
     player.participant.vars['payoff_dict'] = {
         'payoff_list': zip(player.participant.vars['earnings_list']),
         'end_cash_sum': sum(player.participant.vars['earnings_list']),
@@ -365,7 +370,8 @@ def calculate_final_payoff(player: Player):
         'showup_fee': player.session.config['participation_fee'],
         'base_payoff': player.session.config['base_bonus'],
         'percent_conversion': round(
-            player.session.config['real_world_currency_per_point'] * 100, 2
+            player.session.config['real_world_currency_per_point'] * 100, 2,
+        'completion_code': player.completion_code
         ),
     }
 
