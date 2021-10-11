@@ -18,7 +18,6 @@
         Please decide now!
     </p>
 </div>
-{# TODO: (2) The slider knob is visible from the start! #}
 
 <div id="slider_container" style="width: 100%; align-content: center">
     <label for="id_belief"></label>
@@ -43,13 +42,31 @@
 <input type="hidden" id="id_time_to_belief_report" name="time_to_belief_report" value="">
 <input type="hidden" id="id_unfocused_time_to_belief_report" name="unfocused_time_to_belief_report" value="">
 <style>
-    /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
-    .slider_hidden::-webkit-slider-thumb {
-        visibility: hidden;
-    }
-
     .slider_hidden::-moz-range-thumb {
         visibility: hidden;
+        background: #ffffff;
+    }
+
+    input[type=range]::-moz-range-track {
+      background: #1266F1;
+    }
+
+    .slider_hidden::-webkit-slider-thumb {
+      visibility: hidden;
+      background: #ffffff;
+    }
+
+    input[type=range]::-webkit-slider-runnable-track {
+      background: #1266F1;
+    }
+
+    .slider_hidden::-ms-thumb {
+      visibility: hidden;
+      background: #ffffff;
+    }
+
+    input[type=range]::-ms-track {
+      background: #1266F1;
     }
 
     .otree-timer {

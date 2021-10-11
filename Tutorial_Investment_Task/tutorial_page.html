@@ -518,15 +518,33 @@
             background: aliceblue;
         }
 
-        /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
-        .slider_hidden::-webkit-slider-thumb {
-            visibility: hidden;
-        }
-
         .slider_hidden::-moz-range-thumb {
             visibility: hidden;
+            background: #ffffff;
         }
 
+        input[type=range]::-moz-range-track {
+          background: #1266F1;
+        }
+
+        .slider_hidden::-webkit-slider-thumb {
+          visibility: hidden;
+          background: #ffffff;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+          background: #1266F1;
+        }
+
+        .slider_hidden::-ms-thumb {
+          visibility: hidden;
+          background: #ffffff;
+        }
+
+        input[type=range]::-ms-track {
+          background: #1266F1;
+        }
+    
         #id_transition_matrix_table td{
             border-color: dimgrey;
         }
