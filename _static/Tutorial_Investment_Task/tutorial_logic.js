@@ -20,10 +20,12 @@ window.addEventListener('keydown',function(e){
 // Overwrite what the trading-buttons should do:
 let buy_buttons = document.getElementsByClassName('buy_button');
 let sell_buttons = document.getElementsByClassName('sell_button');
+let continue_buttons = document.getElementsByClassName('continue_button');
 let i;
 for (i = 0; i < buy_buttons.length; i++){
     buy_buttons[i].onclick = function() {check_tutorial_moves('buy')};
     sell_buttons[i].onclick = function() {check_tutorial_moves('sell')};
+    sell_buttons[i].onclick = function() {check_tutorial_moves('continue')};
 }
 
 // Keeping track of the tutorial positions

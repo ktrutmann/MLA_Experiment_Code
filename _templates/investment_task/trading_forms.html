@@ -9,6 +9,10 @@
                     onclick="buy()">Buy</button>
             <button class="btn trade_button sell_button" id="asset_sell_button" type="button"
                     onclick="sell()">Sell</button>
+            <div class="row">
+                <button class="btn trade_button continue_button" id="asset_continue_button" type="button"
+                        onclick="no_trade()">Continue</button>
+            </div>
             </div>
         </div>
         <div class="col-md-9" id="confirm_form" style="display: none;">
@@ -21,7 +25,6 @@
                     onclick="switch_order_display()">Change Order</button>
             <button class="btn confirm_button" id="confirm_orders_button" style="display: none;" type="button"
                 onclick="submit_order()">Confirm Order</button>
-                <!-- TODO: (4) The buttons look weird in the new oTree version! -->
         </div>
     </div>
 </div>
@@ -30,7 +33,14 @@
 
 .trade_button{
     height: 38px;
-    margin-left: 10px;
+    margin-bottom: 5px;
+    width:  50%;
+}
+
+.continue_button{
+    width: 25%;
+    background: skyblue;
+    /*border: skyblue;*/
 }
 
 .confirm_button{
@@ -45,6 +55,10 @@
 
 .form-group{
     margin-right: 10px;
+}
+
+.form-control{
+    width: 50%;
 }
 
 </style>

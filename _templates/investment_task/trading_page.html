@@ -218,6 +218,12 @@ sell = function(){
     }
 };
 
+no_trade = function(){
+    order = 0
+    switch_order_display();
+    set_confirm_text(order);
+};
+
 submit_order = function(){
     $$("id_transaction").value = order;
     $$('id_time_to_order').value = (get_time() - load_time) / 1000;
