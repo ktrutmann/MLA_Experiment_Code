@@ -370,9 +370,8 @@ def calculate_final_payoff(player: Player):
         'showup_fee': player.session.config['participation_fee'],
         'base_payoff': player.session.config['base_bonus'],
         'percent_conversion': round(
-            player.session.config['real_world_currency_per_point'] * 100, 2,
+            player.session.config['real_world_currency_per_point'] * 100, 2),
         'completion_code': player.completion_code
-        ),
     }
 
 
