@@ -138,8 +138,9 @@ class PlayerBot(Bot):
             if self.player.hold == 0 or ((previous_self.hold > 0) != (self.player.hold > 0)):
                 alpha = Constants.bot_base_alpha
             # Otherwise check whether the interaction sets in:
-            elif previous_self.returns > 0 and favorable_move or \
-                    previous_self.returns < 0 and not favorable_move:
+            elif (previous_self.returns > 0 and favorable_move or \
+                    previous_self.returns < 0 and not favorable_move) and not \
+                    self.player.i_round_in_path <= Constants.n_periods_per_phase:
                 alpha = Constants.bot_base_alpha - Constants.bot_learning_effect
             else:
                 alpha = Constants.bot_base_alpha
@@ -147,9 +148,10 @@ class PlayerBot(Bot):
             if self.player.hold == 0 or ((previous_self.hold > 0) != (self.player.hold > 0)):
                 alpha = Constants.bot_base_alpha
             # less interaction effect, but still there:
-            elif previous_self.returns > 0 and favorable_move or \
-                    previous_self.returns < 0 and not favorable_move:
-                alpha = Constants.bot_base_alpha - Constants.bot_learning_effect / 2
+            elif (previous_self.returns > 0 and favorable_move or \
+                    previous_self.returns < 0 and not favorable_move) and not \
+                    self.player.i_round_in_path <= Constants.n_periods_per_phase:
+                alpha = Constants.bot_base_alpha - Constants.bot_learning_effect / 5
             else:
                 alpha = Constants.bot_base_alpha
         elif self.player.condition_name == 'blocked_blocked_info':

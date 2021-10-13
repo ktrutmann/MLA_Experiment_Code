@@ -26,6 +26,7 @@ class Constants(BaseConstants):
     n_phases = 2  # How many phases should there be per condition
     hold_range = [-4, 4]  # What's the minimum and maximum amount of shares that can be held.
     shuffle_conditions = True  # Should the conditions be presented in "blocks" or shuffled?
+    scramble_moves_in_phases = False  # Should price moves within phases be scrambled between phases?
     # Derivative constants
     num_paths = n_distinct_paths * len(condition_names)
     n_rounds_per_path = n_phases * n_periods_per_phase + 1
@@ -44,10 +45,9 @@ class Constants(BaseConstants):
     max_time_beliefs = 5  # Same but for the belief page
     experimenter_email = 'k.trutmann@unibas.ch'
     # Bot testing:
-    bot_base_alpha = 0.25  # What's the base learning rate for the RL model
-    bot_learning_effect = 0.08  # How much should the learning rate change for the model bot?
+    bot_base_alpha = 0.2  # What's the base learning rate for the RL model
+    bot_learning_effect = 0.04  # How much should the learning rate change for the model bot?
     show_debug_msg = False  # Whether to print current states to the console
-
 
 class Subsession(BaseSubsession):
     pass
@@ -100,19 +100,20 @@ def make_price_paths(player: Player, n_distinct_paths):
             movement_magnitude = rd.choice(Constants.updates)
             moves += [movement_direction * movement_magnitude]
         distinct_path_moves_list += [moves]
-    # Scramble the moves differently for each condition:
     all_moves_list = [copy.deepcopy(distinct_path_moves_list) for _ in Constants.condition_names]
     all_drifts_list = [copy.deepcopy(drift_list) for _ in Constants.condition_names]
-    # The levels here are [condition][path][period]
-    for i_cond, _ in enumerate(Constants.condition_names):
-        for i_path in range(n_distinct_paths):
-            # Create a moving window to scramble the movements:
-            for i_phase in range(Constants.n_phases):
-                win_start_ix = i_phase * Constants.n_periods_per_phase
-                win_end_ix = (i_phase + 1) * Constants.n_periods_per_phase
-                these_moves = all_moves_list[i_cond][i_path][win_start_ix:win_end_ix]
-                rd.shuffle(these_moves)
-                all_moves_list[i_cond][i_path][win_start_ix:win_end_ix] = these_moves
+    # If wanted, scramble the moves differently for each condition:
+    if Constants.scramble_moves_in_phases:
+        # The levels here are [condition][path][period]
+        for i_cond, _ in enumerate(Constants.condition_names):
+            for i_path in range(n_distinct_paths):
+                # Create a moving window to scramble the movements:
+                for i_phase in range(Constants.n_phases):
+                    win_start_ix = i_phase * Constants.n_periods_per_phase
+                    win_end_ix = (i_phase + 1) * Constants.n_periods_per_phase
+                    these_moves = all_moves_list[i_cond][i_path][win_start_ix:win_end_ix]
+                    rd.shuffle(these_moves)
+                    all_moves_list[i_cond][i_path][win_start_ix:win_end_ix] = these_moves
     # Now also shuffle the paths together with their drifts:
     distinct_path_ids = [list(range(n_distinct_paths))] * len(Constants.condition_names)
     for i_cond, _ in enumerate(Constants.condition_names):
@@ -186,6 +187,15 @@ def initialize_round(player: Player, n_distinct_paths):
         make_price_paths(player, n_distinct_paths=n_distinct_paths)
         player.participant.vars['earnings_list'] = []
         player.global_path_id = 1
+        # Decide what the initial hold will be for each path:
+        initial_holds_per_path = [rd.choice(
+            list(range(Constants.hold_range[0], 0))
+            + list(range(1, Constants.hold_range[1] + 1))) for  # This makes sure 0 isn't chosen!
+            _ in range(n_distinct_paths)]
+        all_initial_holds = [initial_holds_per_path[i] for i in
+            player.participant.vars['price_info']['distinct_path_id']]
+        player.participant.vars['initial_holds'] = all_initial_holds
+
     else:
         player.global_path_id = player.in_round(player.round_number - 1).global_path_id
     # Record the relevant price variables into the database:
@@ -198,10 +208,7 @@ def initialize_round(player: Player, n_distinct_paths):
     player.investable = is_investable(player)
     # If this is the first round of a new path:
     if player.i_round_in_path == 0:
-        player.hold = rd.choice(
-            list(range(Constants.hold_range[0], 0))
-            + list(range(1, Constants.hold_range[1] + 1))  # This makes sure 0 isn't chosen!
-        )
+        player.hold = player.participant.vars['initial_holds'][player.round_number - 1]
         player.cash = Constants.starting_cash - (player.hold * Constants.start_price)
         player.base_price = Constants.start_price if player.hold != 0 else 0
         player.returns = 0

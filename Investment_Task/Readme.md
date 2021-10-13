@@ -16,6 +16,9 @@ investment after `n_periods_per_phase * n_phases` periods.
 - `hold_range`: A list containing the minimum and maximum amount of shares that can be held.
 - `shuffle_conditions`: Should the conditions be presented in "blocks" or shuffled?
 If they are shuffled, the condition page will be displayed each time the condition changes.
+- `scramble_moves_in_phases`: Whether price moves should be scrambled within phases.
+This would lead to prices arriving at the same points at the end of phase 1 and 2, but in
+slightly different paths.
 
 ### Price Path Parameters
 - `up_probs`: List of the possible probabilities of a price increase (i.e. "drifts")

@@ -20,6 +20,8 @@ class Subsession(BaseSubsession):
 class Group(BaseGroup):
     pass
 
+# TODO: (3) Add a "did you recognize a pattern" question
+# TODO: (3) Add a "Is there a reason we shouldn't use your data" question. (Mention that it's not payoff relevant!)
 
 class Player(BasePlayer):
     strategy = models.LongStringField()
