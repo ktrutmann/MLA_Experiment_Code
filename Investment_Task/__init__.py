@@ -21,7 +21,7 @@ class Constants(BaseConstants):
     condition_names = [
         'full_control',
         'blocked_full_info',
-        'blocked_blocked_info',  # TODO: (2) Present info as one sentence!
+        'blocked_blocked_info',
     ]  # List of the conditions
     n_phases = 2  # How many phases should there be per condition
     hold_range = [-4, 4]  # What's the minimum and maximum amount of shares that can be held.
@@ -91,7 +91,9 @@ def make_price_paths(player: Player, n_distinct_paths):
     rounds.
     """
     # Determine the drift for each path:
-    drift_list = rd.choices(Constants.up_probs, k=n_distinct_paths)
+    if player.participant._is_bot:
+        rd.seed(5341 + player.participant.id_in_session)
+    drift_list = rd.choices(player.participant.vars['up_probs'], k=n_distinct_paths)
     distinct_path_moves_list = []  # Will be a list of lists
     for this_drift in drift_list:
         moves = []
@@ -109,8 +111,8 @@ def make_price_paths(player: Player, n_distinct_paths):
             for i_path in range(n_distinct_paths):
                 # Create a moving window to scramble the movements:
                 for i_phase in range(Constants.n_phases):
-                    win_start_ix = i_phase * Constants.n_periods_per_phase
-                    win_end_ix = (i_phase + 1) * Constants.n_periods_per_phase
+                    win_start_ix = i_phase * player.participant.vars['n_periods_per_phase']
+                    win_end_ix = (i_phase + 1) * player.participant.vars['n_periods_per_phase']
                     these_moves = all_moves_list[i_cond][i_path][win_start_ix:win_end_ix]
                     rd.shuffle(these_moves)
                     all_moves_list[i_cond][i_path][win_start_ix:win_end_ix] = these_moves
@@ -184,10 +186,17 @@ def make_price_paths(player: Player, n_distinct_paths):
 def initialize_round(player: Player, n_distinct_paths):
     # If this is the very first round
     if player.round_number == 1:
+        # This is needed so bot-testing can manipulate these values:
+        if not player.participant._is_bot:
+            player.participant.vars['up_probs'] = Constants.up_probs.copy()
+            player.participant.vars['n_periods_per_phase'] = Constants.n_periods_per_phase
+
         make_price_paths(player, n_distinct_paths=n_distinct_paths)
         player.participant.vars['earnings_list'] = []
         player.global_path_id = 1
         # Decide what the initial hold will be for each path:
+        if player.participant._is_bot:
+            rd.seed(5341 + player.participant.id_in_session)
         initial_holds_per_path = [rd.choice(
             list(range(Constants.hold_range[0], 0))
             + list(range(1, Constants.hold_range[1] + 1))) for  # This makes sure 0 isn't chosen!
@@ -267,10 +276,10 @@ def initialize_round(player: Player, n_distinct_paths):
 def is_investable(player: Player):
     """Find out whether the participant should be able to make an investment decision in this round."""
     is_phase_start = (
-        player.i_round_in_path % Constants.n_periods_per_phase == 0
+        player.i_round_in_path % player.participant.vars['n_periods_per_phase'] == 0
         and not player.i_round_in_path == 0
     )
-    is_first_phase = player.i_round_in_path < Constants.n_periods_per_phase
+    is_first_phase = player.i_round_in_path < player.participant.vars['n_periods_per_phase']
     is_last_round = player.i_round_in_path == Constants.n_rounds_per_path 
     is_blocked_condition = player.condition_name in ['blocked_full_info', 'blocked_blocked_info']
     is_investable = ((not (is_first_phase or is_blocked_condition)) or is_phase_start) and not is_last_round
@@ -284,9 +293,9 @@ def should_display_infos(player: Player):
     last_round = player.participant.vars['price_info']['last_trial_in_path'][
         player.round_number - 1
     ]
-    start_of_phase = player.i_round_in_path % Constants.n_periods_per_phase == 0
+    start_of_phase = player.i_round_in_path % player.participant.vars['n_periods_per_phase'] == 0
     blocked_condition = player.condition_name == 'blocked_blocked_info'
-    first_phase = player.i_round_in_path < Constants.n_periods_per_phase
+    first_phase = player.i_round_in_path < player.participant.vars['n_periods_per_phase']
     should_display = ((not blocked_condition) or first_phase or start_of_phase) and not last_round
     if Constants.show_debug_msg:
         print('### should_display_infos(): {}'.format(should_display))
@@ -299,7 +308,7 @@ def get_investment_span(player: Player):
         return 1
     elif player.condition_name in ['blocked_full_info', 'blocked_blocked_info']:
         return (
-            Constants.n_periods_per_phase
+            player.participant.vars['n_periods_per_phase']
             if (player.i_round_in_path + 1) < Constants.n_rounds_per_path
             else 1
         )
@@ -333,13 +342,13 @@ def make_update_list(player: Player):
     """Creates a zipped list for django to display as the updates. The length depends on the condition."""
     if (
         player.condition_name == 'blocked_blocked_info'
-        and player.i_round_in_path == Constants.n_periods_per_phase
+        and player.i_round_in_path == player.participant.vars['n_periods_per_phase']
     ):
         # We are at the last decision of the blocked and low info condition, so show a list of updates:
         price_list = player.participant.vars['price_info']['price']
         # This is shown right after the blocked trade has been made. Hence "future".
         future_indexes = range(
-            player.round_number - 1, player.round_number + Constants.n_periods_per_phase - 1
+            player.round_number - 1, player.round_number + player.participant.vars['n_periods_per_phase'] - 1
         )
         was_increase = [price_list[i + 1] > price_list[i] for i in future_indexes]
         differences = [abs(price_list[i + 1] - price_list[i]) for i in future_indexes]

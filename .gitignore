@@ -11,3 +11,4 @@
 *.sublime-project
 /_REMOVE_SELF_BACKUP/
 /botdata/
+pyrightconfig.json

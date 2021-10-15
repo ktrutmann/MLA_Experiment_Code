@@ -9,15 +9,32 @@ import numpy as np
 class PlayerBot(Bot):
 
     rational_belief_up_asset = .5
-    cases = ['model']  # Can be 'custom', 'model', 'optimal', or 'random'. See `Readme.md`.
+    # Building the cases to be checked:
+    case_list = []
+    case_id = 0
+    for this_prob in np.arange(.6, .8, .05):
+        for these_rounds in range(3, 6):
+            for this_model in ['CSRL', 'RL_single']:
+                case_list += [dict(
+                    response='model',
+                    model=this_model,
+                    up_probs=[this_prob, 1 - this_prob],
+                    n_periods_per_phase=these_rounds,
+                    case_id=case_id)]
+                case_id += 1
+    cases = case_list
+    # TODO: (2) Save the case to the data!
+    # TODO: (2) Create and use learning rates dependent on the model
 
     def play_round(self):
+        if self.player.round_number == 1:
+            self.player.participant.vars['up_probs'] = self.case['up_probs']
+            self.player.participant.vars['n_periods_per_phase'] = self.case['n_periods_per_phase']
+            print(f'@@@@@ This round uses: {self.player.participant.vars}')
 
         yield Submission(initializer_page, check_html=False)
 
-        if self.round_number == 1:
-            print('@@@@@@ Using Bot in "{}" mode.'.format(self.case))
-        else:
+        if self.round_number != 1:
             self.update_optimal_belief()
 
         if self.player.i_round_in_path == 0:
@@ -25,11 +42,11 @@ class PlayerBot(Bot):
 
         # Trading page:
         if is_investable(self.player):
-            if self.case == 'custom':
+            if self.case['response'] == 'custom':
                 transaction = self.get_wishful_trade()
-            elif self.case == 'model':
+            elif self.case['response'] == 'model':
                 transaction = self.get_model_trade()
-            elif self.case == 'optimal':
+            elif self.case['response'] == 'optimal':
                 goal = max(Constants.hold_range) if self.get_optimal_belief() > .5 else min(Constants.hold_range)
                 transaction = goal - self.player.hold
             else:
@@ -51,11 +68,11 @@ class PlayerBot(Bot):
 
         # Belief page:
         if should_display_infos(self.player):
-            if self.case == 'custom':
+            if self.case['response'] == 'custom':
                 belief = self.get_wishful_belief()
-            elif self.case == 'model':
+            elif self.case['response'] == 'model':
                 belief = self.get_model_belief()
-            elif self.case == 'optimal':
+            elif self.case['response'] == 'optimal':
                 belief = int(self.get_optimal_belief() * 100)
             else:
                 belief = rd.randint(0, 100)
@@ -76,16 +93,17 @@ class PlayerBot(Bot):
         else:
             previous_self = self.player.in_round(self.round_number - 1)
             price_up = self.player.price > previous_self.price
-            move_prob = max(Constants.up_probs) if price_up else min(Constants.up_probs)  # Note: This assumes symmetry!
+            move_prob = max(self.player.participant.vars['up_probs']) \
+                if price_up else min(self.player.participant.vars['up_probs'])  # Note: This assumes symmetry!
 
             # This will introduce rounding errors but oh well...
             self.rational_belief_up_asset = self.rational_belief_up_asset * move_prob / \
-                                                (self.rational_belief_up_asset * max(Constants.up_probs) +
-                                                    (1 - self.rational_belief_up_asset) * min(Constants.up_probs))
+                (self.rational_belief_up_asset * max(self.player.participant.vars['up_probs']) +
+                (1 - self.rational_belief_up_asset) * min(self.player.participant.vars['up_probs']))
 
     def get_optimal_belief(self):
-        return (self.rational_belief_up_asset * max(Constants.up_probs) +
-                (1 - self.rational_belief_up_asset) * min(Constants.up_probs))
+        return (self.rational_belief_up_asset * max(self.player.participant.vars['up_probs']) +
+                (1 - self.rational_belief_up_asset) * min(self.player.participant.vars['up_probs']))
 
     def get_model_trade(self):
         """
@@ -95,7 +113,7 @@ class PlayerBot(Bot):
         low parameter will lead to completely random choices.
         """
         alpha = .88  # Risk aversion parameter
-        theta = 30  # Soft-max sensitivity
+        theta = 5  # Soft-max sensitivity
 
         up_belief = self.get_model_belief() / 100
         portfolio_value = self.player.cash + self.player.hold * self.player.price
@@ -108,10 +126,11 @@ class PlayerBot(Bot):
             down_utilities = [(portfolio_value - this_hold * i) ** alpha * ((1 - up_belief) / n_moves)
                               for i in Constants.updates]
 
-            # Dividing by 1000 so the soft-max doesn't blow up
-            utilities += [sum(up_utilities + down_utilities) / 1000]
+            utilities += [sum(up_utilities + down_utilities)]
 
         # Soft-max:
+        # Lowering utilities. What matters is the difference:
+        utilities = [utilities[i] - min(utilities) for i, _ in enumerate(utilities)]
         numerator = [np.e ** (theta * i) for i in utilities]
         denominator = sum(numerator)
         probabilities = [i / denominator for i in numerator]
@@ -140,7 +159,7 @@ class PlayerBot(Bot):
             # Otherwise check whether the interaction sets in:
             elif (previous_self.returns > 0 and favorable_move or \
                     previous_self.returns < 0 and not favorable_move) and not \
-                    self.player.i_round_in_path <= Constants.n_periods_per_phase:
+                    self.player.i_round_in_path <= self.player.participant.vars['n_periods_per_phase']:
                 alpha = Constants.bot_base_alpha - Constants.bot_learning_effect
             else:
                 alpha = Constants.bot_base_alpha
@@ -150,7 +169,7 @@ class PlayerBot(Bot):
             # less interaction effect, but still there:
             elif (previous_self.returns > 0 and favorable_move or \
                     previous_self.returns < 0 and not favorable_move) and not \
-                    self.player.i_round_in_path <= Constants.n_periods_per_phase:
+                    self.player.i_round_in_path <= self.player.participant.vars['n_periods_per_phase']:
                 alpha = Constants.bot_base_alpha - Constants.bot_learning_effect / 5
             else:
                 alpha = Constants.bot_base_alpha
@@ -183,7 +202,7 @@ class PlayerBot(Bot):
 
     def get_wishful_trade(self):
         # Only simulate the effect in the "last decision". Otherwise trade randomly.
-        if self.player.i_round_in_path == Constants.n_periods_per_phase * 2:
+        if self.player.i_round_in_path == self.player.participant.vars['n_periods_per_phase'] * 2:
             if self.player.condition_name == 'full_control':
                 # Invest somewhere around 0 shares:
                 return rd.randint(-2, 2) - self.player.hold
