@@ -183,6 +183,9 @@ class PlayerBot(Bot):
             else:
                 alpha = learning_rates['not_inv']
 
+            if self.case['model'] == 'RL_single':
+                alpha = learning_rates['single']
+
         elif self.player.condition_name == 'blocked_full_info':
             if favorable_move and gain_pos:
                 alpha = (learning_rates['fav_gain'] + learning_rates['single']) / 2
@@ -194,6 +197,9 @@ class PlayerBot(Bot):
                 alpha = (learning_rates['unfav_loss'] + learning_rates['single']) / 2
             else:
                 alpha = (learning_rates['not_inv'] + learning_rates['single']) / 2
+                
+            if self.case['model'] == 'RL_single':
+                alpha = learning_rates['single']
 
         elif self.player.condition_name == 'blocked_blocked_info':
             # If we're jumping rounds do "rational" RL updating:
