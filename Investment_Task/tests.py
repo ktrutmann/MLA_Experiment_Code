@@ -30,7 +30,11 @@ class PlayerBot(Bot):
                     case_id=case_id)]
                 case_id += 1
     cases = case_list
-    # TODO: (2) Save the case to the data!
+
+    file = open('case_list.txt','w')
+    for items in case_list:
+        file.writelines(str(items) + '\n')
+    file.close()
 
     def play_round(self):
         if self.player.round_number == 1:
@@ -39,6 +43,7 @@ class PlayerBot(Bot):
             self.player.participant.vars['learning_rates'] = {this_name:
                 self.case['learning_rates'][this_name] + rd.normalvariate(0, .01) for
                 this_name in self.case['learning_rates']}
+            self.player.participant.label = f'CaseID: {self.case["case_id"]}'
             print(f'@@@@@ This round uses: {self.player.participant.vars}')
 
         yield Submission(initializer_page, check_html=False)
