@@ -18,18 +18,27 @@ class PlayerBot(Bot):
                 case_list += [dict(
                     response='model',
                     model=this_model,
+                    learning_rates = dict(
+                        fav_gain = .119,
+                        fav_loss = .123,
+                        unfav_gain = .182,
+                        unfav_loss = .074,
+                        not_inv = .082,
+                        single = .108),
                     up_probs=[this_prob, 1 - this_prob],
                     n_periods_per_phase=these_rounds,
                     case_id=case_id)]
                 case_id += 1
     cases = case_list
     # TODO: (2) Save the case to the data!
-    # TODO: (2) Create and use learning rates dependent on the model
 
     def play_round(self):
         if self.player.round_number == 1:
             self.player.participant.vars['up_probs'] = self.case['up_probs']
             self.player.participant.vars['n_periods_per_phase'] = self.case['n_periods_per_phase']
+            self.player.participant.vars['learning_rates'] = {this_name:
+                self.case['learning_rates'][this_name] + rd.normalvariate(0, .01) for
+                this_name in self.case['learning_rates']}
             print(f'@@@@@ This round uses: {self.player.participant.vars}')
 
         yield Submission(initializer_page, check_html=False)
@@ -148,31 +157,39 @@ class PlayerBot(Bot):
             return 50
 
         previous_self = self.player.in_round(self.round_number - 1)
+        learning_rates = self.case['learning_rates']
         price_up = self.player.price > previous_self.price
 
         favorable_move = price_up == (previous_self.hold > 0)
+        return_after_trade = previous_self.returns if \
+            (previous_self.hold > 0) is (self.player.hold > 0) and self.player.hold != 0 else 0
+        gain_pos = return_after_trade > 0
+        loss_pos = return_after_trade < 0
 
         if self.player.condition_name == 'full_control':
-            # Interaction effect dependent on returns:
-            if self.player.hold == 0 or ((previous_self.hold > 0) != (self.player.hold > 0)):
-                alpha = Constants.bot_base_alpha
-            # Otherwise check whether the interaction sets in:
-            elif (previous_self.returns > 0 and favorable_move or \
-                    previous_self.returns < 0 and not favorable_move) and not \
-                    self.player.i_round_in_path <= self.player.participant.vars['n_periods_per_phase']:
-                alpha = Constants.bot_base_alpha - Constants.bot_learning_effect
+            if favorable_move and gain_pos:
+                alpha = learning_rates['fav_gain']
+            elif favorable_move and loss_pos:
+                alpha = learning_rates['fav_loss']
+            elif (not favorable_move) and gain_pos:
+                alpha = learning_rates['unfav_gain']
+            elif (not favorable_move) and loss_pos:
+                alpha = learning_rates['unfav_loss']
             else:
-                alpha = Constants.bot_base_alpha
+                alpha = learning_rates['not_inv']
+
         elif self.player.condition_name == 'blocked_full_info':
-            if self.player.hold == 0 or ((previous_self.hold > 0) != (self.player.hold > 0)):
-                alpha = Constants.bot_base_alpha
-            # less interaction effect, but still there:
-            elif (previous_self.returns > 0 and favorable_move or \
-                    previous_self.returns < 0 and not favorable_move) and not \
-                    self.player.i_round_in_path <= self.player.participant.vars['n_periods_per_phase']:
-                alpha = Constants.bot_base_alpha - Constants.bot_learning_effect / 5
+            if favorable_move and gain_pos:
+                alpha = (learning_rates['fav_gain'] + learning_rates['single']) / 2
+            elif favorable_move and loss_pos:
+                alpha = (learning_rates['fav_loss'] + learning_rates['single']) / 2
+            elif (not favorable_move) and gain_pos:
+                alpha = (learning_rates['unfav_gain'] + learning_rates['single']) / 2
+            elif (not favorable_move) and loss_pos:
+                alpha = (learning_rates['unfav_loss'] + learning_rates['single']) / 2
             else:
-                alpha = Constants.bot_base_alpha
+                alpha = (learning_rates['not_inv'] + learning_rates['single']) / 2
+
         elif self.player.condition_name == 'blocked_blocked_info':
             # If we're jumping rounds do "rational" RL updating:
             # It's not too elegant, but this "goes back" to the last known belief and updates from there.
@@ -188,12 +205,12 @@ class PlayerBot(Bot):
             while i > 1:  # Forwards "solve"
                 temp_self = self.player.in_round(self.round_number - i)
                 temp_price_up = temp_self.price < self.player.in_round(self.round_number - i + 1).price
-                belief_last_round = int(belief_last_round + Constants.bot_base_alpha *
+                belief_last_round = int(belief_last_round + learning_rates['single'] *
                                         (100 * temp_price_up - belief_last_round))
                 i -= 1
 
             # Then just update normally:
-            alpha = Constants.bot_base_alpha
+            alpha = learning_rates['single']
             return int(belief_last_round + alpha * (100 * price_up - belief_last_round))
         else:
             raise ValueError('Invalid Experimental Condition!')

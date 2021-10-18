@@ -44,9 +44,6 @@ class Constants(BaseConstants):
     max_time = 7  # Number of seconds until a reminder to decide appears
     max_time_beliefs = 5  # Same but for the belief page
     experimenter_email = 'k.trutmann@unibas.ch'
-    # Bot testing:
-    bot_base_alpha = 0.2  # What's the base learning rate for the RL model
-    bot_learning_effect = 0.04  # How much should the learning rate change for the model bot?
     show_debug_msg = False  # Whether to print current states to the console
 
 class Subsession(BaseSubsession):
