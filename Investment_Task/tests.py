@@ -12,8 +12,8 @@ class PlayerBot(Bot):
     # Building the cases to be checked:
     case_list = []
     case_id = 0
-    for this_prob in np.arange(.6, .8, .05):
-        for these_rounds in range(3, 6):
+    for this_prob in np.arange(.7, .8, .05):
+        for these_rounds in range(4, 5):
             for this_model in ['CSRL', 'RL_single']:
                 case_list += [dict(
                     response='model',
