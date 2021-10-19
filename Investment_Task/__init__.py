@@ -174,6 +174,7 @@ def make_price_paths(player: Player, n_distinct_paths):
     # Note: Django breaks when generating new price paths and storing them as pandas df since it's trying to compare
     # two dfs with different indexes. So I only use pandas for the condition scrambling and go back to dicts.
     player.participant.vars['price_info'] = price_df.to_dict(orient='list')
+    rd.seed()
     if Constants.show_debug_msg:
         print('### Created Price Paths!')
         pd.set_option('display.max_rows', None)
@@ -264,6 +265,7 @@ def initialize_round(player: Player, n_distinct_paths):
             )
             player.payoff = player.final_cash - Constants.starting_cash
             player.participant.vars['earnings_list'].append(player.payoff)
+    rd.seed()
     if Constants.show_debug_msg:
         print('### Initialized round {} ################'.format(player.round_number))
 

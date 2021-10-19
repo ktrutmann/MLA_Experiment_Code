@@ -11,24 +11,22 @@ class PlayerBot(Bot):
     rational_belief_up_asset = .5
     # Building the cases to be checked:
     case_list = []
-    case_id = 0
-    for this_prob in np.arange(.7, .8, .05):
-        for these_rounds in range(4, 5):
-            for this_model in ['CSRL', 'RL_single']:
-                case_list += [dict(
-                    response='model',
-                    model=this_model,
-                    learning_rates = dict(
-                        fav_gain = .119,
-                        fav_loss = .123,
-                        unfav_gain = .182,
-                        unfav_loss = .074,
-                        not_inv = .082,
-                        single = .108),
-                    up_probs=[this_prob, 1 - this_prob],
-                    n_periods_per_phase=these_rounds,
-                    case_id=case_id)]
-                case_id += 1
+    case_id = 1
+    for this_prob in np.arange(.6, .85, .05):
+        for this_model in ['CSRL', 'RL_single']:
+            case_list += [dict(
+                response='model',
+                model=this_model,
+                learning_rates = dict(
+                    fav_gain = .119,
+                    fav_loss = .123,
+                    unfav_gain = .182,
+                    unfav_loss = .074,
+                    not_inv = .082,
+                    single = .108),
+                up_probs=[this_prob, 1 - this_prob],
+                case_id=case_id)]
+            case_id += 1
     cases = case_list
 
     file = open('case_list.txt','w')
@@ -39,7 +37,6 @@ class PlayerBot(Bot):
     def play_round(self):
         if self.player.round_number == 1:
             self.player.participant.vars['up_probs'] = self.case['up_probs']
-            self.player.participant.vars['n_periods_per_phase'] = self.case['n_periods_per_phase']
             self.player.participant.vars['learning_rates'] = {this_name:
                 self.case['learning_rates'][this_name] + rd.normalvariate(0, .01) for
                 this_name in self.case['learning_rates']}
@@ -230,7 +227,7 @@ class PlayerBot(Bot):
 
     def get_wishful_trade(self):
         # Only simulate the effect in the "last decision". Otherwise trade randomly.
-        if self.player.i_round_in_path == self.player.participant.vars['n_periods_per_phase'] * 2:
+        if self.player.i_round_in_path == Constants.n_periods_per_phase * 2:
             if self.player.condition_name == 'full_control':
                 # Invest somewhere around 0 shares:
                 return rd.randint(-2, 2) - self.player.hold
