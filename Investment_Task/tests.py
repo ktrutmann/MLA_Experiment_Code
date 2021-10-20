@@ -180,7 +180,8 @@ class PlayerBot(Bot):
             else:
                 alpha = learning_rates['not_inv']
 
-            if self.case['model'] == 'RL_single':
+            if (self.case['model'] == 'RL_single' or
+                    self.player.i_round_in_path <= Constants.n_rounds_per_path):
                 alpha = learning_rates['single']
 
         elif self.player.condition_name == 'blocked_full_info':
@@ -195,7 +196,8 @@ class PlayerBot(Bot):
             else:
                 alpha = (learning_rates['not_inv'] + learning_rates['single']) / 2
                 
-            if self.case['model'] == 'RL_single':
+            if (self.case['model'] == 'RL_single' or
+                    self.player.i_round_in_path <= Constants.n_rounds_per_path):
                 alpha = learning_rates['single']
 
         elif self.player.condition_name == 'blocked_blocked_info':

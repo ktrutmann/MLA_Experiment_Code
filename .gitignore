@@ -12,3 +12,4 @@
 /_REMOVE_SELF_BACKUP/
 /botdata/
 pyrightconfig.json
+*.txt
