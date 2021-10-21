@@ -77,6 +77,7 @@ class Player(BasePlayer):
     drift = models.FloatField()
     condition_name = models.StringField()
     completion_code = models.StringField(default='0000')
+    learning_rate = models.FloatField() # Onl for bottesting
 
 
 # FUNCTIONS

@@ -37,9 +37,7 @@ class PlayerBot(Bot):
     def play_round(self):
         if self.player.round_number == 1:
             self.player.participant.vars['up_probs'] = self.case['up_probs']
-            self.player.participant.vars['learning_rates'] = {this_name:
-                self.case['learning_rates'][this_name] + rd.normalvariate(0, .01) for
-                this_name in self.case['learning_rates']}
+            self.player.participant.vars['learning_rates'] = self.case['learning_rates']
             self.player.participant.label = f'CaseID: {self.case["case_id"]}'
             print(f'@@@@@ This round uses: {self.player.participant.vars}')
 
@@ -180,8 +178,7 @@ class PlayerBot(Bot):
             else:
                 alpha = learning_rates['not_inv']
 
-            if (self.case['model'] == 'RL_single' or
-                    self.player.i_round_in_path <= Constants.n_rounds_per_path):
+            if (self.case['model'] == 'RL_single' or self.player.i_round_in_path <= Constants.n_periods_per_phase):
                 alpha = learning_rates['single']
 
         elif self.player.condition_name == 'blocked_full_info':
@@ -197,7 +194,7 @@ class PlayerBot(Bot):
                 alpha = (learning_rates['not_inv'] + learning_rates['single']) / 2
                 
             if (self.case['model'] == 'RL_single' or
-                    self.player.i_round_in_path <= Constants.n_rounds_per_path):
+                    self.player.i_round_in_path <= Constants.n_periods_per_phase):
                 alpha = learning_rates['single']
 
         elif self.player.condition_name == 'blocked_blocked_info':
@@ -225,6 +222,7 @@ class PlayerBot(Bot):
         else:
             raise ValueError('Invalid Experimental Condition!')
 
+        self.player.learning_rate = alpha
         return int(previous_self.belief + alpha * (100 * price_up - previous_self.belief))
 
     def get_wishful_trade(self):
