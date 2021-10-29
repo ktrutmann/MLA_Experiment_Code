@@ -1,4 +1,5 @@
 from otree.api import *
+import time
 
 
 author = 'Kevin Trutmann'
@@ -99,6 +100,7 @@ class Player(BasePlayer):
         widget=widgets.RadioSelectHorizontal(),
     )
     general_comments = models.LongStringField(blank=True, label='')
+    timestamp = models.FloatField()
 
 
 # FUNCTIONS
@@ -140,6 +142,10 @@ class demographics_page(Page):
 class comments_page(Page):
     form_model = 'player'
     form_fields = ['general_comments']
+
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        player.timestamp = time.time() # TODO: (2) Test this!
 
 
 page_sequence = [open_strategy_page, closed_strategy_page, demographics_page, comments_page]

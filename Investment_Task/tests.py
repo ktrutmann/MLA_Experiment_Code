@@ -222,7 +222,6 @@ class PlayerBot(Bot):
         else:
             raise ValueError('Invalid Experimental Condition!')
 
-        self.player.learning_rate = alpha
         return int(previous_self.belief + alpha * (100 * price_up - previous_self.belief))
 
     def get_wishful_trade(self):

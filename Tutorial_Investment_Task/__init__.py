@@ -1,7 +1,8 @@
 import copy
 import random as rd
-
+from numpy import tracemalloc_domain
 import pandas as pd
+import time
 from Investment_Task import Constants as MainConstants
 from Investment_Task import (make_price_paths, initialize_round, is_investable,
     should_display_infos, get_investment_span, get_trading_vars, make_update_list,
@@ -57,6 +58,7 @@ class Player(BasePlayer):
     distinct_path_id = models.IntegerField()
     drift = models.FloatField()
     condition_name = models.StringField()
+    timestamp = models.FloatField()
 
 
 # FUNCTIONS
@@ -83,6 +85,7 @@ def get_tutorial_vars(player: Player):
 class initializer_page(Page):
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
+        player.timestamp = time.time() # TODO: (2) Test this!
         initialize_round(player, n_distinct_paths=Constants.num_training_blocks_per_condition)
 
 
