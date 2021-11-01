@@ -1,0 +1,34 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block title %}
+Was sind Matrizen-Aufgaben?
+{% endblock %}
+
+{% block content %}
+     Eine Matrizen-Aufgabe ist eine 3x3-Tabelle mit Bildern, die in einem Muster angeordnet sind,
+    wobei das Bild in der rechten unteren Ecke entfernt wurde. Sie müssen das fehlende Bild identifizieren.
+    Einige Matrizen-Aufgaben sind relativ einfach, wie die unten abgebildete.<br />
+    <img src="{% static "RPM/Bsp_1.png" %}"/>
+    <br />
+
+    In diesem Beispiel ist die Form in jeder Zeile gleich, aber von Zeile zu Zeile unterschiedlich.
+    Beachten Sie, dass der Rand um die Form für jedes Bild gleich ist.
+    Sie erhalten mehrere mögliche richtige Antworten und müssen den Buchstaben für die richtige identifizieren.
+    Wenn Sie die folgenden Optionen erhalten würden, wäre die richtige Antwort "c",
+    da sie die richtige Form und den richtigen Rand hat.<br /><br />
+
+    <img src="{% static "RPM/Bsp_1_sol.png" %}"/>
+    <br />
+
+
+    Die Option "a" ist falsch, da die kleinen Dreiecke am Randpunkt in die falsche Richtung zeigen.
+    Die Option "b" ist falsch, weil sie die falsche Form hat. Die Option "d" ist falsch,
+    da die Form die falsche Farbe hat. Die Option "e" ist falsch, weil die Form die falsche Größe hat.
+    Die Option "f" ist falsch, weil die Form falsch gedreht wird. Die Option "g" ist falsch, da der Rand
+    eine durchgezogene Linie ist. Die Option "f" ist falsch, da die Form die falsche Farbe hat.
+    <br /><br />
+
+    {% next_button %}
+
+{% endblock %}

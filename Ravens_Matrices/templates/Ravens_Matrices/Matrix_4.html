@@ -1,0 +1,27 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block title %}
+Aufgabe 4:
+{% endblock %}
+
+{% block content %}
+
+<img src="{% static "RPM/6_6set1.jpg" %}"/>
+
+<br />
+<b>Antwortoptionen:</b>
+<br />
+
+<img src="{% static "RPM/6_6set1_sol.jpg" %}"/>
+
+
+<br />
+{%  formfields %}
+<br />
+ <br /> <br />
+<button class="btn btn-danger" name="Zurück" value="1">Zurück</button>  <br /><br />
+<button class="btn" id="end_matrices_btn">Aufgabe Beenden!</button>
+
+{% endblock %}
+

@@ -1,0 +1,18 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block title %}
+Matzritzen Aufgabe
+{% endblock %}
+
+{% block content %}
+    <p>Es erscheinen im folgenden vier Matrizen-Aufgaben,
+        die es innerhalb von 3 Minuten zu lösen gilt.<br />
+        Wie diese Aufgabe funktioniert wird nun erklärt.
+    </p>
+    <p>Für jede richtige Antwort erhalten Sie {{Constants.endowment | c }},
+        welche zu Ihrem Gewinn oder Verlust aus der Investment-Aufgabe hinzu gezählt werden. <br /></p>
+
+    {% next_button %}
+
+{% endblock %}

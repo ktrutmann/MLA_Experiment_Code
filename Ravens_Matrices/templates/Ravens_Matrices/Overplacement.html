@@ -1,0 +1,23 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block title %}
+
+{% endblock %}
+
+{% block content %}
+
+Denken Sie an 100 typische Teilnehmer dieser Studie.<br />
+Auf welchem Rang stehen Sie Ihrer Meinung nach in Bezug auf die Anzahl der richtigen Antworten?<br /><br />
+Beispiel:<br />
+• Wählen Sie 1, wenn Sie der Meinung sind, das beste Ergebnis erzielt zu haben.<br />
+• Wählen Sie 100, wenn Sie der Meinung sind, das Schlechteste Ergebnis erzielt zu haben.
+
+<br />
+{%  formfields %}
+
+
+ <br /> <br />
+    {% next_button %}
+
+{% endblock %}

@@ -23,9 +23,9 @@ SESSION_CONFIGS = [
     },
 
    {
-        'name': 'Demographics',
+        'name': 'Ravens',
         'num_demo_participants': 1,
-        'app_sequence': ['Demographics'],
+        'app_sequence': ['Ravens_Matrices'],
     },
 
     {

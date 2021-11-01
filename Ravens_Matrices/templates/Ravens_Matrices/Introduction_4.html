@@ -1,0 +1,28 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block title %}
+Matrizen Aufgabe Beispiel
+{% endblock %}
+
+{% block content %}
+    Die Aufgaben können sehr schwierig sein, wie das folgende Beispiel zeigt. Es ist in Ordnung zu raten und Sie
+    sollten bedenken, dass Sie für die vier Aufgaben drei Minuten Zeit zur Verfügung haben.<br /><br />
+
+    <img src="{% static "RPM/Bsp_2.png" %}"/>     <br /><br />
+
+    In diesem Beispiel sollte das fehlende Bild einen hellgrauen gestrichelten Rand haben, da sich dieses Merkmal um
+    die Zeile ändert.
+    Die Randmarkierungen sollten schwarze Dreiecke sein, da sich diese Eigenschaft durch die Ecke ändert.
+    Die Form sollte groß sein, da sich diese durch die Spalte ändert.
+    Die Form sollte ein Dreizack sein, da sich dies durch die Ecke ändert.
+    Die Form sollte einfarbig schwarz sein, da sich dies in der Diagonale ändert.
+    Die dreizackige Seite des Dreizacks sollte nach oben zeigen, wenn sich die Richtung um die Diagonale ändert.<br />
+    Daher ist die Option "f" die richtige Antwort.<br /><br />
+
+    <img src="{% static "RPM/Bsp_2_sol.png" %}"/>     <br /><br />
+
+
+    {% next_button %}
+
+{% endblock %}

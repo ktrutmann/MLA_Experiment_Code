@@ -1,0 +1,15 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block title %}
+Matrizen-Aufgaben: Start
+{% endblock %}
+
+{% block content %}
+   <p> Während den vier minuten können Sie zwischen den Aufgaben mit den Knöpfen <b>weiter</b> und <b>zurück</b>
+       frei hin- und herwechseln.<br /></p>
+   <p>  Die Zeit läuft, sobald Sie nun auf <b>Weiter</b> klicken. <br/>
+        Viel Erfolg! <br /> <br /></p>
+    {% next_button %}
+
+{% endblock %}
