@@ -2,16 +2,15 @@
 {% load otree %}
 
 {% block title %}
-Matzritzen Aufgabe
+Matrix Task
 {% endblock %}
 
 {% block content %}
-    <p>Es erscheinen im folgenden vier Matrizen-Aufgaben,
-        die es innerhalb von 3 Minuten zu lösen gilt.<br />
-        Wie diese Aufgabe funktioniert wird nun erklärt.
+    <p>You will now be shown six matrix tasks,
+        which you should try to solve within a time limit of four and a half minutes.
+        You will first be shown how to solve these matrix tasks.
     </p>
-    <p>Für jede richtige Antwort erhalten Sie {{Constants.endowment | c }},
-        welche zu Ihrem Gewinn oder Verlust aus der Investment-Aufgabe hinzu gezählt werden. <br /></p>
+    <p> You will receive {{Constants.endowment | c }} as a bonus payment for each correct answer. </p>
 
     {% next_button %}
 

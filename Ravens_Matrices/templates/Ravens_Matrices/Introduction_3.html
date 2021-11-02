@@ -2,23 +2,26 @@
 {% load otree %}
 
 {% block title %}
-Matrizen-Aufgaben Aufbau
+How does the Matrix Task Work?
 {% endblock %}
 
 {% block content %}
-    Wie Sie dem vorhergehenden Beispiel entnehmen können, können Bilder in vielen Dimensionen unterschiedlich sein:
-    Form, Größe, Farbe, Richtung, Randstil und Markierung der Randecken. <br /><br />
+    <p>         
+    As you could see in the previous example, the pictures can differ in multiple aspects:<br>
+    Shape, size, color, direction, border and markings in the corner.</p>
 
-    Die Bildeigenschaften können sich in der Tabelle auf verschiedene Weise ändern. Im Beispiel auf der vorherigen
-    Seite war der Wechsel von Zeile zu Zeile, wie im Bild unten.<br />
+    <p>
+    There are multiple ways in which these aspects can change within the grid of pictures.
+    In the previous example, the difference was between rows, as is shown in the picture below.</p>
+
     <img src="{% static "RPM/Bsp_Zeile.png" %}"/>
     <br /><br />
 
-    Die Bildeigenschaften können sich auch spaltenweise, <br />
+    The aspects can however also change column-wise, <br />
     <img src="{% static "RPM/Bsp_Spalte.png" %}" /> <br /><br />
-    entlang der Diagonale und<br />
+    diagonally, <br />
     <img src="{% static "RPM/Bsp_Diagonale.png" %}"/> <br /><br />
-    in den Ecken ändern.<br />
+    or in the corners.<br />
     <img src="{% static "RPM/Bsp_Ecken.png" %}"/> <br /><br />
 
     {% next_button %}

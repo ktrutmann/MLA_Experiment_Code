@@ -2,23 +2,30 @@
 {% load otree %}
 
 {% block title %}
-Matrizen Aufgabe Beispiel
+Matrix Task Example
 {% endblock %}
 
 {% block content %}
-    Die Aufgaben können sehr schwierig sein, wie das folgende Beispiel zeigt. Es ist in Ordnung zu raten und Sie
-    sollten bedenken, dass Sie für die vier Aufgaben drei Minuten Zeit zur Verfügung haben.<br /><br />
+    <p>
+        The tasks can be rather difficult, as for example the one below.
+        It is okay to guess and you should consider that you are given four and a half minutes.
+    </p>
 
     <img src="{% static "RPM/Bsp_2.png" %}"/>     <br /><br />
 
-    In diesem Beispiel sollte das fehlende Bild einen hellgrauen gestrichelten Rand haben, da sich dieses Merkmal um
-    die Zeile ändert.
-    Die Randmarkierungen sollten schwarze Dreiecke sein, da sich diese Eigenschaft durch die Ecke ändert.
-    Die Form sollte groß sein, da sich diese durch die Spalte ändert.
-    Die Form sollte ein Dreizack sein, da sich dies durch die Ecke ändert.
-    Die Form sollte einfarbig schwarz sein, da sich dies in der Diagonale ändert.
-    Die dreizackige Seite des Dreizacks sollte nach oben zeigen, wenn sich die Richtung um die Diagonale ändert.<br />
-    Daher ist die Option "f" die richtige Antwort.<br /><br />
+    <p>
+        In this example the missing picture should have a light brown dashed border because this aspect 
+        changes in every row.
+        The markings in the corner should be black triangles because this aspect changes in the corners of the grid
+        (and hence the diagonal spanning from the upper left to the lower right corner has the same border markings).
+        The shape should be big because that aspect changes in every column.
+        The shape should be a trident, because this aspect changes in the corners
+        (here the diagonal from the upper right to the lower left stays constant).
+        The shape shoule be black because the color changes in the diagonal.
+        The teeth of the trident should face upwards because the direction also changes in the diagonal
+        (see the upper left corner of the grid).
+        Hence, option 'f' is the correct one.
+    </p>
 
     <img src="{% static "RPM/Bsp_2_sol.png" %}"/>     <br /><br />
 

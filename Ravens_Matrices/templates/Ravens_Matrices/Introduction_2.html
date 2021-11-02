@@ -2,32 +2,39 @@
 {% load otree %}
 
 {% block title %}
-Was sind Matrizen-Aufgaben?
+How does the Matrix Task Work?
 {% endblock %}
 
 {% block content %}
-     Eine Matrizen-Aufgabe ist eine 3x3-Tabelle mit Bildern, die in einem Muster angeordnet sind,
-    wobei das Bild in der rechten unteren Ecke entfernt wurde. Sie müssen das fehlende Bild identifizieren.
-    Einige Matrizen-Aufgaben sind relativ einfach, wie die unten abgebildete.<br />
+     <p>
+     A matrix task consists of a 3x3 table containing pictures which are arranged in a pattern.
+     However, the picture in the lower right corner is missing.
+     You have to identify the missing picture.
+     Some matrix tasks are relatively easy, such as the one below.
+     </p>         
+
     <img src="{% static "RPM/Bsp_1.png" %}"/>
     <br />
 
-    In diesem Beispiel ist die Form in jeder Zeile gleich, aber von Zeile zu Zeile unterschiedlich.
-    Beachten Sie, dass der Rand um die Form für jedes Bild gleich ist.
-    Sie erhalten mehrere mögliche richtige Antworten und müssen den Buchstaben für die richtige identifizieren.
-    Wenn Sie die folgenden Optionen erhalten würden, wäre die richtige Antwort "c",
-    da sie die richtige Form und den richtigen Rand hat.<br /><br />
+    <p>
+    In this example the shape remains constant in each row but differs between rows.
+    Notice that the border around each shape is the same.
+    You are given multiple possible answers and have to identify the letter corresponding to the correct one.
+    If given the options below, the correct answer would be 'c' as it has the correct shape, orientation and border.
+    </p>
 
     <img src="{% static "RPM/Bsp_1_sol.png" %}"/>
     <br />
 
-
-    Die Option "a" ist falsch, da die kleinen Dreiecke am Randpunkt in die falsche Richtung zeigen.
-    Die Option "b" ist falsch, weil sie die falsche Form hat. Die Option "d" ist falsch,
-    da die Form die falsche Farbe hat. Die Option "e" ist falsch, weil die Form die falsche Größe hat.
-    Die Option "f" ist falsch, weil die Form falsch gedreht wird. Die Option "g" ist falsch, da der Rand
-    eine durchgezogene Linie ist. Die Option "f" ist falsch, da die Form die falsche Farbe hat.
-    <br /><br />
+    <p>
+    Option 'a' is incorrect because the triangles in the corners are pointing in the wrong direction.
+    Option 'b' is incorrect because it has the wrong shape.
+    Option 'd' is incorrect because the shape has the wrong color.
+    Option 'e' is incorrect because it has the wrong size.
+    Option 'f' is incorrect because the shape is rotated in the wrong way.
+    Option 'g' is incorrect because the border is a solid line.
+    Option 'h' is incorrect because it also has the wrong color.
+    </p>
 
     {% next_button %}
 

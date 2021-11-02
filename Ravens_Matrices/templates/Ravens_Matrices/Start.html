@@ -2,14 +2,16 @@
 {% load otree %}
 
 {% block title %}
-Matrizen-Aufgaben: Start
+Matrix Task: Start
 {% endblock %}
 
 {% block content %}
-   <p> Während den vier minuten können Sie zwischen den Aufgaben mit den Knöpfen <b>weiter</b> und <b>zurück</b>
-       frei hin- und herwechseln.<br /></p>
-   <p>  Die Zeit läuft, sobald Sie nun auf <b>Weiter</b> klicken. <br/>
-        Viel Erfolg! <br /> <br /></p>
+
+    <p>Throughout the four and a half minutes you can use the <b>Next</b> and <b>Back</b> buttons
+        to freely browse between the different matrices.
+        You will have to enter an answer to continue to the next matrix, but are allowed to guess.</p> 
+    <p>The timer will start as soon as you click the button below.</p>
+       
     {% next_button %}
 
 {% endblock %}

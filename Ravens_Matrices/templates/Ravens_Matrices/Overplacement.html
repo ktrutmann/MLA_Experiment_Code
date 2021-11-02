@@ -6,18 +6,18 @@
 {% endblock %}
 
 {% block content %}
+<p>
+   Think of 100 other participants of this study.
+   What do you think would be your rank in solving the matrix tasks?
+</p>
 
-Denken Sie an 100 typische Teilnehmer dieser Studie.<br />
-Auf welchem Rang stehen Sie Ihrer Meinung nach in Bezug auf die Anzahl der richtigen Antworten?<br /><br />
-Beispiel:<br />
-• Wählen Sie 1, wenn Sie der Meinung sind, das beste Ergebnis erzielt zu haben.<br />
-• Wählen Sie 100, wenn Sie der Meinung sind, das Schlechteste Ergebnis erzielt zu haben.
+<ul>
+   <li>Choose 1 if you think you would have the best result among those 100 participants.</li>
+   <li>Choose 100 if you think you would have the worst result among those 100 participants.</li>
+</ul>
 
-<br />
 {%  formfields %}
 
-
- <br /> <br />
-    {% next_button %}
+{% next_button %}
 
 {% endblock %}

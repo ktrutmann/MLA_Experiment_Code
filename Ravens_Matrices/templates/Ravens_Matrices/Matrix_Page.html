@@ -1,0 +1,137 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block title %}
+   <p id='title_text'>Task 1:</p>
+{% endblock %}
+
+{% block content %}
+
+   <div id='task_1'>
+      <img src="{% static "RPM/1_6_set1.jpg" %}"/><br>
+      <b>Answer Options:</b><br>
+      <img src="{% static "RPM/1_6_set1_sol.jpg" %}"/><br>
+      {% formfield 'cogn_rpm_matrix_1' %}
+   </div>
+
+   <div id='task_2' style = 'display: none;'>
+      <img src="{% static "RPM/2_6_set1.jpg" %}"/><br>
+      <b>Answer Options:</b><br>
+      <img src="{% static "RPM/2_6_set1_sol.jpg" %}"/><br>
+      <br/>
+      {% formfield 'cogn_rpm_matrix_2' %}
+   </div>
+
+   <div id='task_3' style = 'display: none;'>
+      <img src="{% static "RPM/3_6_set1.jpg" %}"/><br>
+      <b>Answer Options:</b><br>
+      <img src="{% static "RPM/3_6_set1_sol.jpg" %}"/><br>
+      <br/>
+      {% formfield 'cogn_rpm_matrix_3' %}
+   </div>
+
+   <div id='task_4' style = 'display: none;'>
+      <img src="{% static "RPM/4_6_set1.jpg" %}"/><br>
+      <b>Answer Options:</b><br>
+      <img src="{% static "RPM/4_6_set1_sol.jpg" %}"/><br>
+      <br/>
+      {% formfield 'cogn_rpm_matrix_4' %}
+   </div>
+
+   <div id='task_5' style = 'display: none;'>
+      <img src="{% static "RPM/5_6_set1.jpg" %}"/><br>
+      <b>Answer Options:</b><br>
+      <img src="{% static "RPM/5_6_set1_sol.jpg" %}"/><br>
+      <br/>
+      {% formfield 'cogn_rpm_matrix_5' %}
+   </div>
+
+   <div id='task_6' style = 'display: none;'>
+      <img src="{% static "RPM/6_6_set1.jpg" %}"/><br>
+      <b>Answer Options:</b><br>
+      <img src="{% static "RPM/6_6_set1_sol.jpg" %}"/><br>
+      <br/>
+      {% formfield 'cogn_rpm_matrix_6' %}
+   </div>
+
+   <div class="row">
+      <div class="col-md-4">
+         <button id="back_button" class="btn btn-danger" name="Back" onclick="back_button_clicked()"
+            type="button" style ="display: none;">
+            Back</button> <br/><br/>
+      </div>
+      <div class="col-md-8">
+         <button id="continue_button" class="button btn" name="Next" onclick="continue_button_clicked()"
+            type="button">
+         Next</button> <br/><br/>
+      </div>
+   </div>
+{% endblock %}
+
+
+{% block scripts %}
+<script type="text/javascript">
+   let task_index = 1;
+   let ready_to_submit = false;
+
+   back_button_clicked = function() {
+      if (task_index === 2) {
+         document.getElementById('back_button').style.display = 'none';
+      } else if (task_index === 6) {
+         ready_to_submit = false;
+         document.getElementById('continue_button').innerHTML = 'Next';
+         document.getElementById('continue_button').style.backgroundColor = '#0069d9';
+      }
+
+      document.getElementById('task_' + task_index).style.display = 'none';
+      task_index -= 1;
+      document.getElementById('task_' + task_index).style.display = 'inline';
+
+      document.getElementById('_otree-title').innerHTML = 'Task ' + task_index + ':';
+   }
+
+   continue_button_clicked = function() {
+      if (!check_form()){return;}
+
+      if (task_index === 1) {
+         document.getElementById('back_button').style.display = 'inline';
+      } else if (task_index === 5) {
+         document.getElementById('continue_button').innerHTML = 'Finish and Submit';
+      } else if (task_index === 6) {
+         if (ready_to_submit) {
+            console.log('Submitting because why not?')
+            document.getElementById('form').submit();
+         } else {
+            console.log('I\'ts about sending a message!')
+            alert('Are you sure you want to submit and end the task?\n' +
+               'If so, please click the submit button again.');
+            ready_to_submit = true;
+            document.getElementById('continue_button').style.backgroundColor = 'green';
+         }
+         return;
+      }
+         document.getElementById('task_' + task_index).style.display = 'none';
+         task_index += 1;
+         document.getElementById('task_' + task_index).style.display = 'inline';
+         document.getElementById('_otree-title').innerHTML = 'Task ' + task_index + ':';
+   }
+
+   check_form = function(){
+      let any_checked = false;
+
+      for (let i = 0; i < 6; i++){
+         if (document.getElementById('id_cogn_rpm_matrix_' + task_index + '-' + i).checked){
+            any_checked = true;
+         }
+      }
+
+      if(!any_checked){
+         alert('Please select one of the answers before continuing.\n' +
+         'You are allowed to guess.')
+      }
+
+      return any_checked; 
+   }
+
+</script>
+{% endblock %}
