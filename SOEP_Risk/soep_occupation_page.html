@@ -1,0 +1,17 @@
+{{ block title }}
+    Risk Questionnaire
+{{ endblock }}
+{{ block content }}
+
+    <p>Please answer the following question:</p>
+
+    <p><b>How would you rate your willingnes totake risks in the following areas?<br>
+        How is it in your occupation?</b></p>
+
+    <p>0 = Risk averse<br> 10 = Fully prepared to take risks</p>
+
+    {% formfields %}
+
+    {{ next_button }}
+
+{{ endblock }}
