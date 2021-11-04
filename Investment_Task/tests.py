@@ -178,7 +178,7 @@ class PlayerBot(Bot):
             else:
                 alpha = learning_rates['not_inv']
 
-            if (self.case['model'] == 'RL_single' or self.player.i_round_in_path <= Constants.n_periods_per_phase):
+            if (self.case['model'] == 'RL_single' or self.player.i_round_in_path <= Constants.rounds_p1):
                 alpha = learning_rates['single']
 
         elif self.player.condition_name == 'blocked_full_info':
@@ -194,7 +194,7 @@ class PlayerBot(Bot):
                 alpha = (learning_rates['not_inv'] + learning_rates['single']) / 2
                 
             if (self.case['model'] == 'RL_single' or
-                    self.player.i_round_in_path <= Constants.n_periods_per_phase):
+                    self.player.i_round_in_path <= Constants.rounds_p1):
                 alpha = learning_rates['single']
 
         elif self.player.condition_name == 'blocked_blocked_info':
@@ -226,7 +226,7 @@ class PlayerBot(Bot):
 
     def get_wishful_trade(self):
         # Only simulate the effect in the "last decision". Otherwise trade randomly.
-        if self.player.i_round_in_path == Constants.n_periods_per_phase * 2:
+        if self.player.i_round_in_path == Constants.n_rounds_per_path - 1:
             if self.player.condition_name == 'full_control':
                 # Invest somewhere around 0 shares:
                 return rd.randint(-2, 2) - self.player.hold

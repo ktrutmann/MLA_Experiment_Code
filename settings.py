@@ -23,16 +23,17 @@ SESSION_CONFIGS = [
     },
 
    {
-        'name': 'Ravens',
+        'name': 'SOEP',
         'num_demo_participants': 1,
-        'app_sequence': ['Ravens_Matrices'],
+        'app_sequence': ['SOEP_Risk'],
     },
 
     {
         'name': 'Investment_Task_Full',
         'num_demo_participants': 1,
         'app_sequence': ['Tutorial_Investment_Task', 'Investment_Task',
-                         'Demographics', 'Show_Payoff'],
+                         'Demographics', 'SOEP_Risk',
+                         'Ravens_Matrices', 'Show_Payoff']
     },
 
     {

@@ -11,27 +11,30 @@ doc = """
     This is the main investment task app. See the Readme.md for more information.
 """
 
+# TODO: (3) Change images for investment lengths
 
 class Constants(BaseConstants):
     name_in_url = 'Investment_Task'
     players_per_group = None
     # Experimental Flow
-    n_periods_per_phase = 4  # How long should the participants be "blocked"?
+    # n_periods_per_phase = 4  # How long should the participants be "blocked"?
+    rounds_p1 = 3 # How long should phase 1 be?
+    rounds_p2 = 5 # How long should phase 2 be?
     n_distinct_paths = 7  # How many paths should be generated?
     condition_names = [
         'full_control',
         # 'blocked_full_info',
         # 'blocked_blocked_info', # TODO: (3) Re-activate after OED
     ]  # List of the conditions
-    n_phases = 2  # How many phases should there be per condition
+    # n_phases = 2  # How many phases should there be per condition
     hold_range = [-4, 4]  # What's the minimum and maximum amount of shares that can be held.
     shuffle_conditions = True  # Should the conditions be presented in "blocks" or shuffled?
     scramble_moves_in_phases = False  # Should price moves within phases be scrambled between phases?
     # Derivative constants
     num_paths = n_distinct_paths * len(condition_names)
-    n_rounds_per_path = n_phases * n_periods_per_phase + 1
+    n_rounds_per_path = rounds_p1 + rounds_p2 + 1
     num_rounds = (
-        n_distinct_paths * n_periods_per_phase * n_phases * len(condition_names)
+        n_distinct_paths * (rounds_p1 + rounds_p2) * len(condition_names)
         + n_distinct_paths * len(condition_names) * 2
     )
     # The parameters for the price path
@@ -107,7 +110,7 @@ def make_price_paths(player: Player, n_distinct_paths):
         for i_cond, _ in enumerate(Constants.condition_names):
             for i_path in range(n_distinct_paths):
                 # Create a moving window to scramble the movements:
-                for i_phase in range(Constants.n_phases):
+                for i_phase in range(2): # TODO: (5) Fix scrambling with new phase lengths
                     win_start_ix = i_phase * Constants.n_periods_per_phase
                     win_end_ix = (i_phase + 1) * Constants.n_periods_per_phase
                     these_moves = all_moves_list[i_cond][i_path][win_start_ix:win_end_ix]
@@ -273,16 +276,17 @@ def initialize_round(player: Player, n_distinct_paths):
 # For displaying the page
 def is_investable(player: Player):
     """Find out whether the participant should be able to make an investment decision in this round."""
-    is_phase_start = (
-        player.i_round_in_path % Constants.n_periods_per_phase == 0
-        and not player.i_round_in_path == 0
-    )
-    is_first_phase = player.i_round_in_path < Constants.n_periods_per_phase
-    is_last_round = player.i_round_in_path == Constants.n_rounds_per_path 
+    is_phase_start = player.i_round_in_path == Constants.rounds_p1
+
+    is_first_phase = player.i_round_in_path < Constants.rounds_p1
+    is_last_decision = player.i_round_in_path == Constants.rounds_p1 + Constants.rounds_p2
+    extra_round = player.i_round_in_path == Constants.rounds_p1 + Constants.rounds_p2 + 1
     is_blocked_condition = player.condition_name in ['blocked_full_info', 'blocked_blocked_info']
-    is_investable = ((not (is_first_phase or is_blocked_condition)) or is_phase_start) and not is_last_round
+    investable_p2 = not (is_blocked_condition or is_first_phase or extra_round)
+
+    is_investable = is_phase_start or is_last_decision or investable_p2
     if Constants.show_debug_msg:
-        print('### Checked investablility: {}'.format(is_investable))
+        print(f'### Checked investablility with i_round {player.i_round_in_path}: {is_investable}')
     return is_investable
 
 
@@ -291,10 +295,10 @@ def should_display_infos(player: Player):
     last_round = player.participant.vars['price_info']['last_trial_in_path'][
         player.round_number - 1
     ]
-    start_of_phase = player.i_round_in_path % Constants.n_periods_per_phase == 0
+    is_phase_start = player.i_round_in_path == Constants.rounds_p1
     blocked_condition = player.condition_name == 'blocked_blocked_info'
-    first_phase = player.i_round_in_path < Constants.n_periods_per_phase
-    should_display = ((not blocked_condition) or first_phase or start_of_phase) and not last_round
+    is_first_phase = player.i_round_in_path < Constants.rounds_p1
+    should_display = ((not blocked_condition) or is_first_phase or is_phase_start) and not last_round
     if Constants.show_debug_msg:
         print('### should_display_infos(): {}'.format(should_display))
     return should_display
@@ -306,7 +310,7 @@ def get_investment_span(player: Player):
         return 1
     elif player.condition_name in ['blocked_full_info', 'blocked_blocked_info']:
         return (
-            Constants.n_periods_per_phase
+            Constants.rounds_p2
             if (player.i_round_in_path + 1) < Constants.n_rounds_per_path
             else 1
         )
@@ -337,16 +341,16 @@ def get_trading_vars(player: Player):
 
 
 def make_update_list(player: Player):
-    """Creates a zipped list for django to display as the updates. The length depends on the condition."""
+    """Creates a zipped list to display as the updates. The length depends on the condition."""
     if (
         player.condition_name == 'blocked_blocked_info'
-        and player.i_round_in_path == Constants.n_periods_per_phase
+        and player.i_round_in_path == Constants.rounds_p1
     ):
         # We are at the last decision of the blocked and low info condition, so show a list of updates:
         price_list = player.participant.vars['price_info']['price']
         # This is shown right after the blocked trade has been made. Hence "future".
         future_indexes = range(
-            player.round_number - 1, player.round_number + Constants.n_periods_per_phase - 1
+            player.round_number - 1, player.round_number + Constants.rounds_p2 - 1
         )
         was_increase = [price_list[i + 1] > price_list[i] for i in future_indexes]
         differences = [abs(price_list[i + 1] - price_list[i]) for i in future_indexes]
@@ -405,7 +409,7 @@ class condition_page(Page):
     def vars_for_template(player: Player):
         return {
             'drift_list': [round(i * 100) for i in Constants.up_probs],
-            'periods_per_phase': Constants.n_periods_per_phase,
+            'periods_per_phase': Constants.rounds_p2, # TODO: (5) Fix this in the text!
             'exp_email': Constants.experimenter_email,
         }
 
@@ -456,7 +460,7 @@ class update_page(Page):
         return (
             Constants.update_time * 2
             if player.condition_name == 'blocked_blocked_info'
-            and player.i_round_in_path == Constants.n_periods_per_phase
+            and player.i_round_in_path == Constants.rounds_p1
             else Constants.update_time
         )
 

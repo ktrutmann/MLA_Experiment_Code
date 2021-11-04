@@ -341,7 +341,7 @@
                 you can still profit from this by short selling the asset.
             </p>
             <p>
-                In each period, the price can move by either <b>{{ Constants.updates.0 }},
+                In each round, the price can move by either <b>{{ Constants.updates.0 }},
                 {{ Constants.updates.1 }} or {{ Constants.updates.2 }}</b> points.
                 This is true for both increases as well as decreases.
                 Which of these magnitudes the next price moves will take on is determined by chance and with equal
@@ -362,19 +362,19 @@
                 what the conditions for the upcoming block are.
             </p>
                 <ul>
-                    <li>The first {{ Constants.n_periods_per_phase }} periods will always be "pre-decided",
+                    <li>The first {{ Constants.n_periods_per_phase }} rounds will always be "pre-decided",
                         meaning you are handed a fixed portfolio and you can only observe the price movement.</li>
-                    <li>After that, in some cases you will be able to make a decision for each individual period of the
-                        remaining periods.</li>
+                    <li>After that, in some cases you will be able to make a decision for each individual round of the
+                        remaining rounds.</li>
                     <li>In some cases you will have to make an investment that will then be "fixed" for the next
-                        {{ Constants.n_periods_per_phase }} periods (i.e. if you decide to hold 2 shares,
+                        {{ Constants.n_periods_per_phase }} rounds (i.e. if you decide to hold 2 shares,
                         you will hold 2 shares throughout the next {{ Constants.n_periods_per_phase }}
                         price movements). There will be an indicator below the table whenever you are deciding
                         for more than one round.</li>
                     <li>There are also price paths in which you can first decide freely and then have to make a decision
                         for the next {{ Constants.n_periods_per_phase }} rounds.</li>
                     <li>In some of the cases in which you can not freely trade you will be informed about the price
-                        movements in each period, in others you will only be informed about the price movements
+                        movements in each round, in others you will only be informed about the price movements
                         after they all already happened.</li>
                 </ul>
             <p>
@@ -399,7 +399,7 @@
             </p>
             <div class="example_box" id="lottery_explanation_text">
                 <p>
-                    How likely do you think is it that the price will be higher in the next period than it is now?
+                    How likely do you think is it that the price will be higher in the next round than it is now?
                 </p>
             </div>
             <p>
@@ -408,9 +408,9 @@
                 likely have some idea about what kind of asset this is and how its price develops. <br>
                 Thus, shifting the slider with which you provide your answer <i>towards the right (towards 100%)</i>
                 indicates that you belief the price will <i>increase</i> (whereby setting it to 100% would mean
-                you are absolutely convinced that the price will increase in the next period). <br>
+                you are absolutely convinced that the price will increase in the next round). <br>
                 Shifting the slider <i>towards the left (towards 0%)</i> on the other hand indicates that you
-                think the price will <i>decrease in the next period</i> (whereby 0% would indicate that you are
+                think the price will <i>decrease in the next round</i> (whereby 0% would indicate that you are
                 absolutely convinced that the price will <i>not</i> increase, and therefore decrease).
             </p>
             <p>
@@ -428,7 +428,7 @@
                 </span>
                 <p>
                     <br>
-                    "I think the probability of a price increase in the next period is
+                    "I think the probability of a price increase in the next round is
                     <span id="belief_feedback" style="font-weight: bold">XX</span><b>%</b>."
                 </p>
             </div>

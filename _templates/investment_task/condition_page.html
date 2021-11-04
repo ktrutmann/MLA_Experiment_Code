@@ -12,20 +12,20 @@
         probability</b> for a price increase.
     </p>
     <ul>
-        <li>Your portfolio will be fixed for the first {{ Constants.n_periods_per_phase }} rounds.</li>
+        <li>Your portfolio will be fixed for the first {{ Constants.rounds_p1 }} rounds.</li>
 
         {% if player.condition_name == 'full_control' %}
             <li>After that you will have <b>full control</b> of your portfolio until the end of the block.</li>
         {% elif player.condition_name == 'blocked_full_info' %}
             <li>After that you will be asked to <b>make a decision for the subsequent
-                {{ Constants.n_periods_per_phase }} rounds</b>.</li>
+                {{ Constants.rounds_p2 }} rounds</b>.</li>
             <li>You will be informed about the price changes <b>in each round</b>.</li>
             <li>Then you can make one last decision in the last round. </li>
         {% elif player.condition_name == 'blocked_blocked_info' %}
             <li>After that you will be asked to <b>make a decision for the subsequent
-                {{ Constants.n_periods_per_phase }} rounds</b>.</li>
+                {{ Constants.rounds_p2 }} rounds</b>.</li>
             <li>You will be informed about the price changes <b>at the end of these
-                {{ Constants.n_periods_per_phase }} rounds</b>.</li>
+                {{ Constants.rounds_p2 }} rounds</b>.</li>
             <li>Then you can make one last decision in the last round.</li>
         {% else %}
             </ul>
