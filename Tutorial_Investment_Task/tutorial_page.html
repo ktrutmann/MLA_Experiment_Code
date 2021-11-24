@@ -1,11 +1,10 @@
 {% extends "global/Page.html" %}
 {% load otree static %}
-
+{# TODO: (2) Mention the new condition somewhere? #}
 {% block title %}
     Investment decision experiment
 {% endblock %}
 {% block content %}
-<!-- TODO: (2) Mention the "continue button"! -->
     <div class="welcome_page content" id="content_welcome_page">
         <p>
             Welcome to this Experiment.
@@ -126,6 +125,7 @@
                 and the price has moved.
             </p>
             <p>
+                <!-- TODO: (2) Replace this with the "continue button"! -->
                 <i>A little hint on the side:</i> If you ever want to keep your portfolio as it is (i.e. not sell or buy
                 anything) you don't have to type a '0' into the order field. Just click either the 'buy' or
                 'sell' button without typing anything into the field.
@@ -362,17 +362,15 @@
                 what the conditions for the upcoming block are.
             </p>
                 <ul>
-                    <li>The first {{ Constants.n_periods_per_phase }} rounds will always be "pre-decided",
+                    <li>The first {{ Constants.rounds_p1 }} rounds will always be "pre-decided",
                         meaning you are handed a fixed portfolio and you can only observe the price movement.</li>
                     <li>After that, in some cases you will be able to make a decision for each individual round of the
                         remaining rounds.</li>
                     <li>In some cases you will have to make an investment that will then be "fixed" for the next
-                        {{ Constants.n_periods_per_phase }} rounds (i.e. if you decide to hold 2 shares,
-                        you will hold 2 shares throughout the next {{ Constants.n_periods_per_phase }}
+                        {{ Constants.rounds_p2 }} rounds (i.e. if you decide to hold 2 shares,
+                        you will hold 2 shares throughout the next {{ Constants.rounds_p2 }}
                         price movements). There will be an indicator below the table whenever you are deciding
                         for more than one round.</li>
-                    <li>There are also price paths in which you can first decide freely and then have to make a decision
-                        for the next {{ Constants.n_periods_per_phase }} rounds.</li>
                     <li>In some of the cases in which you can not freely trade you will be informed about the price
                         movements in each round, in others you will only be informed about the price movements
                         after they all already happened.</li>

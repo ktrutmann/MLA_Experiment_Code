@@ -1,4 +1,4 @@
- <p>
+<p>
         {% if Constants.name_in_url == 'Investment_Task' %}
             A new block of the investment task starts now.
         {% else %}
@@ -21,11 +21,20 @@
                 {{ Constants.rounds_p2 }} rounds</b>.</li>
             <li>You will be informed about the price changes <b>in each round</b>.</li>
             <li>Then you can make one last decision in the last round. </li>
+        {% elif player.condition_name == 'blocked_delayed_info' %}
+            <li>After that you will be asked to <b>make a decision for the subsequent
+                {{ Constants.rounds_p2 }} rounds</b>.</li>
+            <li>You will be informed about the price changes <b> at the end of these
+                {{ Constants.rounds_p2 }} rounds</b>.</li>
+            <li>The price updates will be presented to you in list-form.</li>
+            <li>Then you can make one last decision in the last round.</li>
         {% elif player.condition_name == 'blocked_blocked_info' %}
             <li>After that you will be asked to <b>make a decision for the subsequent
                 {{ Constants.rounds_p2 }} rounds</b>.</li>
             <li>You will be informed about the price changes <b>at the end of these
                 {{ Constants.rounds_p2 }} rounds</b>.</li>
+            <li>You will only be shown the difference in price from the start to the end of
+                these {{ Constants.rounds_p2 }} rounds.</li>
             <li>Then you can make one last decision in the last round.</li>
         {% else %}
             </ul>
@@ -48,6 +57,7 @@
 {#    The file to create these graphs can be found in the project repo#}
 {#    under 'experiment/materials/explanation_graphs.pptx'#}
 {#    Use the "export as graphic" feature to get the transparent .png#}
+{# TODO: (4) Update example pictures to represent 3/5 phase lengths #}
     {% if player.condition_name == 'full_control'%}
         <img src= "{% static 'Investment_Task/full_control.png' %}" class="example-pic">
     {% else %}

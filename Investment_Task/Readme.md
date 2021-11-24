@@ -4,7 +4,8 @@ This is a trading task similar to Weber & Camerer (1998).
 ## Settings
 
 ### Experimental Flow
-- `n_periods_per_phase`: How long should the participants be "blocked"?
+- `rounds_p1`: How long should the participants be "blocked" before they can make their first investment?
+- `rounds_p2`: Length of the second phase in which, depending on the condition, investments can be made.
 - `n_distinct_paths`: How many paths should be generated for each condition?
 The actual amount of paths played by the participants is thus multiplied
 by the number of conditions.

@@ -1,6 +1,7 @@
 import copy
 import random as rd
 import string
+from numpy import tracemalloc_domain
 
 import pandas as pd
 from otree.api import *
@@ -11,7 +12,6 @@ doc = """
     This is the main investment task app. See the Readme.md for more information.
 """
 
-# TODO: (3) Change images for investment lengths
 
 class Constants(BaseConstants):
     name_in_url = 'Investment_Task'
@@ -20,11 +20,12 @@ class Constants(BaseConstants):
     # n_periods_per_phase = 4  # How long should the participants be "blocked"?
     rounds_p1 = 3 # How long should phase 1 be?
     rounds_p2 = 5 # How long should phase 2 be?
-    n_distinct_paths = 7  # How many paths should be generated?
+    n_distinct_paths = 1  # How many paths should be generated? # TODO: (1) Revert back to 7!
     condition_names = [
         'full_control',
-        # 'blocked_full_info',
-        # 'blocked_blocked_info', # TODO: (3) Re-activate after OED
+        'blocked_full_info', 
+        'blocked_delayed_info',
+        'blocked_blocked_info'
     ]  # List of the conditions
     # n_phases = 2  # How many phases should there be per condition
     hold_range = [-4, 4]  # What's the minimum and maximum amount of shares that can be held.
@@ -181,6 +182,7 @@ def make_price_paths(player: Player, n_distinct_paths):
     if Constants.show_debug_msg:
         print('### Created Price Paths!')
         pd.set_option('display.max_rows', None)
+        pd.set_option('display.max_columns', None)
         print(price_df)
 
 
@@ -281,7 +283,8 @@ def is_investable(player: Player):
     is_first_phase = player.i_round_in_path < Constants.rounds_p1
     is_last_decision = player.i_round_in_path == Constants.rounds_p1 + Constants.rounds_p2
     extra_round = player.i_round_in_path == Constants.rounds_p1 + Constants.rounds_p2 + 1
-    is_blocked_condition = player.condition_name in ['blocked_full_info', 'blocked_blocked_info']
+    is_blocked_condition = player.condition_name in ['blocked_full_info', 'blocked_delayed_info',
+        'blocked_blocked_info']
     investable_p2 = not (is_blocked_condition or is_first_phase or extra_round)
 
     is_investable = is_phase_start or is_last_decision or investable_p2
@@ -295,10 +298,11 @@ def should_display_infos(player: Player):
     last_round = player.participant.vars['price_info']['last_trial_in_path'][
         player.round_number - 1
     ]
-    is_phase_start = player.i_round_in_path == Constants.rounds_p1
-    blocked_condition = player.condition_name == 'blocked_blocked_info'
+    is_phase_end = player.i_round_in_path == Constants.rounds_p1 or \
+        player.i_round_in_path == Constants.rounds_p1 + Constants.rounds_p2
+    blocked_condition = player.condition_name in ['blocked_delayed_info', 'blocked_blocked_info']
     is_first_phase = player.i_round_in_path < Constants.rounds_p1
-    should_display = ((not blocked_condition) or is_first_phase or is_phase_start) and not last_round
+    should_display = ((not blocked_condition) or is_first_phase or is_phase_end) and not last_round
     if Constants.show_debug_msg:
         print('### should_display_infos(): {}'.format(should_display))
     return should_display
@@ -308,7 +312,7 @@ def get_investment_span(player: Player):
     """Given you can invest in this round, how many periods into the future is this investment for?"""
     if player.condition_name == 'full_control':
         return 1
-    elif player.condition_name in ['blocked_full_info', 'blocked_blocked_info']:
+    elif player.condition_name in ['blocked_full_info', 'blocked_delayed_info', 'blocked_blocked_info']:
         return (
             Constants.rounds_p2
             if (player.i_round_in_path + 1) < Constants.n_rounds_per_path
@@ -343,7 +347,7 @@ def get_trading_vars(player: Player):
 def make_update_list(player: Player):
     """Creates a zipped list to display as the updates. The length depends on the condition."""
     if (
-        player.condition_name == 'blocked_blocked_info'
+        player.condition_name == 'blocked_delayed_info'
         and player.i_round_in_path == Constants.rounds_p1
     ):
         # We are at the last decision of the blocked and low info condition, so show a list of updates:
@@ -353,19 +357,28 @@ def make_update_list(player: Player):
             player.round_number - 1, player.round_number + Constants.rounds_p2 - 1
         )
         was_increase = [price_list[i + 1] > price_list[i] for i in future_indexes]
-        differences = [abs(price_list[i + 1] - price_list[i]) for i in future_indexes]
+        amount = [abs(price_list[i + 1] - price_list[i]) for i in future_indexes]
         new_price = [price_list[i + 1] for i in future_indexes]
-        return zip(was_increase, differences, new_price)
-    else:
+        return zip(was_increase, amount, new_price)
+    elif (player.condition_name == 'blocked_blocked_info'
+        and player.i_round_in_path == Constants.rounds_p1):
+        target_round = player.round_number + Constants.rounds_p2 - 1 
+        was_increase = (
+            player.participant.vars['price_info']['price'][target_round] > player.price
+        )
+        amount = abs(
+            player.participant.vars['price_info']['price'][target_round] - player.price)
+        new_price = player.participant.vars['price_info']['price'][target_round]
+        return zip([was_increase], [amount], [new_price])
+    else:  # We are in a condition which advances one round at a time
         was_increase = (
             player.participant.vars['price_info']['price'][player.round_number] > player.price
         )
-        difference = abs(
+        amount = abs(
             player.participant.vars['price_info']['price'][player.round_number] - player.price
         )
         new_price = player.participant.vars['price_info']['price'][player.round_number]
-        return zip([was_increase], [difference], [new_price])
-
+        return zip([was_increase], [amount], [new_price])
 
 # In the very last round, calculate how much was earned
 def calculate_final_payoff(player: Player):
@@ -459,7 +472,7 @@ class update_page(Page):
         # Give more time if a list is presented:
         return (
             Constants.update_time * 2
-            if player.condition_name == 'blocked_blocked_info'
+            if player.condition_name in ['blocked_delayed_info', 'blocked_blocked_info']
             and player.i_round_in_path == Constants.rounds_p1
             else Constants.update_time
         )

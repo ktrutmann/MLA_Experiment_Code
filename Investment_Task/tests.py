@@ -13,7 +13,7 @@ class PlayerBot(Bot):
     case_list = []
     case_id = 1
     for this_prob in np.arange(.6, .85, .05):
-        for this_model in ['CSRL', 'RL_single']:
+        for this_model in ['CSRL']: #, 'RL_single']:
             case_list += [dict(
                 response='model',
                 model=this_model,
@@ -24,7 +24,7 @@ class PlayerBot(Bot):
                     unfav_loss = .074,
                     not_inv = .082,
                     single = .108),
-                up_probs=[this_prob, 1 - this_prob],
+                up_probs=[.65],
                 case_id=case_id)]
             case_id += 1
     cases = case_list
@@ -197,7 +197,7 @@ class PlayerBot(Bot):
                     self.player.i_round_in_path <= Constants.rounds_p1):
                 alpha = learning_rates['single']
 
-        elif self.player.condition_name == 'blocked_blocked_info':
+        elif self.player.condition_name in ['blocked_delayed_info', 'blocked_blocked_info']:
             # If we're jumping rounds do "rational" RL updating:
             # It's not too elegant, but this "goes back" to the last known belief and updates from there.
             # Sadly oTree doesn't let us change attributes of past rounds, so it's only stored temporarely.
@@ -257,7 +257,7 @@ class PlayerBot(Bot):
         elif self.player.condition_name == 'blocked_full_info':
             # Be less conservative:
             alpha = .75
-        elif self.player.condition_name == 'blocked_blocked_info':
+        elif self.player.condition_name in ['blocked_delayed_info', 'blocked_blocked_info']:
             # If we're jumping rounds use last reported belief and price as a reference:
             i = 2
             while previous_self.field_maybe_none('belief') is None:

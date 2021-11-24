@@ -1,15 +1,31 @@
 <div class="price_update">
-    {% for is_increase, amount, new_price in update_list %}
+    <!-- TODO: (2) Test whether this all works -->
+    {% if player.condition_name == 'blocked_delayed_info' %}
         <p>
-            The assets price
-            {% if is_increase %}
-                <b>increases</b>
-            {% else %}
-                <b>decreases</b>
-            {% endif %}
-            by <b>{{ amount }}</b> and is now <b>{{ new_price }}</b>
+            {{ Constants.rounds_p2 }} rounds have now passed.
+            The price has developped in the following way:
         </p>
-    {% endfor %}
+
+    {% elif player.condition_name == 'blocked_blocked_info' %}
+        <p>
+            {{ Constants.rounds_p2 }} rounds have now passed.
+            Overall, the price has developped in the following way:
+        </p>
+
+    {% endif %}
+
+        {% for is_increase, amount, new_price in update_list %}
+            <p>
+                The assets price
+                {% if is_increase %}
+                    <b>increased</b>
+                {% else %}
+                    <b>decreased</b>
+                {% endif %}
+                by <b>{{ amount }}</b> and is now <b>{{ new_price }}</b>
+            </p>
+        {% endfor %}
+
 {% next_button %}
 </div>
 <input type="hidden" id="id_update_time_used" name="update_time_used" value="0">
