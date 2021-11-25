@@ -30,7 +30,6 @@ class Constants(BaseConstants):
     # n_phases = 2  # How many phases should there be per condition
     hold_range = [-4, 4]  # What's the minimum and maximum amount of shares that can be held.
     shuffle_conditions = True  # Should the conditions be presented in "blocks" or shuffled?
-    scramble_moves_in_phases = False  # Should price moves within phases be scrambled between phases?
     # Derivative constants
     num_paths = n_distinct_paths * len(condition_names)
     n_rounds_per_path = rounds_p1 + rounds_p2 + 1
@@ -105,19 +104,7 @@ def make_price_paths(player: Player, n_distinct_paths):
         distinct_path_moves_list += [moves]
     all_moves_list = [copy.deepcopy(distinct_path_moves_list) for _ in Constants.condition_names]
     all_drifts_list = [copy.deepcopy(drift_list) for _ in Constants.condition_names]
-    # If wanted, scramble the moves differently for each condition:
-    if Constants.scramble_moves_in_phases:
-        # The levels here are [condition][path][period]
-        for i_cond, _ in enumerate(Constants.condition_names):
-            for i_path in range(n_distinct_paths):
-                # Create a moving window to scramble the movements:
-                for i_phase in range(2): # TODO: (5) Fix scrambling with new phase lengths
-                    win_start_ix = i_phase * Constants.n_periods_per_phase
-                    win_end_ix = (i_phase + 1) * Constants.n_periods_per_phase
-                    these_moves = all_moves_list[i_cond][i_path][win_start_ix:win_end_ix]
-                    rd.shuffle(these_moves)
-                    all_moves_list[i_cond][i_path][win_start_ix:win_end_ix] = these_moves
-    # Now also shuffle the paths together with their drifts:
+    # Now shuffle the paths together with their drifts:
     distinct_path_ids = [list(range(n_distinct_paths))] * len(Constants.condition_names)
     for i_cond, _ in enumerate(Constants.condition_names):
         these_ids = distinct_path_ids[i_cond].copy()
