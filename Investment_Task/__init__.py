@@ -479,7 +479,8 @@ class update_page(Page):
 
     @staticmethod
     def vars_for_template(player: Player):
-        return {'update_list': make_update_list(player)}
+        return {'update_list': make_update_list(player),
+            'is_start_p2': player.i_round_in_path == Constants.rounds_p1}
 
 
 class end_page(Page):
