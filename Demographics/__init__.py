@@ -1,6 +1,7 @@
 from otree.api import *
 import time
 
+# TODO: (2) Separate away Demographics and put them at the end!
 
 author = 'Kevin Trutmann'
 doc = """
@@ -21,8 +22,6 @@ class Subsession(BaseSubsession):
 class Group(BaseGroup):
     pass
 
-# TODO: (3) Add a "did you recognize a pattern" question
-# TODO: (3) Add a "Is there a reason we shouldn't use your data" question. (Mention that it's not payoff relevant!)
 
 class Player(BasePlayer):
     strategy = models.LongStringField()
@@ -99,6 +98,8 @@ class Player(BasePlayer):
         choices=[i + 1 for i in range(7)],
         widget=widgets.RadioSelectHorizontal(),
     )
+    pattern = models.LongStringField(blank=True, label='')
+    dont_use_data = models.LongStringField(blank=True, label='') 
     general_comments = models.LongStringField(blank=True, label='')
     timestamp = models.FloatField()
 
@@ -141,11 +142,18 @@ class demographics_page(Page):
 
 class comments_page(Page):
     form_model = 'player'
-    form_fields = ['general_comments']
+    form_fields = [
+        'pattern',
+        'dont_use_data',
+        'general_comments'
+    
+
+
+    ]
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
-        player.timestamp = time.time() # TODO: (2) Test this!
+        player.timestamp = time.time() # TODO: (6) Test this!
 
 
 page_sequence = [open_strategy_page, closed_strategy_page, demographics_page, comments_page]

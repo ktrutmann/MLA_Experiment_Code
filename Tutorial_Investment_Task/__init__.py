@@ -85,7 +85,7 @@ def get_tutorial_vars(player: Player):
 class initializer_page(Page):
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
-        player.timestamp = time.time() # TODO: (2) Test this!
+        player.timestamp = time.time() # TODO: (5) Test this!
         initialize_round(player, n_distinct_paths=Constants.num_training_blocks_per_condition)
 
 

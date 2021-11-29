@@ -1,6 +1,5 @@
 {% extends "global/Page.html" %}
 {% load otree static %}
-{# TODO: (2) Mention the new condition somewhere? #}
 {% block title %}
     Investment decision experiment
 {% endblock %}
@@ -35,7 +34,7 @@
         <p>
             Please click the continue button to start the tutorial.
         </p>
-        <button class="button btn continue_button navigation_button" id="welcome_continue_button" type="button"
+        <button class="button btn tut_continue_button navigation_button" id="welcome_continue_button" type="button"
                 onclick="flip_tut_pages('continue')">Continue</button>
     </div>
 
@@ -125,10 +124,9 @@
                 and the price has moved.
             </p>
             <p>
-                <!-- TODO: (2) Replace this with the "continue button"! -->
-                <i>A little hint on the side:</i> If you ever want to keep your portfolio as it is (i.e. not sell or buy
-                anything) you don't have to type a '0' into the order field. Just click either the 'buy' or
-                'sell' button without typing anything into the field.
+                <i>A little hint on the side:</i> If you are happy with your portfolio as it is (i.e. you do not want to sell or buy
+                anything) you can either just click the 'Buy' or 'Sell' button without typing anything into the field or you can use
+                the 'Continue' button below.
             </p>
             <p>
                 If you have understood everything so far, sell all your shares by entering the amount of shares you are
@@ -188,7 +186,7 @@
             </div>
         </div>
 
-        <button class="button btn continue_button navigation_button" id="trade_continue_button" type="button"
+        <button class="button btn tut_continue_button navigation_button" id="trade_continue_button" type="button"
             style="display: none" onclick="flip_tut_pages('continue')">Continue</button>
     </div>
 
@@ -295,16 +293,20 @@
                 <div class="row">
                     <div class="col-md-9" id="trading_form">
                         <div class="row">
-                        <span style="margin-right: 10px">Your Order: </span>
-                        <div class="form-group">
-                            <div class="controls  field-transaction">
-                                <input type="number" name="transaction2" id="id_transaction2" class="form-control">
+                            <span style="margin-right: 10px">Your Order: </span>
+                            <div class="form-group">
+                                <div class="controls  field-transaction" style="margin-bottom: 10px;">
+                                    <input type="number" name="transaction2" id="id_transaction2" class="form-control">
+                                </div>
                             </div>
-                        </div>
-                        <button class="btn trade_button buy_button" id="asset_buy_button" type="button"
-                                onclick="buy()">Buy</button>
-                        <button class="btn trade_button sell_button" id="asset_sell_button" type="button"
-                                onclick="sell()">Sell</button>
+                            <button class="btn trade_button buy_button" id="asset_buy_button" type="button"
+                                    onclick="buy()">Buy</button>
+                            <button class="btn trade_button sell_button" id="asset_sell_button" type="button"
+                                    onclick="sell()">Sell</button>
+                            <div class="row">
+                                <button class="btn trade_button continue_button" id="asset_continue_button" type="button"
+                            onclick="no_trade()">Continue</button>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-9" id="confirm_form" style="display: none;">
@@ -324,7 +326,7 @@
 
         <button class="button btn back_button navigation_button" id="shorting_back_button" type="button"
             onclick="flip_tut_pages('back')">Back</button>
-        <button class="button btn continue_button navigation_button" id="shorting_continue_button" type="button"
+        <button class="button btn tut_continue_button navigation_button" id="shorting_continue_button" type="button"
                 style="display: none" onclick="flip_tut_pages('continue');">Continue</button>
     </div>
 
@@ -384,7 +386,7 @@
 
     <button class="button btn back_button navigation_button" id="price_movement_back_button" type="button"
         onclick="flip_tut_pages('back')">Back</button>
-    <button class="button btn continue_button navigation_button" id="price_movement_continue_button" type="button"
+    <button class="button btn tut_continue_button navigation_button" id="price_movement_continue_button" type="button"
             onclick="check_tutorial_moves('continue')">Continue</button>
     </div>
 
@@ -441,7 +443,7 @@
 
         <button class="button btn back_button navigation_button" id="belief_back_button" type="button"
             onclick="flip_tut_pages('back')">Back</button>
-        <button class="button btn continue_button navigation_button" id="belief_continue_button" type="button"
+        <button class="button btn tut_continue_button navigation_button" id="belief_continue_button" type="button"
                 onclick="check_tutorial_moves('continue')">Continue</button>
     </div>
 
@@ -479,7 +481,7 @@
         </p>
         <button class="button btn back_button navigation_button" id="structure_back_button" type="button"
             onclick="flip_tut_pages('back')">Back</button>
-        <button class="button btn continue_button navigation_button" id="structure_continue_button" type="button"
+        <button class="button btn tut_continue_button navigation_button" id="structure_continue_button" type="button"
                 onclick="check_tutorial_moves('continue')">Continue</button>
     </div>
 

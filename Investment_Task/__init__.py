@@ -20,7 +20,7 @@ class Constants(BaseConstants):
     # n_periods_per_phase = 4  # How long should the participants be "blocked"?
     rounds_p1 = 3 # How long should phase 1 be?
     rounds_p2 = 5 # How long should phase 2 be?
-    n_distinct_paths = 1  # How many paths should be generated? # TODO: (1) Revert back to 7!
+    n_distinct_paths = 1  # How many paths should be generated? # TODO: (7) Revert back to 7 after testing!
     condition_names = [
         'full_control',
         'blocked_full_info', 
@@ -409,7 +409,7 @@ class condition_page(Page):
     def vars_for_template(player: Player):
         return {
             'drift_list': [round(i * 100) for i in Constants.up_probs],
-            'periods_per_phase': Constants.rounds_p2, # TODO: (5) Fix this in the text!
+            'periods_per_phase': Constants.rounds_p2,
             'exp_email': Constants.experimenter_email,
         }
 

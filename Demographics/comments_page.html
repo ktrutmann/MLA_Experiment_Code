@@ -6,11 +6,25 @@
 {% endblock %}
 
 {% block content %}
+    <p>You are now almost at the end of the study. These are the last questions.</p>
+
     <p>
-        You are now almost at the end of the study. <br>
-        If you have some general comments, please provide them here.
+        Did you feel like you found any patterns in the price developments, either within or between blocks
+        (and other than the drift)? If not, you can leave this field blank.
     </p>
-{% formfield player.general_comments%}
+    {% formfield player.pattern %}
+ 
+    <p>
+       Is there any reason why we should consider not using your data?
+       Your answer to this question does not affect your payment.
+       If so, please explain below. If not, leave this field empty.
+    </p>
+    {% formfield player.dont_use_data %}
+
+    <p>
+        Finally, if you have some general comments, please provide them here.
+    </p>
+    {% formfield player.general_comments%}
 
     {% next_button %}
 

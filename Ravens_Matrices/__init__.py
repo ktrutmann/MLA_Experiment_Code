@@ -13,7 +13,7 @@ class Constants(BaseConstants):
     name_in_url = 'RPM'
     players_per_group = None
     num_rounds = 1
-    endowment = 10  # TODO: (2) Adjust endowment!
+    endowment = 10  # TODO: (4) Adjust endowment!
 
 
 class Subsession(BaseSubsession):
@@ -55,7 +55,7 @@ class Player(BasePlayer):
     pers_rpm_overplacement_answer = models.IntegerField(label='Rank:', min=1, max=100)
 
 def add_earnings_to_payoff(player: Player):
-    # TODO: (3) Test whether the bonus propagates till the end.
+    # TODO: (5) Test whether the bonus propagates till the end.
     answer_key = [1, 5, 4, 3, 0, 0]
     total_score = 0
 
