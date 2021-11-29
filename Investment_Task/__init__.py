@@ -27,16 +27,12 @@ class Constants(BaseConstants):
         'blocked_delayed_info',
         'blocked_blocked_info'
     ]  # List of the conditions
-    # n_phases = 2  # How many phases should there be per condition
     hold_range = [-4, 4]  # What's the minimum and maximum amount of shares that can be held.
     shuffle_conditions = True  # Should the conditions be presented in "blocks" or shuffled?
     # Derivative constants
     num_paths = n_distinct_paths * len(condition_names)
     n_rounds_per_path = rounds_p1 + rounds_p2 + 1
-    num_rounds = (
-        n_distinct_paths * (rounds_p1 + rounds_p2) * len(condition_names)
-        + n_distinct_paths * len(condition_names) * 2
-    )
+    num_rounds = n_distinct_paths * len(condition_names) * (n_rounds_per_path + 1)
     # The parameters for the price path
     up_probs = [0.35, 0.65]  # The possible probabilities of a price increase (i.e. "drifts")
     start_price = 1000  # The first price in the price path
@@ -382,7 +378,7 @@ def calculate_final_payoff(player: Player):
     player.completion_code = ''.join(rd.sample(string.ascii_uppercase + '1234567890', k = 5))
 
     player.participant.vars['payoff_dict'] = {
-        'payoff_list': zip(player.participant.vars['earnings_list']),
+        'payoff_list': player.participant.vars['earnings_list'],
         'end_cash_sum': sum(player.participant.vars['earnings_list']),
         'payoff_total': player.participant.payoff_plus_participation_fee(),
         'showup_fee': player.session.config['participation_fee'],

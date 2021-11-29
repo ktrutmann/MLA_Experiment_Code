@@ -32,16 +32,14 @@ SESSION_CONFIGS = [
         'name': 'Investment_Task_Full',
         'num_demo_participants': 1,
         'app_sequence': ['Tutorial_Investment_Task', 'Investment_Task',
-                         'Demographics', 'SOEP_Risk',
-                         'Ravens_Matrices', 'Show_Payoff']
+                         'Strategy', 'SOEP_Risk',
+                         'Ravens_Matrices', 'Demographics', 'Show_Payoff']
     },
 
     {
-        'name': 'Investment_Task_Full_bots',
+        'name': 'Payoff',
         'num_demo_participants': 1,
-        'app_sequence': ['Tutorial_Investment_Task', 'Investment_Task',
-                         'Demographics', 'Show_Payoff'],
-        'use_browser_bots': True
+        'app_sequence': ['Show_Payoff'],
     },
 ]
 
@@ -51,7 +49,7 @@ SESSION_CONFIGS = [
 LANGUAGE_CODE = 'en'
 
 # e.g. EUR, GBP, CNY, JPY
-REAL_WORLD_CURRENCY_CODE = 'CHF'
+REAL_WORLD_CURRENCY_CODE = 'USD'
 REAL_WORLD_CURRENCY_DECIMAL_PLACES = 2
 USE_POINTS = True
 POINTS_DECIMAL_PLACES = 1

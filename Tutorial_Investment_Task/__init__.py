@@ -21,7 +21,7 @@ class Constants(MainConstants):
     name_in_url = 'Tutorial_Investment_Task'
     num_training_blocks_per_condition = 1
     num_tutorial_paths = num_training_blocks_per_condition * len(MainConstants.condition_names)
-    num_rounds = num_tutorial_paths * MainConstants.n_rounds_per_path  # Number of training rounds
+    num_rounds = num_tutorial_paths * (MainConstants.n_rounds_per_path + 1)  # Number of training rounds
     shuffle_conditions = False
     # Constants specifically for the tutorial text
     num_blocks = MainConstants.num_paths
@@ -85,7 +85,7 @@ def get_tutorial_vars(player: Player):
 class initializer_page(Page):
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
-        player.timestamp = time.time() # TODO: (5) Test this!
+        player.timestamp = time.time()
         initialize_round(player, n_distinct_paths=Constants.num_training_blocks_per_condition)
 
 

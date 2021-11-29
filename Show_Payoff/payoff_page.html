@@ -14,6 +14,7 @@
         </tr>
         {% for this_trade_payoff in payoff_list %}
             <tr>
+                {# TODO: (3) Add earnings from matrix task! #}
                 <td>{{ forloop.counter }}</td><td>{{ this_trade_payoff }}</td>
             </tr>
         {% endfor %}
@@ -23,17 +24,19 @@
     </table>
     <p>
         <br>
-        You therefore have earned <b>{{ end_cash_sum|c }}</b>. Your payoff is calculated in the following way:
+        You therefore have earned <b>{{ end_cash_sum|c }}</b> in the investment task.
+        Your payoff is calculated in the following way:
     </p>
     <p>
-        {{ showup_fee }} for completing the study + CHF {{ base_payoff }} base bonus + {{ percent_conversion }}% of
+        {{ showup_fee }} for completing the study +  ${{ base_payoff }} base bonus + {{ percent_conversion }}% of
         {{ end_cash_sum|c }} =
         <b>{{ payoff_total }}</b>
     </p>
     <p>
         If you have activated fullscreen mode you may now leave it by pressing <b><i>F11</i></b>
         or <i><b>Cmd + Ctrl + F</b></i> again. <br>
-        Please return to the mTurk window and enter the code <b>{{ completion_code }}</b> to confirm that you finished the study.
+        Your completion code for this study is <b>{{ completion_code }}</b>.
+        This code is used to confirm that you finished the study.
         Thank you very much for participating!
     </p>
 {% endblock %}

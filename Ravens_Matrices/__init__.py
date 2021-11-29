@@ -13,7 +13,7 @@ class Constants(BaseConstants):
     name_in_url = 'RPM'
     players_per_group = None
     num_rounds = 1
-    endowment = 10  # TODO: (4) Adjust endowment!
+    endowment = 10  # TODO: (6) Adjust endowment!
 
 
 class Subsession(BaseSubsession):
