@@ -87,6 +87,7 @@ class initializer_page(Page):
     def before_next_page(player: Player, timeout_happened):
         player.timestamp = time.time()
         initialize_round(player, n_distinct_paths=Constants.num_training_blocks_per_condition)
+        # TODO: (1) Generate four different price paths!
 
 
 class tutorial_page(Page):
