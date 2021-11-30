@@ -1,0 +1,17 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block title %}
+    Welcome
+{% endblock %}
+
+{% block content %}
+    <p>
+        Welcome to this study!
+        Before we begin, please copy your Prolific ID into the field below.
+        This will be used to validate your participation in this study.
+    </p>
+
+    {% formfields %}
+    {% next_button %}
+{% endblock %}

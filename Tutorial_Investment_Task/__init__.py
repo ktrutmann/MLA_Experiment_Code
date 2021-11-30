@@ -59,6 +59,7 @@ class Player(BasePlayer):
     drift = models.FloatField()
     condition_name = models.StringField()
     timestamp = models.FloatField()
+    prolific_id = models.StringField(label='Prolific ID:')
 
 
 # FUNCTIONS
@@ -89,6 +90,13 @@ class initializer_page(Page):
         initialize_round(player, n_distinct_paths=Constants.num_training_blocks_per_condition)
         # TODO: (1) Generate four different price paths!
 
+class prolific_ID_page(Page):
+    form_model = 'player'
+    form_fields = ['prolific_id']
+
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.round_number == 1
 
 class tutorial_page(Page):
     form_model = 'player'
@@ -110,6 +118,7 @@ class end_page(Page):
 
 
 page_sequence = [
+    prolific_ID_page,
     initializer_page,
     tutorial_page,
     condition_page,
