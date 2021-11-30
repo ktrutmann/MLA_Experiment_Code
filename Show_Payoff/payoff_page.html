@@ -14,7 +14,6 @@
         </tr>
         {% for this_trade_payoff in payoff_list %}
             <tr>
-                {# TODO: (3) Add earnings from matrix task! #}
                 <td>{{ forloop.counter }}</td><td>{{ this_trade_payoff }}</td>
             </tr>
         {% endfor %}
@@ -25,12 +24,16 @@
     <p>
         <br>
         You therefore have earned <b>{{ end_cash_sum|c }}</b> in the investment task.
-        Your payoff is calculated in the following way:
+    <p>
+        In addition, you have earned {{ ravens_bonus_points|c }} in the matrix task.
+    </p>
+    <p>
+        Your payoff is now calculated in the following way:
     </p>
     <p>
         {{ showup_fee }} for completing the study +  ${{ base_payoff }} base bonus + {{ percent_conversion }}% of
-        {{ end_cash_sum|c }} =
-        <b>{{ payoff_total }}</b>
+        {{ end_cash_sum|c }} from the investment task and {{ percent_conversion }}% of {{ravens_bonus_points|c }}
+        from the matrix task = <b>{{ payoff_total }}</b>
     </p>
     <p>
         If you have activated fullscreen mode you may now leave it by pressing <b><i>F11</i></b>

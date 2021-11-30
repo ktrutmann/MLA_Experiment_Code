@@ -13,7 +13,7 @@ class Constants(BaseConstants):
     name_in_url = 'RPM'
     players_per_group = None
     num_rounds = 1
-    endowment = 10  # TODO: (6) Adjust endowment!
+    endowment = 5
 
 
 class Subsession(BaseSubsession):
@@ -55,7 +55,6 @@ class Player(BasePlayer):
     pers_rpm_overplacement_answer = models.IntegerField(label='Rank:', min=1, max=100)
 
 def add_earnings_to_payoff(player: Player):
-    # TODO: (5) Test whether the bonus propagates till the end.
     answer_key = [1, 5, 4, 3, 0, 0]
     total_score = 0
 
@@ -63,6 +62,10 @@ def add_earnings_to_payoff(player: Player):
         total_score += getattr(player, f'cogn_rpm_matrix_{i + 1}') == this_right_answer
     player.cogn_rpm_total_points = total_score
     player.payoff = cu(player.cogn_rpm_total_points * Constants.endowment)
+    player.participant.vars['payoff_dict'].update({'ravens_bonus_points': player.payoff})
+    player.participant.vars['payoff_dict'].update(
+        {'payoff_total': player.participant.payoff_plus_participation_fee()})
+    print(player.participant.vars['payoff_dict'])
 
 
 # Pages: ----

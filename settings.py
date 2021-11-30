@@ -3,8 +3,8 @@ from os import environ
 
 SESSION_CONFIG_DEFAULTS = {
     'real_world_currency_per_point': 0.02,
-    'participation_fee': 10,
-    'base_bonus': 20,
+    'participation_fee': 3,
+    'base_bonus': 4,
     'doc': "",
 }
 
@@ -14,32 +14,13 @@ SESSION_CONFIGS = [
         'num_demo_participants': 1,
         'app_sequence': ['Investment_Task'],
     },
-
-    {
-        'name': 'Investment_Task_bots',
-        'num_demo_participants': 1,
-        'app_sequence': ['Investment_Task'],
-        'use_browser_bots': True
-    },
-
-   {
-        'name': 'SOEP',
-        'num_demo_participants': 1,
-        'app_sequence': ['SOEP_Risk'],
-    },
-
+ 
     {
         'name': 'Investment_Task_Full',
         'num_demo_participants': 1,
         'app_sequence': ['Tutorial_Investment_Task', 'Investment_Task',
                          'Strategy', 'SOEP_Risk',
                          'Ravens_Matrices', 'Demographics', 'Show_Payoff']
-    },
-
-    {
-        'name': 'Payoff',
-        'num_demo_participants': 1,
-        'app_sequence': ['Show_Payoff'],
     },
 ]
 

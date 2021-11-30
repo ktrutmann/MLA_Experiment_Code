@@ -20,7 +20,7 @@ class Constants(BaseConstants):
     # n_periods_per_phase = 4  # How long should the participants be "blocked"?
     rounds_p1 = 3 # How long should phase 1 be?
     rounds_p2 = 5 # How long should phase 2 be?
-    n_distinct_paths = 1  # How many paths should be generated? # TODO: (7) Revert back to 7 after testing!
+    n_distinct_paths = 2  # How many paths should be generated? # TODO: (7) Revert back to 7 after testing!
     condition_names = [
         'full_control',
         'blocked_full_info', 
@@ -380,7 +380,6 @@ def calculate_final_payoff(player: Player):
     player.participant.vars['payoff_dict'] = {
         'payoff_list': player.participant.vars['earnings_list'],
         'end_cash_sum': sum(player.participant.vars['earnings_list']),
-        'payoff_total': player.participant.payoff_plus_participation_fee(),
         'showup_fee': player.session.config['participation_fee'],
         'base_payoff': player.session.config['base_bonus'],
         'percent_conversion': round(
