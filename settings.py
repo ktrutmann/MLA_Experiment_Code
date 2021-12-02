@@ -3,10 +3,12 @@ from os import environ
 
 SESSION_CONFIG_DEFAULTS = {
     'real_world_currency_per_point': 0.02,
-    'participation_fee': 4,
-    'base_bonus': 4,
+    'participation_fee': 6.65,
+    'base_bonus': 1.5,
     'doc': "",
 }
+# TODO: (1) Recalculate payoff using pre-pilot. 6.5 + 1.5 base bonus + max .6 ravens. Max 1.5. winnings in task
+# TODO: (2) Programm tests for everything
 
 SESSION_CONFIGS = [
     {
@@ -18,8 +20,9 @@ SESSION_CONFIGS = [
     {
         'name': 'Investment_Task_Full',
         'num_demo_participants': 1,
-        'app_sequence': ['Tutorial_Investment_Task', 'Investment_Task',
-                         'Strategy', 'SOEP_Risk',
+        'app_sequence': [#'Tutorial_Investment_Task',
+            'Investment_Task',
+                         'Strategy', 'SOEP_Risk', # TODO: (3) Add an impulsiveness question? See sinergia.
                          'Ravens_Matrices', 'Demographics', 'Show_Payoff']
     },
 ]

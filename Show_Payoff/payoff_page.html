@@ -13,26 +13,27 @@
             <th>Block</th><th>Earnings</th>
         </tr>
         {% for this_trade_payoff in payoff_list %}
-            <tr>
+            {% if forloop.counter == wining_block %}
+                <tr style="background: darkgreen">
+            {% else %}
+                <tr>
+            {% endif %}
                 <td>{{ forloop.counter }}</td><td>{{ this_trade_payoff }}</td>
             </tr>
         {% endfor %}
-        <tr style="background: skyblue;">
-            <td>Total:</td><td>{{ end_cash_sum }}</td>
-        </tr>
     </table>
-    <p>
-        <br>
-        You therefore have earned <b>{{ end_cash_sum|c }}</b> in the investment task.
-    <p>
-        In addition, you have earned {{ ravens_bonus_points|c }} in the matrix task.
+    <p><br>
+        The block which was randomly chosen to determine your payoff is
+        <span style="color: darkgreen; font-weight: bold;">marked in green</span>.<br>
+        You therefore have earned <b>{{ wining_earnings }}</b> in the investment task.
+        In addition, you have earned <b>{{ ravens_bonus_points|c }}</b> in the matrix task.
     </p>
     <p>
         Your payoff is now calculated in the following way:
     </p>
     <p>
         {{ showup_fee }} for completing the study +  ${{ base_payoff }} base bonus + {{ percent_conversion }}% of
-        {{ end_cash_sum|c }} from the investment task and {{ percent_conversion }}% of {{ravens_bonus_points|c }}
+        {{ wining_earnings }} from the investment task and {{ percent_conversion }}% of {{ravens_bonus_points|c }}
         from the matrix task = <b>{{ payoff_total }}</b>
     </p>
     <p>

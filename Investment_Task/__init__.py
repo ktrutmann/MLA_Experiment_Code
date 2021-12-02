@@ -5,7 +5,7 @@ from numpy import tracemalloc_domain
 
 import pandas as pd
 from otree.api import *
-
+import time
 
 author = 'Kevin Trutmann'
 doc = """
@@ -20,7 +20,7 @@ class Constants(BaseConstants):
     # n_periods_per_phase = 4  # How long should the participants be "blocked"?
     rounds_p1 = 3 # How long should phase 1 be?
     rounds_p2 = 5 # How long should phase 2 be?
-    n_distinct_paths = 6  # How many paths should be generated?
+    n_distinct_paths = 6  # How many paths should be generated? 
     condition_names = [
         'full_control',
         'blocked_full_info', 
@@ -75,7 +75,9 @@ class Player(BasePlayer):
     distinct_path_id = models.IntegerField()
     drift = models.FloatField()
     condition_name = models.StringField()
+    timestamp = models.FloatField()
     completion_code = models.StringField(default='0000')
+    wining_block = models.IntegerField()
 
 
 # FUNCTIONS
@@ -254,6 +256,8 @@ def initialize_round(player: Player, n_distinct_paths):
             player.payoff = player.final_cash - Constants.starting_cash
             player.participant.vars['earnings_list'].append(player.payoff)
     rd.seed()
+    # Timestamp of the round:
+    player.timestamp = time.time()
     if Constants.show_debug_msg:
         print('### Initialized round {} ################'.format(player.round_number))
 
@@ -367,10 +371,14 @@ def make_update_list(player: Player):
 def calculate_final_payoff(player: Player):
     if Constants.show_debug_msg:
         print('##### Earnings list is {}'.format(player.participant.vars['earnings_list']))
+
+    # Determine the wining round:
+    player.wining_block = rd.randint(0, Constants.num_paths - 1)
+    wining_block_earnings = player.participant.vars['earnings_list'][player.wining_block]
     # Add the base_payoff to the game-payoff and make sure that it is floored at 0
     player.participant.payoff = cu(
         player.session.config['base_bonus'] / player.session.config['real_world_currency_per_point']
-        + sum(player.participant.vars['earnings_list'])
+        + wining_block_earnings
     )
     if player.participant.payoff < 0:
         player.participant.payoff -= player.participant.payoff  # For some reason 0 didn't work.
@@ -379,7 +387,8 @@ def calculate_final_payoff(player: Player):
 
     player.participant.vars['payoff_dict'] = {
         'payoff_list': player.participant.vars['earnings_list'],
-        'end_cash_sum': sum(player.participant.vars['earnings_list']),
+        'wining_earnings': wining_block_earnings,
+        'wining_block': player.wining_block,
         'showup_fee': player.session.config['participation_fee'],
         'base_payoff': player.session.config['base_bonus'],
         'percent_conversion': round(

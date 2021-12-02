@@ -464,14 +464,17 @@
         <p>
             The payoff will be based on <b>the difference</b> between the value of your portfolio (cash plus assets)
             <i>at the start</i> of each block and the value of your portfolio <i>at the end</i> of the block.
-            This therefore reflects the winnings or losses of your investments. <br>
-            Your final points will then be added or subtracted from the base payoff of
+            This therefore reflects the winnings or losses of your investments.
+            In the end, you will be presented with a list with all your winnings in each block.
+            One of the blocks' winnings (or losses) will be randomly chosen to be payed out.<br>
+            This chosen amount will then be added or subtracted from the base payoff of
             ${{ base_bonus }} with an exchange rate of {{ conversion_percent }}%.
             Additionally you will receive the {{ showup_fee }} for completing the study, no matter your performance.
             </p>
             <p>
             As an example: <br>
-            If your total earnings from all blocks add up to 100 points, your payoff will be {{ example_payoff }}.
+            If in the block that was randomly chosen to be payed out you have gained 100 points,
+            your payoff will be {{ example_payoff }}.
             It will consist of {{ showup_fee }} for completing the study, ${{ base_bonus }} base payoff
             plus {{ conversion_percent }}% of the 100 points you earned.
         </p>
