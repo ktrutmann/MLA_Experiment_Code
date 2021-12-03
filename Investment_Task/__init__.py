@@ -1,7 +1,7 @@
 import copy
 import random as rd
 import string
-from numpy import tracemalloc_domain
+from numpy import ndarray, tracemalloc_domain
 
 import pandas as pd
 from otree.api import *
@@ -20,7 +20,7 @@ class Constants(BaseConstants):
     # n_periods_per_phase = 4  # How long should the participants be "blocked"?
     rounds_p1 = 3 # How long should phase 1 be?
     rounds_p2 = 5 # How long should phase 2 be?
-    n_distinct_paths = 6  # How many paths should be generated? 
+    n_distinct_paths = 6  # How many paths should be generated?
     condition_names = [
         'full_control',
         'blocked_full_info', 
@@ -81,19 +81,21 @@ class Player(BasePlayer):
 
 
 # FUNCTIONS
-def make_price_paths(player: Player, n_distinct_paths):
+def make_price_paths(player: Player, n_distinct_paths, training):
     """
     This method first creates distinct movement sets and then multiplies and scrambles them
     (paths within the experiment and movements within phases). In the end it applies the movement sets
     to create the actual price paths. It takes constants as arguments so it can also be used for the training
     rounds.
+    The "training" argument leads to one unique path being returned per condition
+    (so people don't notice the repetition in the training rounds).
     """
     # Determine the drift for each path:
     if player.participant._is_bot:
         rd.seed(5341 + player.participant.id_in_session)
-    drift_list = rd.choices(player.participant.vars['up_probs'], k=n_distinct_paths)
+    drift_per_path = rd.choices(player.participant.vars['up_probs'], k=n_distinct_paths)
     distinct_path_moves_list = []  # Will be a list of lists
-    for this_drift in drift_list:
+    for this_drift in drift_per_path:
         moves = []
         for _ in range(Constants.n_rounds_per_path):
             movement_direction = rd.choices([1, -1], weights=[this_drift, 1 - this_drift])[0]
@@ -101,7 +103,7 @@ def make_price_paths(player: Player, n_distinct_paths):
             moves += [movement_direction * movement_magnitude]
         distinct_path_moves_list += [moves]
     all_moves_list = [copy.deepcopy(distinct_path_moves_list) for _ in Constants.condition_names]
-    all_drifts_list = [copy.deepcopy(drift_list) for _ in Constants.condition_names]
+    all_drifts_list = [copy.deepcopy(drift_per_path) for _ in Constants.condition_names]
     # Now shuffle the paths together with their drifts:
     distinct_path_ids = [list(range(n_distinct_paths))] * len(Constants.condition_names)
     for i_cond, _ in enumerate(Constants.condition_names):
@@ -156,6 +158,8 @@ def make_price_paths(player: Player, n_distinct_paths):
             condition_name=condition_name,
         )
     )
+    if training: # Use only one distinct path per condition
+        price_df = price_df[price_df.condition_id == price_df.distinct_path_id]
     if Constants.shuffle_conditions:
         grouped_df = [group.copy() for _, group in price_df.groupby('global_path_id')]
         rd.shuffle(grouped_df)
@@ -171,14 +175,14 @@ def make_price_paths(player: Player, n_distinct_paths):
         print(price_df)
 
 
-def initialize_round(player: Player, n_distinct_paths):
+def initialize_round(player: Player, n_distinct_paths, training=False):
     # If this is the very first round
     if player.round_number == 1:
         # This is needed so bot-testing can manipulate these values:
         if not player.participant._is_bot:
             player.participant.vars['up_probs'] = Constants.up_probs.copy()
 
-        make_price_paths(player, n_distinct_paths=n_distinct_paths)
+        make_price_paths(player, n_distinct_paths=n_distinct_paths, training=training)
         player.participant.vars['earnings_list'] = []
         player.global_path_id = 1
         # Decide what the initial hold will be for each path:

@@ -19,8 +19,7 @@ Tutorial for the investment Task
 
 class Constants(MainConstants):
     name_in_url = 'Tutorial_Investment_Task'
-    num_training_blocks_per_condition = 1
-    num_tutorial_paths = num_training_blocks_per_condition * len(MainConstants.condition_names)
+    num_tutorial_paths = len(MainConstants.condition_names)
     num_rounds = num_tutorial_paths * (MainConstants.n_rounds_per_path + 1)  # Number of training rounds
     shuffle_conditions = False
     # Constants specifically for the tutorial text
@@ -87,8 +86,9 @@ class initializer_page(Page):
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
         player.timestamp = time.time()
-        initialize_round(player, n_distinct_paths=Constants.num_training_blocks_per_condition)
-        # TODO: (1) Generate four different price paths!
+        initialize_round(player,
+            n_distinct_paths=len(Constants.condition_names),
+            training=True)
 
 class prolific_ID_page(Page):
     form_model = 'player'

@@ -20,7 +20,7 @@ SESSION_CONFIGS = [
     {
         'name': 'Investment_Task_Full',
         'num_demo_participants': 1,
-        'app_sequence': [#'Tutorial_Investment_Task',
+        'app_sequence': ['Tutorial_Investment_Task',
             'Investment_Task',
                          'Strategy', 'SOEP_Risk', # TODO: (3) Add an impulsiveness question? See sinergia.
                          'Ravens_Matrices', 'Demographics', 'Show_Payoff']
