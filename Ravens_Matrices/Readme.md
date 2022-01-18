@@ -17,7 +17,7 @@ The Matrices are generated with a Matlab Interface provided by Civelli & Deck
 (available here: https://acivelli.hosted.uark.edu/ResearchPage.html).
 
 ## Settings
-The amount of incentivization can be adjustet in models.py, variable `endowment`.
+The amount of incentivization can be adjustet in `__init__.py` with the `endowment` variable.
 
 ## Exported Data
 The main exports are the scores for the three matrices (`cogn_rpm_matrix_1` - `cogn_rpm_matrix_3`) 

@@ -2,12 +2,11 @@ from os import environ
 
 
 SESSION_CONFIG_DEFAULTS = {
-    'real_world_currency_per_point': 0.02,
-    'participation_fee': 6.65,
+    'real_world_currency_per_point': 0.01,
+    'participation_fee': 6.50,
     'base_bonus': 1.5,
     'doc': "",
 }
-# TODO: (1) Recalculate payoff using pre-pilot. 6.5 + 1.5 base bonus + max .6 ravens. Max 1.5. winnings in task
 
 SESSION_CONFIGS = [
     {
