@@ -77,7 +77,7 @@ class Player(BasePlayer):
     condition_name = models.StringField()
     timestamp = models.FloatField()
     completion_code = models.StringField(default='0000')
-    wining_block = models.IntegerField()
+    i_wining_block = models.IntegerField()
 
 
 # FUNCTIONS
@@ -377,8 +377,8 @@ def calculate_final_payoff(player: Player):
         print('##### Earnings list is {}'.format(player.participant.vars['earnings_list']))
 
     # Determine the wining round:
-    player.wining_block = rd.randint(0, Constants.num_paths - 1)
-    wining_block_earnings = player.participant.vars['earnings_list'][player.wining_block]
+    player.i_wining_block = rd.randint(0, Constants.num_paths - 1)
+    wining_block_earnings = player.participant.vars['earnings_list'][player.i_wining_block]
     # Add the base_payoff to the game-payoff and make sure that it is floored at 0
     player.participant.payoff = cu(
         player.session.config['base_bonus'] / player.session.config['real_world_currency_per_point']
@@ -392,7 +392,7 @@ def calculate_final_payoff(player: Player):
     player.participant.vars['payoff_dict'] = {
         'payoff_list': player.participant.vars['earnings_list'],
         'wining_earnings': wining_block_earnings,
-        'wining_block': player.wining_block,
+        'wining_block': player.i_wining_block + 1,
         'showup_fee': player.session.config['participation_fee'],
         'base_payoff': player.session.config['base_bonus'],
         'percent_conversion': round(

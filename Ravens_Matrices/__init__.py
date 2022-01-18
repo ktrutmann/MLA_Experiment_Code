@@ -55,6 +55,10 @@ class Player(BasePlayer):
     pers_rpm_overplacement_answer = models.IntegerField(label='Rank:', min=1, max=100)
 
 def add_earnings_to_payoff(player: Player):
+    # Create the dict in case the app is ran separately for testing:
+    if 'payoff_dict' not in player.participant.vars.keys():
+        player.participant.vars['payoff_dict'] = dict()
+
     answer_key = [1, 5, 4, 3, 0, 0]
     total_score = 0
 

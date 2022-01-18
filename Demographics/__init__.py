@@ -31,20 +31,27 @@ class Player(BasePlayer):
     study_field = models.StringField(blank=True)
     investment_experience = models.IntegerField(
         label='On a scale from 0-5, how much experience do you have with '
-        'investment decisions (i.e. trading stocks / bonds ect.)? '
-        '(0 = No experience at all, 5 = Professional Investor',
+        'investment decisions (i.e. trading stocks / bonds ect.)?<br> '
+        '(0 = No experience at all, 5 = Professional Investor)',
         choices=list(range(6)),
         widget=widgets.RadioSelectHorizontal(),
     )
-    purpose = models.LongStringField(blank=True, label='')
-    engagement = models.IntegerField(
-        label='On a scale from 1-7, how attentive were you throughout the study?',
-        choices=[i + 1 for i in range(7)],
+    purpose = models.LongStringField(blank=True,
+        label='Do you have an idea what the purpose of this study is?')
+    attentiveness = models.IntegerField(
+        label='On a scale from 0-5, how attentive were you throughout the study?',
+        choices=list(range(6)),
         widget=widgets.RadioSelectHorizontal(),
     )
-    interest = models.IntegerField(
-        label='On a scale from 1-7, how engaging did you find the task?',
-        choices=[i + 1 for i in range(7)],
+    attention_check = models.IntegerField(
+        label='To ensure you are not an automated program or just clicking through the study, ' +
+            'please answer this question with a value of 1.',
+        choices=list(range(6)),
+        widget=widgets.RadioSelectHorizontal(),
+    )
+    engagement = models.IntegerField(
+        label='On a scale from 0-5, how engaging did you find the task?',
+        choices=list(range(6)),
         widget=widgets.RadioSelectHorizontal(),
     )
     pattern = models.LongStringField(blank=True, label='')
@@ -64,8 +71,9 @@ class demographics_page(Page):
         'study_field',
         'investment_experience',
         'purpose',
+        'attention_check',
+        'attentiveness',
         'engagement',
-        'interest',
     ]
 
 

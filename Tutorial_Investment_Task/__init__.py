@@ -1,12 +1,6 @@
-import copy
-import random as rd
-from numpy import tracemalloc_domain
-import pandas as pd
 import time
 from Investment_Task import Constants as MainConstants
-from Investment_Task import (make_price_paths, initialize_round, is_investable,
-    should_display_infos, get_investment_span, get_trading_vars, make_update_list,
-    calculate_final_payoff)
+from Investment_Task import (initialize_round, should_display_infos)
 from Investment_Task import condition_page, trading_page, belief_page, update_page
 from otree.api import *
 
