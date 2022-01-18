@@ -26,6 +26,9 @@ slightly different paths.
 - `start_price`: The first price in the price path
 - `updates`: List of possible price movements
 - `starting_cash`: How much cash does the participant own at the start
+- `start_cash_jitter`: A random amount drawn from a uniform distribution in -`start_cash_jitter`
+to + `start_cash_jitter` will be added (or subtracted) to `starting_cash`.
+This is done to make it harder to compare what the overall earnings so far are in this block.
 
 ### Time Limits
 - `update_time`: Indicated how long the updating screen is shown.

@@ -37,7 +37,9 @@ class Constants(BaseConstants):
     up_probs = [0.35, 0.65]  # The possible probabilities of a price increase (i.e. "drifts")
     start_price = 1000  # The first price in the price path
     updates = [5, 10, 15]  # List of possible price movements
-    starting_cash = 50000  # How much cash does the participant own at the start
+    starting_cash = 5000  # How much cash does the participant own at the start
+    start_cash_jitter = 100  # A random amount plusminus this value will be added to starting_cash
+    # TODO: (1) Mention the cash jitter in the instructions!
     # Time:
     update_time = 5  # Number of seconds to show the price updates
     max_time = 7  # Number of seconds until a reminder to decide appears
@@ -68,7 +70,6 @@ class Player(BasePlayer):
     hold = models.IntegerField()
     base_price = models.FloatField()
     returns = models.IntegerField()
-    final_cash = models.CurrencyField()
     i_round_in_path = models.IntegerField()
     investable = models.BooleanField()
     global_path_id = models.IntegerField()
@@ -209,7 +210,10 @@ def initialize_round(player: Player, n_distinct_paths, training=False):
     # If this is the first round of a new path:
     if player.i_round_in_path == 0:
         player.hold = player.participant.vars['initial_holds'][player.round_number - 1]
-        player.cash = Constants.starting_cash - (player.hold * Constants.start_price)
+        player.participant.vars['this_start_cash'] = rd.randint(
+            -Constants.start_cash_jitter, Constants.start_cash_jitter) +\
+            Constants.starting_cash
+        player.cash = player.participant.vars['this_start_cash'] - (player.hold * Constants.start_price)
         player.base_price = Constants.start_price if player.hold != 0 else 0
         player.returns = 0
         player.price = Constants.start_price
@@ -252,12 +256,12 @@ def initialize_round(player: Player, n_distinct_paths, training=False):
         # If this is the last round of a block:
         if player.participant.vars['price_info']['last_trial_in_path'][player.round_number - 1]:
             # "Sell everything" for the last price:
-            player.final_cash = (
+            final_cash = (
                 player.cash
                 + player.hold
                 * player.participant.vars['price_info']['price'][player.round_number - 1]
             )
-            player.payoff = player.final_cash - Constants.starting_cash
+            player.payoff = final_cash - player.participant.vars['this_start_cash']
             player.participant.vars['earnings_list'].append(player.payoff)
     rd.seed()
     # Timestamp of the round:

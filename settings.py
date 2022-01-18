@@ -12,7 +12,7 @@ SESSION_CONFIGS = [
     {
         'name': 'testing',
         'num_demo_participants': 1,
-        'app_sequence': ['Strategy', 'Individual_Measures'],
+        'app_sequence': ['Investment_Task'],
     },
 
     {
