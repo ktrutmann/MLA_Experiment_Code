@@ -2,9 +2,9 @@ from os import environ
 
 
 SESSION_CONFIG_DEFAULTS = {
-    'real_world_currency_per_point': 0.01,
+    'real_world_currency_per_point': 0.015,
     'participation_fee': 6.50,
-    'base_bonus': 1.5,
+    'base_bonus': 2.5,
     'doc': "",
 }
 
@@ -27,7 +27,7 @@ SESSION_CONFIGS = [
         'app_sequence': ['Tutorial_Investment_Task',
             'Investment_Task',
             'Strategy', 'Individual_Measures',
-            'Ravens_Matrices', 'Demographics', 'Show_Payoff'],
+            'Ravens_Matrices', 'Demographics', 'Show_Payoff']
     },
 ]
 

@@ -39,7 +39,6 @@ class Constants(BaseConstants):
     updates = [5, 10, 15]  # List of possible price movements
     starting_cash = 5000  # How much cash does the participant own at the start
     start_cash_jitter = 100  # A random amount plusminus this value will be added to starting_cash
-    # TODO: (1) Mention the cash jitter in the instructions!
     # Time:
     update_time = 5  # Number of seconds to show the price updates
     max_time = 7  # Number of seconds until a reminder to decide appears
