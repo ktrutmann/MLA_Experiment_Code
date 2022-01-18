@@ -10,6 +10,12 @@ SESSION_CONFIG_DEFAULTS = {
 
 SESSION_CONFIGS = [
     {
+        'name': 'testing',
+        'num_demo_participants': 1,
+        'app_sequence': ['Strategy', 'Individual_Measures'],
+    },
+
+    {
         'name': 'Investment_Task',
         'num_demo_participants': 1,
         'app_sequence': ['Investment_Task'],
@@ -20,7 +26,7 @@ SESSION_CONFIGS = [
         'num_demo_participants': 1,
         'app_sequence': ['Tutorial_Investment_Task',
             'Investment_Task',
-            'Strategy', 'SOEP_Risk', # TODO: (3) Add an impulsiveness question? See sinergia.
+            'Strategy', 'Individual_Measures',
             'Ravens_Matrices', 'Demographics', 'Show_Payoff'],
     },
 ]

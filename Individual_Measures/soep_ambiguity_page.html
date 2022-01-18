@@ -1,0 +1,16 @@
+{{ block title }}
+    General Questionnaire
+{{ endblock }}
+{{ block content }}
+
+    <p>Please answer the following question:</p>
+
+    <p><b>In general, how willing are you to make decisions under uncertainty?</b></p>
+
+    <p>0 = Not willing at all<br> 10 = Very willing</p>
+
+    {% formfields %}
+
+    {{ next_button }}
+
+{{ endblock }}

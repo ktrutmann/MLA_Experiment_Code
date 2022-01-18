@@ -1,0 +1,19 @@
+{{ block title }}
+    General Questionnaire
+{{ endblock }}
+{{ block content }}
+
+    <p>Please answer the following question:</p>
+
+    <p>
+        <b>To what extent are you willing to give up something that is beneficial to you today
+        in order to gain a greater advantage in the future?</b>
+    </p>
+
+    <p>0 = Not willing at all<br> 10 = Completely willing</p>
+
+    {% formfields %}
+
+    {{ next_button }}
+
+{{ endblock }}
