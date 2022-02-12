@@ -27,6 +27,27 @@ class Player(BasePlayer):
     gender = models.StringField(
         choices=['Male', 'Female', 'Other', 'No Answer'], widget=widgets.RadioSelect()
     )
+    # TODO: (1) Replace is_student with "holds_stocks"
+    # TODO: (4) Add the following questions:
+
+# Have you ever traded stocks?	" [1, 'Yes'],
+#            [0, 'No']"
+#What is the highest level of school you have completed or the highest degree you have received?	"[1, 'less than high school degree'],
+#            [2, 'high school degree or equivalent (e.g., GED)'],
+#            [3, 'Some college but no degree'],
+#            [4, 'Associate degree'],
+#            [5, 'Bachelor degree'],
+#            [6, 'Graduate degree'],
+#            [0, 'Prefer not to say']"
+#How good are your mathematical and statistical abilities from  grades A - F?	"[6, 'A'],
+#            [5, 'B'],
+#            [4, 'C'],
+#            [3, 'D'],
+#            [2, 'E'],
+#            [1, 'F']"
+#Have you played any games of chance in the last 12 months (e.g. online, at the casino)?'	"[1, 'Yes'],
+#            [0, 'No']"
+            
     is_student = models.StringField(choices=['Yes', 'No'], widget=widgets.RadioSelectHorizontal())
     study_field = models.StringField(blank=True)
     investment_experience = models.IntegerField(

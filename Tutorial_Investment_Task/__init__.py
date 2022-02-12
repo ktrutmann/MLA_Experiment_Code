@@ -10,6 +10,7 @@ doc = """
 Tutorial for the investment Task
 """
 
+# TODO: (1) Add comprehension quizz!
 
 class Constants(MainConstants):
     name_in_url = 'Tutorial_Investment_Task'

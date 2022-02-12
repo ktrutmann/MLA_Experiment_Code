@@ -45,6 +45,11 @@ class Player(BasePlayer):
     choices=[i for i in range(11)],
     widget=widgets.RadioSelectHorizontal(),
     label='')
+    # TODO: (3) Add chapman question (see slack) for impulse control.
+    # TODO: (1) Add Q30, Q34&35 (as one question), Q36 and Q47 (maybe some in the demographics?) from here:
+    # https://www.newyorkfed.org/medialibrary/interactives/sce/sce/downloads/data/frbny-sce-survey-core-module-public-questionnaire.pdf
+
+# I tend to move things around, although it would be better to do them directly” (do not agree at all: 0, fully agree: 10)
 
 
 # PAGES

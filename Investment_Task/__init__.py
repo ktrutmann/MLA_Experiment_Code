@@ -20,13 +20,13 @@ class Constants(BaseConstants):
     # n_periods_per_phase = 4  # How long should the participants be "blocked"?
     rounds_p1 = 3 # How long should phase 1 be?
     rounds_p2 = 5 # How long should phase 2 be?
-    n_distinct_paths = 6  # How many paths should be generated?
+    n_distinct_paths = 8  # How many paths should be generated?
     condition_names = [
         'full_control',
         'blocked_full_info', 
         'blocked_delayed_info',
-        'blocked_blocked_info'
     ]  # List of the conditions
+    # TODO: (5) Test whether everything still works with the last condition removed and all other changes!
     hold_range = [-4, 4]  # What's the minimum and maximum amount of shares that can be held.
     shuffle_conditions = True  # Should the conditions be presented in "blocks" or shuffled?
     # Derivative constants
@@ -186,6 +186,7 @@ def initialize_round(player: Player, n_distinct_paths, training=False):
         player.participant.vars['earnings_list'] = []
         player.global_path_id = 1
         # Decide what the initial hold will be for each path:
+        # TODO: (3) Allow for cash-only portfolios
         if player.participant._is_bot:
             rd.seed(5341 + player.participant.id_in_session)
         initial_holds_per_path = [rd.choice(
