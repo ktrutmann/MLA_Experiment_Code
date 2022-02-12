@@ -186,13 +186,10 @@ def initialize_round(player: Player, n_distinct_paths, training=False):
         player.participant.vars['earnings_list'] = []
         player.global_path_id = 1
         # Decide what the initial hold will be for each path:
-        # TODO: (3) Allow for cash-only portfolios
         if player.participant._is_bot:
             rd.seed(5341 + player.participant.id_in_session)
-        initial_holds_per_path = [rd.choice(
-            list(range(Constants.hold_range[0], 0))
-            + list(range(1, Constants.hold_range[1] + 1))) for  # This makes sure 0 isn't chosen!
-            _ in range(n_distinct_paths)]
+        initial_holds_per_path = [rd.choice(range(Constants.hold_range[0],
+            Constants.hold_range[1] + 1)) for _ in range(n_distinct_paths)]
         all_initial_holds = [initial_holds_per_path[i] for i in
             player.participant.vars['price_info']['distinct_path_id']]
         player.participant.vars['initial_holds'] = all_initial_holds
