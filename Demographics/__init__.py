@@ -144,9 +144,6 @@ class comments_page(Page):
         'dont_use_data',
         'dont_use_data_reason',
         'general_comments'
-    
-
-
     ]
 
     @staticmethod

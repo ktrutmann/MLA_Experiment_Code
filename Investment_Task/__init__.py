@@ -26,7 +26,6 @@ class Constants(BaseConstants):
         'blocked_full_info', 
         'blocked_delayed_info'
     ]  # List of the conditions
-    # TODO: (5) Test whether everything still works with the last condition removed and all other changes!
     hold_range = [-4, 4]  # What's the minimum and maximum amount of shares that can be held.
     shuffle_conditions = True  # Should the conditions be presented in "blocks" or shuffled?
     # Derivative constants

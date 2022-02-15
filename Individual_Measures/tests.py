@@ -9,4 +9,5 @@ class PlayerBot(Bot):
         yield(soep_ambiguity_page, {'soep_ambiguity': 2})
         yield(soep_loss_aversion_page, {'soep_loss_aversion': 2})
         yield(falk_patience_page, {'falk_patience_question': 2})
+        yield(chapman_impulse_page, {'chapman_impulse_question': 2})
         yield(dept_payment_page, {'prob_no_dept_payment': 33})

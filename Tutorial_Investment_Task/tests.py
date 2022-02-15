@@ -20,6 +20,10 @@ class PlayerBot(Bot):
         if self.round_number == 1:
             yield Submission(tutorial_page, {'transaction': 1}, check_html=False)
 
+            yield Submission(quiz_page,
+                {'Q1': 1, 'Q2': 1, 'Q3': 1, 'Q4': 1, 'wrong_answers': 0},
+                check_html=False)
+
         if self.player.i_round_in_path == 0:
             yield condition_page
 
