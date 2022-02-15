@@ -24,7 +24,7 @@ class Constants(BaseConstants):
     condition_names = [
         'full_control',
         'blocked_full_info', 
-        'blocked_delayed_info',
+        'blocked_delayed_info'
     ]  # List of the conditions
     # TODO: (5) Test whether everything still works with the last condition removed and all other changes!
     hold_range = [-4, 4]  # What's the minimum and maximum amount of shares that can be held.
@@ -35,6 +35,7 @@ class Constants(BaseConstants):
     num_rounds = n_distinct_paths * len(condition_names) * (n_rounds_per_path + 1)
     # The parameters for the price path
     up_probs = [0.35, 0.65]  # The possible probabilities of a price increase (i.e. "drifts")
+    # NOTE: These numbers are hardoded in the comprehension quiz!
     start_price = 1000  # The first price in the price path
     updates = [5, 10, 15]  # List of possible price movements
     starting_cash = 5000  # How much cash does the participant own at the start

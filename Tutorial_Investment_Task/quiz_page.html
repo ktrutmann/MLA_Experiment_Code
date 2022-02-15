@@ -1,0 +1,106 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block title %}
+Comprehension Quiz
+{% endblock %}
+{% block content %}
+
+<div class="quiz_tutorial content" id="content_quiz">
+    <p>
+        Here you find some questions about the experiment.
+        Please try to answer them to the best of your understanding.
+    </p>
+    <div id="Q1_div" style="display: inline;">{% formfield player.Q1 %}</div>
+    <div id="Q2_div" style="display: none;">{% formfield player.Q2 %}</div>
+    <div id="Q3_div" style="display: none;">{% formfield player.Q3 %}</div>
+    <div id="Q4_div" style="display: none;">{% formfield player.Q4 %}</div>
+
+    <input type="hidden" id="id_wrong_answers" name="wrong_answers" value="0">
+    <button class="button btn continue_button navigation_button" id="quiz_continue_button" type="button"
+            onclick="check_quiz()">Next</button>
+</div>
+
+
+<!-- Quiz logic happens here -->
+<script>
+    $$ = function(x){return document.getElementById(x)};
+
+    // Disable the enter key for this page
+    window.addEventListener('keydown',function(e){
+        if(e.keyIdentifier === 'U+000A' || e.keyIdentifier === 'Enter' || e.keyCode === 13) {
+            e.preventDefault();
+            return false;
+        }
+    }, true);
+
+    let quiz_position = 1;
+
+    check_quiz = function(){
+        let ans_key = [1, 0, 1, 2];
+        // If the answer was correct:
+        if ($$('id_Q' + quiz_position + '-' + ans_key[quiz_position - 1]).checked){
+            if (quiz_position === ans_key.length){
+                $$('form').submit();
+            } else {
+                $$('Q' + quiz_position + '_div').style.display = 'none';
+                $$('Q' + (quiz_position + 1).toString() + '_div').style.display = 'inline';
+                quiz_position += 1;
+            }
+        } else {  // We got a wrong answer!
+            // NOTE: The probabilities are hard coded here!
+            switch (quiz_position) {
+                case 1:
+                    alert('This answer is incorrect.\n\n' +
+                        'From the instructions:\n' +
+                        'You will either be able to invest in the stock of a company with a 65% probability' +
+                        ' of a price increase, resulting in a general upwards trend, or one with a 35%' +
+                        ' probability of a price increase, resulting in a general downward trend.');
+                break;
+                case 2:
+                    alert('This answer is incorrect.\n\n' +
+                        'From the instructions:\n' +
+                        'Which of the price change magnitudes the next price move will take on is determined' +
+                        ' by chance and with equal probability. Thus, whether the price in- or decreases is' +
+                        ' determined by the kind of asset while the magnitude of the change is determined randomly.');
+                break;
+                case 3:
+                    alert('This answer is incorrect.\n\n' +
+                        'From the instructions:\n' +
+                        'You will either be able to invest in the stock of a company with a 65% probability' +
+                        ' of a price increase, resulting in a general upwards trend, or one with a 35%' +
+                        ' probability of a price increase, resulting in a general downward trend.');
+                break;
+                case 4:
+                    alert('This answer is incorrect.\n\n' +
+                        'From the instructions:\n' +
+                        'When short selling, the dependence of your returns on the price movements is' +
+                        ' reversed from that of a standard investment.');
+                break;
+
+            }
+            $$('id_wrong_answers').value = parseInt($$('id_wrong_answers').value) +  1;
+        }
+    };
+</script>
+
+
+<style>
+.btn{
+    margin-right: 10px;
+}
+
+.form-group{
+    margin-right: 10px;
+}
+
+.row {
+    margin-bottom: 20px;
+}
+
+.table_content{
+    background: aliceblue;
+}
+</style>
+
+{% endblock %}

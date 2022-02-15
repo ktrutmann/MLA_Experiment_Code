@@ -338,8 +338,9 @@
                 We now turn to the way in which the assets price can develop.
                 To illustrate, imagine that the asset you are buying is a stock that is based on a company which can
                 make a profit but can also lose money.
-                You will either be able to invest in the stock of a company with <b>{{ good_raise_prob }}%</b>
-                probability of a price increase or one with <b>{{ bad_raise_prob }}%</b>.
+                You will either be able to invest in the stock of a company with a <b>{{ good_raise_prob }}%</b>
+                probability of a price increase, resulting in a general upwards trend, or one with a <b>{{ bad_raise_prob }}%</b>
+                probability of a price increase, resulting in a general downward trend.
                 Remember that even if you are given the stock from a company where the price is more likely to decrease,
                 you can still profit from this by short selling the asset.
             </p>
@@ -347,7 +348,7 @@
                 In each round, the price can move by either <b>{{ Constants.updates.0 }},
                 {{ Constants.updates.1 }} or {{ Constants.updates.2 }}</b> points.
                 This is true for both increases as well as decreases.
-                Which of these magnitudes the next price moves will take on is determined by chance and with equal
+                Which of these magnitudes the next price move will take on is determined by chance and with equal
                 probability. Thus, whether the price in- or decreases is determined by the kind of asset
                 while the magnitude of the change is determined randomly.
             </p>
@@ -360,7 +361,7 @@
         <div class="instr_text tut_part_6" id="instr_text_6" style="display: none;">
             <hr>
             <p>
-                You will be investing under different conditions throughout the different rounds in the experiment.
+                You will be investing under different conditions throughout different "blocks" in the experiment.
                 The page that indicates when a new price path is started will also tell you
                 what the conditions for the upcoming block are.
             </p>
@@ -480,8 +481,8 @@
             plus {{ conversion_percent }}% of the 100 points you earned.
         </p>
         <p>
-            If you have understood these instructions, please click the "Continue" button to start the the
-            {{ Constants.num_tutorial_paths }} training blocks.
+            If you have understood these instructions, please click the "Continue" button to start a short
+            comprehension quiz which will be followed by the {{ Constants.num_tutorial_paths }} training blocks.
         </p>
         <button class="button btn back_button navigation_button" id="structure_back_button" type="button"
             onclick="flip_tut_pages('back')">Back</button>

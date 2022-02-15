@@ -15,17 +15,33 @@
     {% formfield player.pattern %}
  
     <p>
+        Did you notice a price path being shown more than once?
+    </p>
+    {% formfield player.noticed_repetitions %}
+
+    <p>
        Is there any reason why we should consider not using your data?
-       If so, please explain below. If not, leave this field empty.
        Your answer to this question does not affect your payment.
     </p>
     {% formfield player.dont_use_data %}
+
+    <p>
+       If you answered yes above, please explain the reason in the box below. If not, leave this field empty.
+    </p>
+    {% formfield player.dont_use_data_reason %}
 
     <p>
         Finally, if you have some general comments, please provide them here.
     </p>
     {% formfield player.general_comments%}
 
-    {% next_button %}
+    {% next_button %} 
 
+<style>
+    .mb-3 {
+        margin-bottom: 2rem !important;
+        margin-top: -2rem;
+    }
+
+</style>
 {% endblock %}

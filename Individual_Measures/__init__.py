@@ -1,3 +1,4 @@
+from typing import TypedDict
 from otree.api import *
 
 
@@ -5,6 +6,7 @@ doc = """
 The general risk and financial risk questions of the Socioeconomic pannel risk questionnaire
 https://www.diw.de/documents/publikationen/73/diw_01.c.571151.de/diw_ssp0423.pdf
 Also the SOEP Ambiguity and Loss Aversion questions.
+An "implusivenes" question from Chapman, J., Dean, M., Ortoleva, P., Snowberg, E., & Camerer, C. (2018). Econographics (No. w24931). National Bureau of Economic Research.
 Lastly the patience question from Falk et al. (2018) was also used
 (Falk, A., Becker, A., Dohmen, T., Enke, B., Huffman, D. & Sunde, U. (2018). Global Evidence on Economic Preferences).
 """
@@ -26,30 +28,30 @@ class Group(BaseGroup):
 
 class Player(BasePlayer):
     soep_general = models.IntegerField(
-    choices=[i for i in range(11)],
-    widget=widgets.RadioSelectHorizontal(),
-    label='')
+        choices=[i for i in range(11)],
+        widget=widgets.RadioSelectHorizontal(),
+        label='')
     soep_finance = models.IntegerField(
-    choices=[i for i in range(11)],
-    widget=widgets.RadioSelectHorizontal(),
-    label='')
+        choices=[i for i in range(11)],
+        widget=widgets.RadioSelectHorizontal(),
+        label='')
     soep_ambiguity = models.IntegerField(
-    choices=[i for i in range(11)],
-    widget=widgets.RadioSelectHorizontal(),
-    label='')
+        choices=[i for i in range(11)],
+        widget=widgets.RadioSelectHorizontal(),
+        label='')
     soep_loss_aversion = models.IntegerField(
-    choices=[i for i in range(11)],
-    widget=widgets.RadioSelectHorizontal(),
-    label='')
+        choices=[i for i in range(11)],
+        widget=widgets.RadioSelectHorizontal(),
+        label='')
     falk_patience_question = models.IntegerField(
-    choices=[i for i in range(11)],
-    widget=widgets.RadioSelectHorizontal(),
-    label='')
-    # TODO: (3) Add chapman question (see slack) for impulse control.
-    # TODO: (1) Add Q30, Q34&35 (as one question), Q36 and Q47 (maybe some in the demographics?) from here:
-    # https://www.newyorkfed.org/medialibrary/interactives/sce/sce/downloads/data/frbny-sce-survey-core-module-public-questionnaire.pdf
-
-# I tend to move things around, although it would be better to do them directly” (do not agree at all: 0, fully agree: 10)
+        choices=[i for i in range(11)],
+        widget=widgets.RadioSelectHorizontal(),
+        label='')
+    chapman_impulse_question = models.IntegerField(
+        choices=[i for i in range(11)],
+        widget=widgets.RadioSelectHorizontal(),
+        label='')
+    prob_no_dept_payment = models.IntegerField(min=0, max=100, label='')
 
 
 # PAGES
@@ -73,10 +75,20 @@ class falk_patience_page(Page):
     form_model = 'player'
     form_fields = ['falk_patience_question']
 
+class chapman_impulse_page(Page):
+    form_model = 'player'
+    form_fields = ['chapman_impulse_question']
+
+class dept_payment_page(Page):
+    form_model = 'player'
+    form_fields = ['prob_no_dept_payment']
+
 
 page_sequence = [
     soep_general_page,
     soep_finance_page,
     soep_ambiguity_page,
     soep_loss_aversion_page,   
-    falk_patience_page]
+    falk_patience_page,
+    chapman_impulse_page,
+    dept_payment_page]

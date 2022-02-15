@@ -1,0 +1,25 @@
+{{ block title }}
+    General Questionnaire
+{{ endblock }}
+{{ block content }}
+
+    <p>Please answer the following question:</p>
+
+    <p>What do you think is the percent chance that, <b>over the next 3 months</b>, you will <b>NOT</b>
+    be able to make one of your dept payments (that is, the minimum required payments on credit
+    and retail cards, auto loans, student loans, mortgages, or any other dept you may have)?</p>
+
+    <div id="slider_container" style="width: 100%; align-content: center">
+        <label for="id_prob_no_dept_payment"></label>
+        <span>
+            <i>0%</i>
+            <input type="range" class="slider",
+                   min="0" max="100" step="1" id="id_prob_no_dept_payment" name="prob_no_dept_payment"
+                   style = "width: 500px; margin-top: 10px; margin-bottom: 20px; ">
+            <i>100%</i>
+        </span>
+    </div>
+
+    {{ next_button }}
+
+{{ endblock }}

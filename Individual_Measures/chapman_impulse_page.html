@@ -1,0 +1,19 @@
+{{ block title }}
+    General Questionnaire
+{{ endblock }}
+{{ block content }}
+
+    <p>Please answer the following question:</p>
+
+    <p>
+        <b>To what extend do you agree with the following statement:<br>
+        "I tend to move things around, although it would be better to do them directly”</b>
+    </p>
+
+    <p>0 = do not agree at all<br> 10 = fully agree</p>
+
+    {% formfields %}
+
+    {{ next_button }}
+
+{{ endblock }}

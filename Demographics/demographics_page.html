@@ -8,15 +8,22 @@
 {% block content %}
     <p>You have reached the final pages of the study.
     Please answer the following questions:</p>
-{% formfield player.age label='Age'%}
-{% formfield player.gender label='Gender'%}
-{% formfield player.is_student label='Are you a student?'%}
-{% formfield player.study_field label='If so, in what subject?'%}
-{% formfield player.investment_experience %}
-{% formfield player.purpose %}
-{% formfield player.attention_check %}
-{% formfield player.attentiveness %}
-{% formfield player.engagement %}
+
+    {% formfield player.age %}
+    {% formfield player.gender %}
+    {% formfield player.ethnicity %}
+    {% formfield player.education %}
+    {% formfield player.math_abilities_self_report %}
+    {% formfield player.attention_check %}
+    {% formfield player.attentiveness %}
+    {% formfield player.engagement %}
+    {% formfield player.household_size %}
+    {% formfield player.household_children %}
+    {% formfield player.income_bracket %}
+    {% formfield player.games_of_chance %}
+    {% formfield player.traded_stocks %}
+    {% formfield player.investment_experience %}
+    {% formfield player.purpose %}
 
     {% next_button %}
 

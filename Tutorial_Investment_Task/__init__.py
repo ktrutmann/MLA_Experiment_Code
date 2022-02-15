@@ -10,7 +10,6 @@ doc = """
 Tutorial for the investment Task
 """
 
-# TODO: (1) Add comprehension quizz!
 
 class Constants(MainConstants):
     name_in_url = 'Tutorial_Investment_Task'
@@ -54,7 +53,27 @@ class Player(BasePlayer):
     condition_name = models.StringField()
     timestamp = models.FloatField()
     prolific_id = models.StringField(label='Prolific ID:')
-
+    Q1 = models.StringField(widget=widgets.RadioSelect, blank=True,
+                            label='A decrease in the assets price is...',
+                            choices=['...more likely during an upward trend.',
+                                     '...more likely during a downward trend.',
+                                     '...equally likely during an upward as during a downward trend.'])
+    Q2 = models.StringField(widget=widgets.RadioSelect, blank=True,
+                            label='A price increase of 15 points is...',
+                            choices=['...always equally as likely as an increase of 10.',
+                                     '...more likely than a price increase of 10 if the asset has an upward trend.',
+                                     '...always equally as likely as a decrease of 15 points.'])
+    Q3 = models.StringField(widget=widgets.RadioSelect, blank=True,
+                            label='When the asset has a downward trend...',
+                            choices=['...there is a 50% chance that the price will in- or decrease.',
+                                     '...there is a 35% chance that the price will increase and a 65% chance that it will decrease.',
+                                     '...there is a 35% chance that the price will decrease and a 65% chance that it will increase.'])
+    Q4 = models.StringField(widget=widgets.RadioSelect, blank=True,
+                            label='Imagine that you have short sold the asset by two shares (i.e. you hold -2 shares). Which statement is correct?',
+                            choices=['If the asset has an upward trend, the value of your portfolio is more likely to increase now.',
+                                     'If the price decreases by 10 points, the value of your portfolio will decrease by 20 points.',
+                                     'If the price decreases by 15 points, the value of your portfolio will increase by 30 points.'])
+    wrong_answers = models.IntegerField()
 
 # FUNCTIONS
 def get_tutorial_vars(player: Player):
@@ -106,6 +125,15 @@ class tutorial_page(Page):
         return get_tutorial_vars(player)
 
 
+class quiz_page(Page):
+    form_model = 'player'
+    form_fields = ['Q1', 'Q2', 'Q3', 'Q4', 'wrong_answers']
+
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.round_number == 1
+
+
 class end_page(Page):
     @staticmethod
     def is_displayed(player: Player):
@@ -116,6 +144,7 @@ page_sequence = [
     prolific_ID_page,
     initializer_page,
     tutorial_page,
+    quiz_page,
     condition_page,
     trading_page,
     belief_page,

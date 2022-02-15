@@ -32,13 +32,15 @@
         Your payoff is now calculated in the following way:
     </p>
     <p>
-        {{ showup_fee }} for completing the study + ${{ base_payoff }} base bonus + {{ percent_conversion }}% of
-        {{ wining_earnings }} from the investment task and {{ percent_conversion }}% of {{ravens_bonus_points|c }}
-        from the matrix task = <b>{{ payoff_total }}</b><br>
-        (In case the math does not seem correct here, note that you can lose no more from the investment task than the
-        ${{ base_payoff}} base bonus and that the points from the matrix task may have to be rounded.)
+        The {{ showup_fee }} for completing the study will be payed out immediately after your
+        task has been accepted. In addition you will receive a bonus payment consisting of the
+        ${{ base_payoff }} base bonus + {{ percent_conversion }}% of {{ wining_earnings }} from the
+        investment task and {{ percent_conversion }}% of {{ravens_bonus_points|c }}
+        from the matrix task. In total, that is <b>{{ payoff_total }}</b><br>
+        (In case the math does not seem correct here, note that you can lose no more from the investment
+        task than the ${{ base_payoff}} base bonus and that the points from the
+        matrix task may have to be rounded.)
     </p>
-    <!-- TODO: (2) Make clearer what will be payed out when -->
     <p>
         If you have activated fullscreen mode you may now leave it by pressing <b><i>F11</i></b>
         or <i><b>Cmd + Ctrl + F</b></i> again. <br>

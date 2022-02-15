@@ -3,7 +3,7 @@ from os import environ
 
 SESSION_CONFIG_DEFAULTS = {
     'real_world_currency_per_point': 0.015,
-    'participation_fee': 6.50,
+    'participation_fee': 8.13,
     'base_bonus': 2.5,
     'doc': "",
 }
@@ -12,7 +12,7 @@ SESSION_CONFIGS = [
     {
         'name': 'testing',
         'num_demo_participants': 1,
-        'app_sequence': ['Investment_Task'],
+        'app_sequence': ['Demographics'],
     },
 
     {
