@@ -51,7 +51,7 @@ ROOMS = [
     {
         'name': 'room_2',
         'display_name': 'room2'
-    }
+    },
     {
         'name': 'room_3',
         'display_name': 'room3'
