@@ -45,12 +45,16 @@ POINTS_DECIMAL_PLACES = 1
 ROOM_DEFAULTS = {}
 ROOMS = [
     {
-        'name': 'test_room',
-        'display_name': 'test_room1'
+        'name': 'room_1',
+        'display_name': 'room1'
     },
     {
-        'name': 'pilot_room',
-        'display_name': 'pilot_room1'
+        'name': 'room_2',
+        'display_name': 'room2'
+    }
+    {
+        'name': 'room_3',
+        'display_name': 'room3'
     }
 ]
 
