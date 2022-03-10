@@ -51,7 +51,7 @@ class Player(BasePlayer):
     household_size = models.IntegerField(
         label='How many people (including you) live in your Household?', min=1)
     household_children = models.IntegerField(
-        label='How many of the people living in your household are children under the age of 18?', min=1)
+        label='How many of the people living in your household are children under the age of 18?')
     ethnicity = models.StringField(
         label='Please choose the race that you would most consider yourself to be:',
         choices=['White / Caucasian', 'Black or African American',
@@ -83,8 +83,8 @@ class Player(BasePlayer):
         choices=[[True, 'Yes'], [False, 'No']],
         widget=widgets.RadioSelectHorizontal())
     investment_experience = models.IntegerField(
-        label='On a scale from 0-5, how much experience do you have with '
-        'investment decisions (i.e. trading stocks / bonds ect.)?<br> '
+        label='On a scale from 0-5, how much experience do you have with ' +
+        'investment decisions (i.e. trading stocks / bonds ect.)?<br> ' +
         '(0 = No experience at all, 5 = Professional Investor)',
         choices=list(range(6)),
         widget=widgets.RadioSelectHorizontal())
